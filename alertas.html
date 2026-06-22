@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>EasyBiome — Alertas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<div class="page">
+  <div class="top-bar">
+    <div class="top-bar-title">Alertas</div>
+    <button class="icon-btn" onclick="openTerrarioPicker()" aria-label="Trocar terrário">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M21 3l-7 7"/><path d="M8 21H3v-5M3 21l7-7"/><path d="M21 16v5h-5M21 21l-7-7"/><path d="M3 8V3h5M3 3l7 7"/></svg>
+    </button>
+  </div>
+
+  <div class="alert-list">
+    <div class="alert-row unread">
+      <div class="alert-icon warn-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="alert-body">
+        <div class="alert-title">Humidade baixa</div>
+        <div class="alert-desc">42% — abaixo do mínimo de 50%</div>
+        <div class="alert-time">há 5 minutos · Exposição</div>
+        <div style="margin-top:6px"><span class="alert-badge unresolved">Por resolver</span></div>
+      </div>
+    </div>
+    <div class="alert-row ok">
+      <div class="alert-icon ok-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="alert-body">
+        <div class="alert-title">Temperatura normalizada</div>
+        <div class="alert-desc">Voltou ao intervalo 20–35°C</div>
+        <div class="alert-time">há 2 horas · Exposição</div>
+        <div style="margin-top:6px"><span class="alert-badge resolved">Resolvido</span></div>
+      </div>
+    </div>
+    <div class="alert-row unread">
+      <div class="alert-icon warn-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="alert-body">
+        <div class="alert-title">Temperatura alta</div>
+        <div class="alert-desc">36.2°C — acima do máximo de 35°C</div>
+        <div class="alert-time">ontem, 14:32 · Quarto</div>
+        <div style="margin-top:6px"><span class="alert-badge unresolved">Por resolver</span></div>
+      </div>
+    </div>
+    <div class="alert-row ok">
+      <div class="alert-icon ok-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="alert-body">
+        <div class="alert-title">ESP32 reconectado</div>
+        <div class="alert-desc">Ligação restabelecida após 3 min offline</div>
+        <div class="alert-time">ontem, 09:15 · Exposição</div>
+        <div style="margin-top:6px"><span class="alert-badge resolved">Resolvido</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Picker bottom sheet (partilhado) -->
+<div class="picker-overlay" id="picker-overlay" onclick="closeTerrarioPicker(event)">
+  <div class="picker-sheet">
+    <div class="picker-handle"></div>
+    <div class="sel-label" style="padding:0 0 12px">Os meus terrários</div>
+    <div class="picker-list" id="picker-list"></div>
+    <button class="picker-add" onclick="addTerrario()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Novo terrário
+    </button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="bnav-item" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Início
+  </a>
+  <a class="bnav-item" href="historico.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Histórico
+  </a>
+  <a class="bnav-item active" href="alertas.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Alertas
+  </a>
+  <a class="bnav-item" href="definicoes.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Definições
+  </a>
+</nav>
+
+<script src="js/terrarios.js"></script>
+<script src="js/picker.js"></script>
+<script src="js/alertas.js"></script>
+</body>
+</html>
