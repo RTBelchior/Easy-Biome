@@ -66,6 +66,7 @@ body {
   flex-shrink: 0;
 }
 
+
 .top-bar-title {
   font-family: var(--mono);
   font-size: 14px;
@@ -83,9 +84,12 @@ body {
 }
 
 .logo-box {
-  width: 120px;        /* Mantém o tamanho que já tinhas */
-  background: none;   /* REMOVIDO: var(--green) -> Agora o fundo é transparente */
-  border-radius: 0;   /* REMOVIDO: Já não precisa de cantos arredondados */
+  width: auto;
+  /* Deixa a largura adaptar-se proporcionalmente */
+  height: 32px;
+  /* Define uma altura excelente para a barra do telemóvel */
+  background: none;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,7 +98,7 @@ body {
 .logo-box img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Garante que a imagem mantém a proporção original */
+  object-fit: contain;
 }
 
 .logo-box svg {
@@ -895,6 +899,26 @@ canvas {
 
   .desktop-topbar {
     display: flex;
+  }
+
+  @media (min-width: 820px) {
+    body {
+      max-width: none;
+    }
+
+    /* ... outras regras que já lá tens ... */
+
+    .desktop-topbar {
+      display: flex;
+    }
+
+    /* ADICIONA ESTA REGRA AQUI DENTRO: */
+    .logo-box {
+      height: 50px;
+      /* O logo fica maior apenas no computador */
+    }
+
+    /* ... resto do teu código @media ... */
   }
 
   /* Barra superior única e fixa, partilhada por todas as páginas */
