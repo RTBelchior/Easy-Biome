@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EasyBiome — Autenticação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  /* Dark dashboard palette — matches the screenshot */
+  --bg:       #090e09;        /* near-black page bg */
+  --surface:  #0f1a0f;        /* card / right panel bg */
+  --surface2: #162016;        /* input bg */
+  --surface3: #1c2a1c;        /* input hover / elevated */
+  --border:   rgba(46,232,123,0.10);  /* subtle green border */
+  --border2:  rgba(46,232,123,0.18);  /* stronger border */
+  --accent:   #2EE87B;        /* néon green — primary action */
+  --accent-d: #1fbb5f;        /* accent darker for hover */
+  --accent-dim:rgba(46,232,123,0.15); /* tinted bg */
+
+  --text-1:   #e4f0e4;        /* primary text */
+  --text-2:   #7a9e7a;        /* secondary */
+  --text-3:   #3e5e3e;        /* tertiary / placeholders */
+
+  --err:      #f26b6b;
+  --err-bg:   rgba(242,107,107,0.08);
+
+  --font-sans:'Inter',system-ui,sans-serif;
+  --font-serif:'Lora',Georgia,serif;
+
+  /* keep legacy vars for JS compat */
+  --color-text-primary:var(--text-1);
+  --color-text-secondary:var(--text-2);
+  --color-text-tertiary:var(--text-3);
+  --color-border-tertiary:var(--border);
+}
+
+html,body{
+  height:100%;
+  font-family:var(--font-sans);
+  background:var(--bg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:24px;
+}
+
+/* ── ROOT CARD ── */
+.eb-root{
+  display:flex;
+  width:100%;
+  max-width:860px;
+  min-height:600px;
+  border-radius:16px;
+  border:1px solid var(--border2);
+  overflow:hidden;
+  background:var(--surface);
+  box-shadow:0 0 0 1px rgba(46,232,123,0.04), 0 24px 60px rgba(0,0,0,0.6);
+  position:relative;
+}
+
+/* ── LEFT SIDEBAR ── */
+.eb-left{
+  width:240px;
+  flex-shrink:0;
+  background:#060c06;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  border-right:1px solid var(--border);
+}
+
+.eb-left-art{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  opacity:0.7;
+}
+
+.eb-left-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  padding:28px 24px;
+}
+
+.eb-logo-wrap{
+  display:flex;
+  flex-direction:column;
+  margin-bottom:auto;
+}
+
+/* logo hex */
+.eb-logo-hex{
+  width:100%;
+  height:120px;
+  border-radius:12px;
+  background:#060c06;
+  border:1px solid rgba(46,232,123,0.20);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  margin-bottom:auto;
+}
+
+.eb-logo-hex img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  padding:16px;
+}
+
+.eb-logo-hex .ti{
+  font-size:19px;
+  color:var(--accent);
+}
+
+.eb-brand-text h1{
+  font-size:16px;
+  font-weight:600;
+  color:var(--text-1);
+  letter-spacing:-0.3px;
+  line-height:1.1;
+}
+
+.eb-brand-text p{
+  font-size:9px;
+  color:var(--text-3);
+  letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-top:2px;
+}
+
+.eb-tagline{
+  padding-top:24px;
+  border-top:1px solid var(--border);
+}
+
+.eb-tagline-text{
+  font-family:var(--font-serif);
+  font-size:20px;
+  font-weight:500;
+  color:var(--text-1);
+  line-height:1.35;
+  margin-bottom:20px;
+}
+
+.eb-feature-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.eb-feat{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.eb-feat-dot{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:var(--accent);
+  flex-shrink:0;
+  box-shadow:0 0 6px var(--accent);
+}
+
+.eb-feat span{
+  font-size:11.5px;
+  color:var(--text-2);
+  line-height:1.4;
+}
+
+/* ── RIGHT PANEL ── */
+.eb-right{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  background:var(--surface);
+  min-width:0;
+}
+
+/* ── TABS ── */
+.eb-right-top{
+  padding:24px 32px 0;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  gap:0;
+  flex-shrink:0;
+}
+
+.eb-tab{
+  padding:0 0 14px;
+  margin-right:24px;
+  font-size:14px;
+  font-family:var(--font-sans);
+  color:var(--text-3);
+  background:none;
+  border:none;
+  border-bottom:2px solid transparent;
+  cursor:pointer;
+  transition:color 0.15s,border-color 0.15s;
+  margin-bottom:-1px;
+  font-weight:400;
+}
+
+.eb-tab.on{
+  color:var(--accent);
+  border-bottom:2px solid var(--accent);
+  font-weight:500;
+}
+
+/* ── FORM AREA ── */
+.eb-form-wrap{
+  flex:1;
+  padding:28px 32px 24px;
+  overflow-y:auto;
+}
+
+.f-heading{
+  font-size:20px;
+  font-weight:600;
+  color:var(--text-1);
+  margin-bottom:3px;
+  letter-spacing:-0.3px;
+}
+
+.f-sub{
+  font-size:13px;
+  color:var(--text-2);
+  margin-bottom:24px;
+}
+
+/* ── FIELD ROW ── */
+.f-row{
+  display:flex;
+  gap:12px;
+}
+
+.f-row .f-field{
+  flex:1;
+  min-width:0;
+}
+
+/* ── FIELD ── */
+.f-field{
+  margin-bottom:16px;
+}
+
+.f-label{
+  display:block;
+  font-size:10.5px;
+  font-weight:600;
+  color:var(--text-3);
+  margin-bottom:6px;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+}
+
+/* ── INPUT WRAPPER ── */
+.f-inp-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.f-inp-wrap .lead{
+  position:absolute;
+  left:12px;
+  font-size:17px;
+  color:var(--text-3);
+  pointer-events:none;
+  z-index:1;
+  line-height:1;
+}
+
+.f-inp-wrap input{
+  width:100%;
+  padding:10px 40px 10px 38px;
+  font-size:14px;
+  font-family:var(--font-sans);
+  border-radius:9px;
+  border:1px solid var(--border2);
+  background:var(--surface2);
+  color:var(--text-1);
+  transition:border-color 0.15s,background 0.15s,box-shadow 0.15s;
+  outline:none;
+}
+
+.f-inp-wrap input:not([type="password"]):not(.has-toggle){
+  padding-right:14px;
+}
+
+.f-inp-wrap input:focus{
+  border-color:var(--accent);
+  background:var(--surface3);
+  box-shadow:0 0 0 3px rgba(46,232,123,0.10);
+}
+
+.f-inp-wrap input::placeholder{
+  color:var(--text-3);
+}
+
+.f-inp-wrap input.err{
+  border-color:var(--err);
+  box-shadow:0 0 0 3px var(--err-bg);
+}
+
+.pw-toggle{
+  position:absolute;
+  right:10px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:var(--text-3);
+  font-size:17px;
+  padding:3px;
+  display:flex;
+  align-items:center;
+  line-height:1;
+  z-index:1;
+  transition:color 0.15s;
+}
+
+.pw-toggle:hover{color:var(--text-2);}
+
+/* ── ERRORS ── */
+.f-err{
+  font-size:11.5px;
+  color:var(--err);
+  margin-top:5px;
+  display:none;
+}
+
+.f-err.on{display:block;}
+
+/* ── PASSWORD STRENGTH ── */
+.str-bar{
+  display:flex;
+  gap:4px;
+  margin-top:8px;
+}
+
+.str-seg{
+  flex:1;
+  height:3px;
+  border-radius:3px;
+  background:var(--surface3);
+  transition:background 0.3s;
+}
+
+.str-info{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:4px;
+}
+
+.str-lbl{
+  font-size:11px;
+  color:var(--text-3);
+}
+
+/* ── AUX ROW ── */
+.f-aux{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.f-check-row{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.f-check-row input[type="checkbox"]{
+  accent-color:var(--accent);
+  width:14px;
+  height:14px;
+  cursor:pointer;
+}
+
+.f-check-row label{
+  font-size:13px;
+  color:var(--text-2);
+  cursor:pointer;
+}
+
+.f-forgot{
+  font-size:12px;
+  color:var(--accent);
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-family:var(--font-sans);
+  opacity:0.8;
+  transition:opacity 0.15s;
+}
+
+.f-forgot:hover{opacity:1;text-decoration:underline;}
+
+/* ── TERMS ── */
+.f-terms{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.f-terms input[type="checkbox"]{
+  accent-color:var(--accent);
+  width:14px;
+  height:14px;
+  margin-top:2px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+.f-terms label{
+  font-size:13px;
+  color:var(--text-2);
+  line-height:1.5;
+  cursor:pointer;
+}
+
+.f-terms a{
+  color:var(--accent);
+  text-decoration:none;
+  cursor:pointer;
+  opacity:0.85;
+}
+
+.f-terms a:hover{opacity:1;text-decoration:underline;}
+
+/* ── PRIMARY BUTTON ── */
+.btn-go{
+  width:100%;
+  padding:11px 16px;
+  font-size:14px;
+  font-weight:600;
+  font-family:var(--font-sans);
+  color:#060c06;
+  background:var(--accent);
+  border:none;
+  border-radius:9px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:background 0.15s,box-shadow 0.15s,transform 0.1s;
+  letter-spacing:0.1px;
+}
+
+.btn-go:hover{
+  background:var(--accent-d);
+  box-shadow:0 0 20px rgba(46,232,123,0.25);
+}
+.btn-go:active{transform:scale(0.99);}
+.btn-go:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+
+.btn-go .ti{font-size:16px;}
+
+.btn-spin{
+  width:16px;
+  height:16px;
+  border:2px solid rgba(6,12,6,0.25);
+  border-top-color:#060c06;
+  border-radius:50%;
+  animation:spin 0.7s linear infinite;
+  display:none;
+  flex-shrink:0;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── OR DIVIDER ── */
+.or-line{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:18px 0;
+  font-size:12px;
+  color:var(--text-3);
+}
+
+.or-line::before,
+.or-line::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+/* ── SSO BUTTON ── */
+.btn-sso{
+  width:100%;
+  padding:10px 16px;
+  font-size:13px;
+  font-family:var(--font-sans);
+  color:var(--text-2);
+  background:var(--surface2);
+  border:1px solid var(--border2);
+  border-radius:9px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:background 0.15s,border-color 0.15s,color 0.15s;
+}
+
+.btn-sso:hover{
+  background:var(--surface3);
+  border-color:rgba(46,232,123,0.3);
+  color:var(--text-1);
+}
+
+.btn-sso .ti{font-size:17px;}
+
+/* ── TOAST ── */
+.eb-toast{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  padding:11px 16px;
+  border-radius:10px;
+  font-size:13px;
+  font-family:var(--font-sans);
+  display:flex;
+  align-items:center;
+  gap:9px;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity 0.25s,transform 0.25s;
+  pointer-events:none;
+  max-width:300px;
+  z-index:100;
+}
+
+.eb-toast.on{opacity:1;transform:translateY(0);}
+
+.eb-toast.ok{
+  background:#0f2a1a;
+  color:var(--accent);
+  border:1px solid rgba(46,232,123,0.25);
+}
+
+.eb-toast.bad{
+  background:#2a0f0f;
+  color:var(--err);
+  border:1px solid rgba(242,107,107,0.25);
+}
+
+.eb-toast .ti{font-size:16px;flex-shrink:0;}
+
+/* ── PANELS ── */
+.panel{display:none;}
+.panel.on{display:block;}
+
+.sr-only{
+  position:absolute;width:1px;height:1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;
+}
+</style>
+</head>
+<body>
+
+<h2 class="sr-only">EasyBiome — Autenticação</h2>
+
+<div class="eb-root">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="eb-left">
+    <svg class="eb-left-art" viewBox="0 0 240 600" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="240" height="600" fill="#060c06"/>
+      <!-- Ground mounds -->
+      <ellipse cx="120" cy="568" rx="155" ry="90" fill="#0a1a0a"/>
+      <ellipse cx="44" cy="492" rx="68" ry="48" fill="#0a1a0a"/>
+      <ellipse cx="196" cy="452" rx="58" ry="40" fill="#0a1a0a"/>
+      <!-- Main stems — dark muted green -->
+      <path d="M120 568 Q96 450 68 362 Q48 293 88 214 Q108 170 120 154" stroke="#1a3a1a" stroke-width="13" stroke-linecap="round" fill="none"/>
+      <path d="M120 568 Q152 440 172 342 Q188 264 158 194 Q144 160 120 154" stroke="#1a3a1a" stroke-width="10" stroke-linecap="round" fill="none"/>
+      <!-- Branches — slightly lighter -->
+      <path d="M104 494 Q52 464 18 424" stroke="#1f4a1f" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M134 462 Q192 432 218 392" stroke="#1f4a1f" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M92 404 Q44 380 16 340" stroke="#1f4a1f" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M146 372 Q198 344 218 298" stroke="#1f4a1f" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M84 324 Q36 304 10 266" stroke="#163016" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M154 288 Q204 262 224 220" stroke="#163016" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <!-- Leaf nodes — neon green glow -->
+      <ellipse cx="66" cy="424" rx="26" ry="17" fill="#1a3a1a" opacity="0.9"/>
+      <ellipse cx="186" cy="388" rx="20" ry="13" fill="#1a3a1a" opacity="0.8"/>
+      <!-- Neon tip glow -->
+      <circle cx="120" cy="154" r="14" fill="#2EE87B" opacity="0.08"/>
+      <circle cx="120" cy="154" r="8" fill="#2EE87B" opacity="0.18"/>
+      <circle cx="120" cy="154" r="4" fill="#2EE87B" opacity="0.55"/>
+      <circle cx="88" cy="215" r="5" fill="#2EE87B" opacity="0.20"/>
+      <circle cx="158" cy="194" r="4" fill="#2EE87B" opacity="0.18"/>
+      <!-- Subtle neon veins on branches -->
+      <path d="M104 494 Q52 464 18 424" stroke="#2EE87B" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.15"/>
+      <path d="M134 462 Q192 432 218 392" stroke="#2EE87B" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.12"/>
+      <path d="M92 404 Q44 380 16 340" stroke="#2EE87B" stroke-width="0.6" stroke-linecap="round" fill="none" opacity="0.10"/>
+      <!-- Ground fill -->
+      <path d="M0 548 Q60 528 120 543 Q180 558 240 538 L240 600 L0 600Z" fill="#0a1a0a"/>
+    </svg>
+
+    <div class="eb-left-content">
+      <div class="eb-logo-wrap">
+        <div class="eb-logo-hex">
+          <img src="logotipo.png" alt="EasyBiome Logo"/>
+        </div>
+      </div>
+
+      <div class="eb-tagline">
+        <p class="eb-tagline-text">O teu ecossistema.<br>Sob controlo.</p>
+        <div class="eb-feature-list">
+          <div class="eb-feat"><div class="eb-feat-dot"></div><span>Temperatura &amp; humidade em tempo real</span></div>
+          <div class="eb-feat"><div class="eb-feat-dot"></div><span>Alertas inteligentes por espécie</span></div>
+          <div class="eb-feat"><div class="eb-feat-dot"></div><span>Histórico e gráficos de dados</span></div>
+          <div class="eb-feat"><div class="eb-feat-dot"></div><span>Gestão de múltiplos terrários</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="eb-right">
+    <div class="eb-right-top" role="tablist">
+      <button class="eb-tab on" id="t-in" role="tab" aria-selected="true" onclick="sw('in')">Entrar</button>
+      <button class="eb-tab" id="t-up" role="tab" aria-selected="false" onclick="sw('up')">Criar conta</button>
+    </div>
+
+    <div class="eb-form-wrap">
+
+      <!-- LOGIN PANEL -->
+      <div class="panel on" id="p-in" role="tabpanel">
+        <p class="f-heading">Bem-vindo de volta</p>
+        <p class="f-sub">Acede aos teus terrários</p>
+
+        <div class="f-field">
+          <label class="f-label" for="li-email">Email</label>
+          <div class="f-inp-wrap">
+            <i class="ti ti-mail lead" aria-hidden="true"></i>
+            <input type="email" id="li-email" placeholder="ti@exemplo.pt" autocomplete="email"/>
+          </div>
+          <div class="f-err" id="e-li-email">Email inválido</div>
+        </div>
+
+        <div class="f-field">
+          <label class="f-label" for="li-pw">Palavra-passe</label>
+          <div class="f-inp-wrap">
+            <i class="ti ti-lock lead" aria-hidden="true"></i>
+            <input type="password" id="li-pw" placeholder="••••••••" autocomplete="current-password"/>
+            <button class="pw-toggle" aria-label="Mostrar palavra-passe" onclick="tpw('li-pw',this)">
+              <i class="ti ti-eye"></i>
+            </button>
+          </div>
+          <div class="f-err" id="e-li-pw">Preenche a palavra-passe</div>
+        </div>
+
+        <div class="f-aux">
+          <div class="f-check-row">
+            <input type="checkbox" id="rem"/>
+            <label for="rem">Manter sessão</label>
+          </div>
+          <button class="f-forgot" onclick="toast('Verifica o teu email para o link de recuperação.','ok')">Esqueceste?</button>
+        </div>
+
+        <button class="btn-go" id="b-in" onclick="doIn()">
+          <span id="bt-in">Entrar na conta</span>
+          <div class="btn-spin" id="sp-in"></div>
+          <i class="ti ti-arrow-right" id="ic-in"></i>
+        </button>
+
+        <div class="or-line">ou continua com</div>
+
+        <button class="btn-sso" onclick="toast('SSO em breve.','bad')">
+          <i class="ti ti-brand-google" aria-hidden="true"></i> Google
+        </button>
+      </div>
+
+      <!-- REGISTER PANEL -->
+      <div class="panel" id="p-up" role="tabpanel">
+        <p class="f-heading">Cria a tua conta</p>
+        <p class="f-sub">Começa a monitorizar hoje — é grátis</p>
+
+        <div class="f-row">
+          <div class="f-field">
+            <label class="f-label" for="rg-fn">Primeiro nome</label>
+            <div class="f-inp-wrap">
+              <i class="ti ti-user lead" aria-hidden="true"></i>
+              <input type="text" id="rg-fn" placeholder="Ana" autocomplete="given-name"/>
+            </div>
+            <div class="f-err" id="e-rg-fn">Obrigatório</div>
+          </div>
+          <div class="f-field">
+            <label class="f-label" for="rg-ln">Apelido</label>
+            <div class="f-inp-wrap">
+              <i class="ti ti-user lead" aria-hidden="true"></i>
+              <input type="text" id="rg-ln" placeholder="Ferreira" autocomplete="family-name"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="f-field">
+          <label class="f-label" for="rg-em">Email</label>
+          <div class="f-inp-wrap">
+            <i class="ti ti-mail lead" aria-hidden="true"></i>
+            <input type="email" id="rg-em" placeholder="ana@exemplo.pt" autocomplete="email"/>
+          </div>
+          <div class="f-err" id="e-rg-em">Email inválido</div>
+        </div>
+
+        <div class="f-field">
+          <label class="f-label" for="rg-pw">Palavra-passe</label>
+          <div class="f-inp-wrap">
+            <i class="ti ti-lock lead" aria-hidden="true"></i>
+            <input type="password" id="rg-pw" placeholder="Mínimo 8 caracteres" oninput="chkStr(this.value)" autocomplete="new-password"/>
+            <button class="pw-toggle" aria-label="Mostrar" onclick="tpw('rg-pw',this)">
+              <i class="ti ti-eye"></i>
+            </button>
+          </div>
+          <div class="str-bar">
+            <div class="str-seg" id="s1"></div>
+            <div class="str-seg" id="s2"></div>
+            <div class="str-seg" id="s3"></div>
+            <div class="str-seg" id="s4"></div>
+          </div>
+          <div class="str-info"><span class="str-lbl" id="slbl"></span></div>
+          <div class="f-err" id="e-rg-pw">Mínimo 8 caracteres</div>
+        </div>
+
+        <div class="f-field">
+          <label class="f-label" for="rg-p2">Confirmar</label>
+          <div class="f-inp-wrap">
+            <i class="ti ti-lock-check lead" aria-hidden="true"></i>
+            <input type="password" id="rg-p2" placeholder="Repete a palavra-passe" autocomplete="new-password"/>
+            <button class="pw-toggle" aria-label="Mostrar" onclick="tpw('rg-p2',this)">
+              <i class="ti ti-eye"></i>
+            </button>
+          </div>
+          <div class="f-err" id="e-rg-p2">As palavras-passe não coincidem</div>
+        </div>
+
+        <div class="f-terms">
+          <input type="checkbox" id="trm"/>
+          <label for="trm">Li e aceito os
+            <a onclick="toast('Termos ainda não publicados.','bad')">Termos de Serviço</a>
+            e a
+            <a onclick="toast('Política ainda não publicada.','bad')">Política de Privacidade</a>
+          </label>
+        </div>
+
+        <button class="btn-go" id="b-up" onclick="doUp()">
+          <span id="bt-up">Criar conta gratuita</span>
+          <div class="btn-spin" id="sp-up"></div>
+          <i class="ti ti-arrow-right" id="ic-up"></i>
+        </button>
+
+        <div class="or-line">ou regista-te com</div>
+
+        <button class="btn-sso" onclick="toast('SSO em breve.','bad')">
+          <i class="ti ti-brand-google" aria-hidden="true"></i> Google
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="eb-toast" id="ebtoast" role="alert" aria-live="polite"></div>
+</div>
+
+<script>
+function sw(t){
+  ['in','up'].forEach(k=>{
+    document.getElementById('t-'+k).classList.toggle('on',k===t);
+    document.getElementById('t-'+k).setAttribute('aria-selected',k===t);
+    document.getElementById('p-'+k).classList.toggle('on',k===t);
+  });
+}
+
+function tpw(id,btn){
+  const el=document.getElementById(id);
+  const show=el.type==='password';
+  el.type=show?'text':'password';
+  btn.querySelector('i').className=show?'ti ti-eye-off':'ti ti-eye';
+  btn.setAttribute('aria-label',show?'Ocultar':'Mostrar');
+}
+
+function toast(msg,type){
+  const el=document.getElementById('ebtoast');
+  el.innerHTML=`<i class="ti ti-${type==='ok'?'circle-check':'alert-circle'}" aria-hidden="true"></i>${msg}`;
+  el.className='eb-toast on '+type;
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('on'),3400);
+}
+
+function serr(id,v){
+  const errEl=document.getElementById(id);
+  if(!errEl)return;
+  errEl.classList.toggle('on',v);
+  const wrap=errEl.previousElementSibling;
+  if(wrap){
+    const inp=wrap.querySelector('input');
+    if(inp)inp.classList.toggle('err',v);
+  }
+}
+
+function chkStr(pw){
+  const segs=['s1','s2','s3','s4'].map(id=>document.getElementById(id));
+  const lbl=document.getElementById('slbl');
+  let sc=0;
+  if(pw.length>=8)sc++;
+  if(/[A-Z]/.test(pw))sc++;
+  if(/[0-9]/.test(pw))sc++;
+  if(/[^A-Za-z0-9]/.test(pw))sc++;
+  const c=['#E24B4A','#EF9F27','#97C459','#3B6D11'];
+  const l=['Fraca','Razoável','Boa','Forte'];
+  segs.forEach((s,i)=>s.style.background=i<sc?c[sc-1]:'var(--color-border-tertiary)');
+  lbl.textContent=pw.length?l[Math.max(0,sc-1)]:'';
+  lbl.style.color=pw.length?c[Math.max(0,sc-1)]:'var(--color-text-tertiary)';
+}
+
+function loading(k,on){
+  document.getElementById('bt-'+k).style.display=on?'none':'';
+  document.getElementById('sp-'+k).style.display=on?'block':'none';
+  const ic=document.getElementById('ic-'+k);
+  if(ic)ic.style.display=on?'none':'';
+  document.getElementById('b-'+k).disabled=on;
+}
+
+function doIn(){
+  const em=document.getElementById('li-email').value.trim();
+  const pw=document.getElementById('li-pw').value;
+  const ve=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  serr('e-li-email',!ve);
+  serr('e-li-pw',!pw);
+  if(!ve||!pw)return;
+  loading('in',true);
+  setTimeout(()=>{loading('in',false);toast('Sessão iniciada! A redirecionar…','ok');},1900);
+}
+
+function doUp(){
+  const fn=document.getElementById('rg-fn').value.trim();
+  const em=document.getElementById('rg-em').value.trim();
+  const pw=document.getElementById('rg-pw').value;
+  const p2=document.getElementById('rg-p2').value;
+  const trm=document.getElementById('trm').checked;
+  const ve=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+  serr('e-rg-fn',!fn);
+  serr('e-rg-em',!ve);
+  serr('e-rg-pw',pw.length<8);
+  serr('e-rg-p2',pw!==p2);
+  if(!fn||!ve||pw.length<8||pw!==p2)return;
+  if(!trm){toast('Aceita os termos para continuar.','bad');return;}
+  loading('up',true);
+  setTimeout(()=>{loading('up',false);toast('Conta criada! Verifica o teu email.','ok');sw('in');},2100);
+}
+</script>
+
+</body>
+</html>
