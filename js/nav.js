@@ -20,11 +20,10 @@ function normalizeLinkHref(href) {
 
 function setActiveNavigation() {
   const currentFile = getPageFileName();
-  const activeFile = currentFile === 'profile.html' ? 'definicoes.html' : currentFile;
 
   document.querySelectorAll('.desktop-topbar .desktop-nav-link, .bottom-nav .bnav-item').forEach(link => {
     const targetFile = normalizeLinkHref(link.getAttribute('href'));
-    const isActive = targetFile !== null && targetFile === activeFile;
+    const isActive = targetFile !== null && targetFile === currentFile;
 
     link.classList.toggle('active', isActive);
 
