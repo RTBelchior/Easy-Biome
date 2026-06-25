@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>EasyBiome — Diagnóstico Completo</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    #report {
+      position: fixed; inset: 0; background: #000; color: #0f0;
+      font-family: monospace; font-size: 13px; padding: 14px;
+      z-index: 999999; overflow: auto; white-space: pre-wrap; line-height: 1.5;
+    }
+    #report .err { color: #f55; font-weight: bold; }
+    #report .ok { color: #5f5; }
+    #report .warn { color: #fd5; }
+    #report .hdr { color: #5cf; font-weight: bold; margin-top: 10px; display: block; }
+  </style>
+</head>
+<body>
+
+  <nav class="desktop-topbar">
+    <a class="top-logo" href="#"><div class="logo-box">L</div></a>
+    <div class="desktop-topbar-links">
+      <a class="desktop-nav-link active" href="#">Início</a>
+      <a class="desktop-nav-link" href="#">Histórico</a>
+    </div>
+    <div class="icon-btn">P</div>
+  </nav>
+
+  <div class="page">
+    <div class="top-bar">
+      <a class="top-logo" href="#"><div class="logo-box">L</div></a>
+      <div class="top-bar-title">Diagnóstico</div>
+      <button class="icon-btn">P</button>
+    </div>
+
+    <div class="hist-filters">
+      <div class="filter-chip active">1h</div>
+      <div class="filter-chip">6h</div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title"><span>Teste</span></div>
+      <div class="chart-wrap"><canvas id="chart-temp"></canvas></div>
+    </div>
+
+    <div class="sec-header">Dispositivos (teste)</div>
+    <div class="devices">
+      <div class="dev-row"><div class="dev-icon">I</div><div class="dev-info"><div class="dev-name">A</div></div></div>
+      <div class="dev-row"><div class="dev-icon">I</div><div class="dev-info"><div class="dev-name">B</div></div></div>
+      <div class="dev-row"><div class="dev-icon">I</div><div class="dev-info"><div class="dev-name">C</div></div></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a class="bnav-item active" href="#">Início</a>
+    <a class="bnav-item" href="#">Histórico</a>
+  </nav>
+
+  <div id="report">A gerar relatório...</div>
+
+  <script>
+    const log = [];
+    function add(msg, cls) { log.push('<span class="' + (cls||'') + '">' + msg + '</span>'); }
+    function hdr(msg) { log.push('<span class="hdr">' + msg + '</span>'); }
+
+    window.onerror = function(msg, url, line, col) {
+      add('CRASH JS: ' + msg + ' @ ' + url + ':' + line, 'err');
+      render();
+    };
+
+    function render() { document.getElementById('report').innerHTML = log.join('\n'); }
+
+    hdr('=== AMBIENTE ===');
+    add('innerWidth: ' + window.innerWidth + 'px | innerHeight: ' + window.innerHeight + 'px');
+    add('screen.width: ' + window.screen.width + ' | screen.height: ' + window.screen.height);
+    add('devicePixelRatio: ' + window.devicePixelRatio);
+    add('orientation: ' + (screen.orientation ? screen.orientation.type : 'desconhecida'));
+
+    hdr('=== BREAKPOINT ATIVO ===');
+    const w = window.innerWidth;
+    let activeBp = 'MOBILE (<540px)';
+    if (w >= 1180) activeBp = 'DESKTOP (>=1180px)';
+    else if (w >= 900) activeBp = 'TABLET GRANDE (900-1179px)';
+    else if (w >= 540) activeBp = 'TABLET (540-899px)';
+    add('Largura atual: ' + w + 'px -> deveria estar em: ' + activeBp, 'warn');
+
+    hdr('=== ELEMENTOS-CHAVE (computed style) ===');
+
+    function reportEl(selector, props) {
+      const el = document.querySelector(selector);
+      if (!el) { add(selector + ' -> ELEMENTO NÃO ENCONTRADO NO DOM', 'err'); return; }
+      const cs = getComputedStyle(el);
+      const vals = props.map(p => p + '=' + cs[p]).join(' | ');
+      add(selector + '  ->  ' + vals);
+    }
+
+    reportEl('body', ['maxWidth', 'width', 'display', 'flexDirection']);
+    reportEl('.desktop-topbar', ['display']);
+    reportEl('.top-bar', ['display']);
+    reportEl('.bottom-nav', ['display', 'maxWidth', 'width']);
+    reportEl('.page', ['display', 'paddingBottom']);
+    reportEl('.devices', ['display', 'gridTemplateColumns']);
+    reportEl('.chart-wrap', ['height', 'width']);
+    reportEl('.dev-row', ['display']);
+
+    hdr('=== CANVAS ===');
+    const canvas = document.getElementById('chart-temp');
+    if (canvas) {
+      add('canvas.clientWidth: ' + canvas.clientWidth + ' | canvas.parentElement.clientWidth: ' + canvas.parentElement.clientWidth);
+      try {
+        canvas.width = 100; canvas.height = 50;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#3DBA7E';
+        ctx.fillRect(0,0,100,50);
+        add('Canvas 2D context: OK, conseguiu desenhar', 'ok');
+      } catch(e) {
+        add('Canvas 2D context FALHOU: ' + e.message, 'err');
+      }
+    }
+
+    hdr('=== CSS CARREGADO? ===');
+    const link = document.querySelector('link[rel="stylesheet"]');
+    add('href do stylesheet: ' + (link ? link.href : 'NENHUM LINK ENCONTRADO'));
+    // testa se uma regra muito específica do nosso CSS está a aplicar-se
+    const testDiv = document.createElement('div');
+    testDiv.className = 'm-card';
+    document.body.appendChild(testDiv);
+    const csTest = getComputedStyle(testDiv);
+    add('.m-card border-radius (esperado 14px): ' + csTest.borderRadius, csTest.borderRadius === '14px' ? 'ok' : 'err');
+    document.body.removeChild(testDiv);
+
+    hdr('=== FIM DO RELATÓRIO ===');
+    render();
+  </script>
+</body>
+</html>

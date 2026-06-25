@@ -42,6 +42,21 @@ body {
   overflow-x: hidden;
 }
 
+/* A partir do telemóvel grande até ao breakpoint de desktop,
+   a app deixa de ficar fixa a 480px e estica-se com o ecrã,
+   para tablets (iPad em retrato/paisagem) não ficarem com
+   uma faixa de 480px rodeada de fundo vazio. */
+@media (min-width: 540px) {
+  body {
+    max-width: 700px;
+  }
+}
+@media (min-width: 900px) {
+  body {
+    max-width: 880px;
+  }
+}
+
 /* ── PAGE WRAPPER (replaces the old .view system) ── */
 .page {
   display: flex;
@@ -143,6 +158,12 @@ body {
   display: flex;
   padding: 0.4rem 0 calc(0.5rem + env(safe-area-inset-bottom));
   z-index: 100;
+}
+@media (min-width: 540px) {
+  .bottom-nav { max-width: 700px; }
+}
+@media (min-width: 900px) {
+  .bottom-nav { max-width: 880px; }
 }
 
 .bnav-item {
@@ -267,6 +288,9 @@ body {
   border-radius: 20px 20px 0 0;
   padding: 0.75rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
   animation: slideUp .2s ease-out;
+}
+@media (min-width: 540px) {
+  .picker-sheet { max-width: 480px; }
 }
 
 @keyframes slideUp {
@@ -887,7 +911,7 @@ canvas {
    horizontal no topo (logo | links | perfil), e o
    top-bar de cada página deixa de aparecer.
 ══════════════════════════════ */
-@media (min-width: 820px) {
+@media (min-width: 1180px) {
   body {
     max-width: none;
   }
@@ -901,24 +925,9 @@ canvas {
     display: flex;
   }
 
-  @media (min-width: 820px) {
-    body {
-      max-width: none;
-    }
-
-    /* ... outras regras que já lá tens ... */
-
-    .desktop-topbar {
-      display: flex;
-    }
-
-    /* ADICIONA ESTA REGRA AQUI DENTRO: */
-    .logo-box {
-      height: 50px;
-      /* O logo fica maior apenas no computador */
-    }
-
-    /* ... resto do teu código @media ... */
+  /* O logo fica maior apenas no computador */
+  .logo-box {
+    height: 50px;
   }
 
   /* Barra superior única e fixa, partilhada por todas as páginas */
@@ -926,6 +935,7 @@ canvas {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
     padding: 0.9rem 2rem;
     position: sticky;
     top: 0;
@@ -938,21 +948,22 @@ canvas {
   .desktop-topbar-links {
     display: flex;
     gap: 4px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
   }
 
   .desktop-nav-link {
     display: flex;
     align-items: center;
     gap: 7px;
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 10px;
     font-family: var(--mono);
     font-size: 13px;
     color: var(--text3);
     text-decoration: none;
+    white-space: nowrap;
     transition: color .15s, background .15s;
   }
 
@@ -1061,8 +1072,53 @@ canvas {
   }
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .devices {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* ══════════════════════════════
+   RESPONSIVIDADE PARA TABLET
+   Entre o telemóvel e o desktop (540px–1180px) a app continua
+   a usar a navegação inferior e o cabeçalho mobile, mas com
+   mais espaço aproveitado: mais colunas, hero maior, fontes
+   ligeiramente maiores.
+══════════════════════════════ */
+@media (min-width: 540px) and (max-width: 1179px) {
+  .terrario-hero {
+    height: 200px;
+  }
+
+  .metrics {
+    gap: 14px;
+  }
+
+  .m-val {
+    font-size: 34px;
+  }
+
+  .devices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .chart-wrap {
+    height: 150px;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1179px) {
+  .devices {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .terrario-hero {
+    height: 240px;
   }
 }
