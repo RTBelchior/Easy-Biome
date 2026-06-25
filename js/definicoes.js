@@ -19,3 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPickerList();
   renderSettings();
 });
+
+document.getElementById('set-preset').addEventListener('change', function(e) {
+    const perfil = e.target.value;
+    const tempInput = document.getElementById('set-temp-target');
+    const humInput = document.getElementById('set-hum-target');
+
+    if (perfil === 'tropical') {
+        tempInput.value = "28.0";
+        humInput.value = "80";
+    } else if (perfil === 'desert') {
+        tempInput.value = "32.0";
+        humInput.value = "30";
+    } else if (perfil === 'temperate') {
+        tempInput.value = "22.5";
+        humInput.value = "55";
+    }
+    
+    // Aqui também podes disparar a função para enviar estes novos valores para o ESP32
+});
+
