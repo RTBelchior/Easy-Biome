@@ -57,15 +57,31 @@ function onTerrarioChanged() {
   renderDevices();
 }
 
-/* ── Simulação de sensores (substituir pelas chamadas reais à API) ── */
-function startSensorSimulation() {
-  setInterval(() => {
-    const t = getActive();
-    t.temp = Math.max(t.tempRange[0] - 3, Math.min(t.tempRange[1] + 3, t.temp + (Math.random() - .5) * .5));
-    t.hum  = Math.max(t.humRange[0] - 8, Math.min(t.humRange[1] + 8, t.hum + (Math.random() - .5) * .8));
-    saveTerrarios();
-    renderMetrics();
-  }, 3000);
+async function atualizarDados() {
+    try {
+
+        const terrario = getActive();
+
+        const resposta = await fetch(
+            `http://localhost:8080/api/leituras/ultima/${terrario.id}`
+        );
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao obter dados da API");
+        }
+
+        const dados = await resposta.json();
+
+        terrario.temp = dados.temperatura;
+        terrario.hum = dados.humidade;
+
+        renderHero();
+        renderMetrics();
+        renderDevices();
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -73,5 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMetrics();
   renderDevices();
   renderPickerList();
-  startSensorSimulation();
+
+  atualizarDados();
+  setInterval(atualizarDados, 5000);
 });

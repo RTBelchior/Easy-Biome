@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/leituras")
+@CrossOrigin(origins = "*")
 public class LeituraSensorController {
 
     @Autowired
@@ -20,8 +21,8 @@ public class LeituraSensorController {
         return repository.save(leitura);
     }
 
-    @GetMapping
-    public List<LeituraSensor> listar() {
-        return repository.findAll();
+    @GetMapping("/ultima/{idTerrario}")
+    public LeituraSensor ultimaLeitura(@PathVariable Long idTerrario) {
+        return repository.findTopByIdTerrarioOrderByRegistadoEmDesc(idTerrario);
     }
 }
