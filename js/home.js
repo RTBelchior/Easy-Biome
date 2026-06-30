@@ -30,16 +30,27 @@ function renderMetrics() {
 
 function renderDevices() {
   const t = getActive();
-  ['fan', 'heat', 'light'].forEach(key => {
+  // Adicionado 'humidifier' à lista abaixo:
+  ['fan', 'heat', 'light', 'humidifier'].forEach(key => {
     const on = t[key];
-    document.getElementById(key + '-t').classList.toggle('on', on);
-    document.getElementById(key + '-icon').classList.toggle('on', on);
-    const labels = {
-      fan:   on ? 'A ventilar'       : 'Desligada',
-      heat:  on ? 'Ligada · Relé OK' : 'Desligada',
-      light: on ? 'Ligada'           : 'Desligada'
-    };
-    document.getElementById(key + '-sub').textContent = labels[key];
+    
+    // Procura o elemento correspondente (adiciona uma proteção caso o elemento não exista na página atual)
+    const toggleEl = document.getElementById(key + '-t');
+    const iconEl = document.getElementById(key + '-icon');
+    const subEl = document.getElementById(key + '-sub');
+
+    if (toggleEl) toggleEl.classList.toggle('on', on);
+    if (iconEl) iconEl.classList.toggle('on', on);
+    
+    if (subEl) {
+      const labels = {
+        fan:        on ? 'A ventilar'       : 'Desligada',
+        heat:       on ? 'Ligada · Relé OK' : 'Desligada',
+        light:      on ? 'Ligada'           : 'Desligada',
+        humidifier: on ? 'A humidificar'    : 'Desligado' // Novo rótulo para o humidificador
+      };
+      subEl.textContent = labels[key];
+    }
   });
 }
 
