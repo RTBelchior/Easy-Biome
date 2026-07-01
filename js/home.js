@@ -4,103 +4,258 @@
 
 function renderHero() {
   const t = getActive();
-  document.getElementById('terrario-img').src = t.img;
-  document.getElementById('terrario-name').textContent = t.nome;
+
+  document.getElementById("terrario-img").src = t.img;
+  document.getElementById("terrario-name").textContent = t.nome;
 }
 
 function renderMetrics() {
+
   const t = getActive();
+
   const tw = t.temp > t.tempRange[1] || t.temp < t.tempRange[0];
-  const hw = t.hum < t.humRange[0] || t.hum > t.humRange[1];
+  const hw = t.hum > t.humRange[1] || t.hum < t.humRange[0];
 
-  document.getElementById('temp-val').innerHTML = t.temp.toFixed(1) + '<span class="unit">°C</span>';
-  document.getElementById('temp-val').className = 'm-val ' + (tw ? 'warn' : 'ok');
-  document.getElementById('temp-card').className = 'm-card' + (tw ? ' warn-border' : '');
-  document.getElementById('temp-hint').className = 'm-hint' + (tw ? ' warn' : '');
-  document.getElementById('temp-hint').textContent = tw ? 'Fora dos limites!' : `Normal · ${t.tempRange[0]}–${t.tempRange[1]}°C`;
+  document.getElementById("temp-val").innerHTML =
+    t.temp.toFixed(1) + '<span class="unit">°C</span>';
 
-  document.getElementById('hum-val').innerHTML = Math.round(t.hum) + '<span class="unit">%</span>';
-  document.getElementById('hum-val').className = 'm-val ' + (hw ? 'warn' : 'ok');
-  document.getElementById('hum-card').className = 'm-card' + (hw ? ' warn-border' : '');
-  document.getElementById('hum-hint').className = 'm-hint' + (hw ? ' warn' : '');
-  document.getElementById('hum-hint').textContent = hw
-    ? (t.hum < t.humRange[0] ? 'Abaixo do limite' : 'Acima do limite')
-    : `Normal · ${t.humRange[0]}–${t.humRange[1]}%`;
+  document.getElementById("temp-val").className =
+    "m-val " + (tw ? "warn" : "ok");
+
+  document.getElementById("temp-card").className =
+    "m-card" + (tw ? " warn-border" : "");
+
+  document.getElementById("temp-hint").className =
+    "m-hint" + (tw ? " warn" : "");
+
+  document.getElementById("temp-hint").textContent =
+    tw
+      ? "Fora dos limites!"
+      : `Normal · ${t.tempRange[0]}–${t.tempRange[1]}°C`;
+
+  document.getElementById("hum-val").innerHTML =
+    Math.round(t.hum) + '<span class="unit">%</span>';
+
+  document.getElementById("hum-val").className =
+    "m-val " + (hw ? "warn" : "ok");
+
+  document.getElementById("hum-card").className =
+    "m-card" + (hw ? " warn-border" : "");
+
+  document.getElementById("hum-hint").className =
+    "m-hint" + (hw ? " warn" : "");
+
+  document.getElementById("hum-hint").textContent =
+    hw
+      ? (t.hum < t.humRange[0]
+        ? "Abaixo do limite"
+        : "Acima do limite")
+      : `Normal · ${t.humRange[0]}–${t.humRange[1]}%`;
 }
 
 function renderDevices() {
-  const t = getActive();
-  // Adicionado 'humidifier' à lista abaixo:
-  ['fan', 'heat', 'light', 'humidifier'].forEach(key => {
-    const on = t[key];
-    
-    // Procura o elemento correspondente (adiciona uma proteção caso o elemento não exista na página atual)
-    const toggleEl = document.getElementById(key + '-t');
-    const iconEl = document.getElementById(key + '-icon');
-    const subEl = document.getElementById(key + '-sub');
 
-    if (toggleEl) toggleEl.classList.toggle('on', on);
-    if (iconEl) iconEl.classList.toggle('on', on);
-    
+  const t = getActive();
+
+  ["fan", "heat", "light", "humidifier"].forEach(key => {
+
+    const on = t[key];
+
+    const toggleEl = document.getElementById(key + "-t");
+    const iconEl = document.getElementById(key + "-icon");
+    const subEl = document.getElementById(key + "-sub");
+
+    if (toggleEl)
+      toggleEl.classList.toggle("on", on);
+
+    if (iconEl)
+      iconEl.classList.toggle("on", on);
+
     if (subEl) {
+
       const labels = {
-        fan:        on ? 'A ventilar'       : 'Desligada',
-        heat:       on ? 'Ligada · Relé OK' : 'Desligada',
-        light:      on ? 'Ligada'           : 'Desligada',
-        humidifier: on ? 'A humidificar'    : 'Desligado' // Novo rótulo para o humidificador
+        fan: on ? "A ventilar" : "Desligada",
+        heat: on ? "Ligada · Relé OK" : "Desligada",
+        light: on ? "Ligada" : "Desligada",
+        humidifier: on ? "A humidificar" : "Desligado"
       };
+
       subEl.textContent = labels[key];
     }
   });
 }
 
-function toggleDev(key) {
-  const t = getActive();
-  t[key] = !t[key];
-  saveTerrarios();
-  renderDevices();
-}
+async function toggleDev(key) {
 
-/* chamada pelo picker.js quando o utilizador troca de terrário */
-function onTerrarioChanged() {
-  renderHero();
-  renderMetrics();
-  renderDevices();
-}
+    const terrario = getActive();
 
-async function atualizarDados() {
+    const mapa = {
+        fan: 1,
+        heat: 2,
+        light: 3,
+        humidifier: 4
+    };
+
+    const novoEstado = !terrario[key];
+
+    // Pergunta ao utilizador antes de ativar o modo manual
+    if (novoEstado) {
+
+        const continuar = confirm(
+            "Este dispositivo vai passar para Modo Manual.\n\nPretende continuar?"
+        );
+
+        if (!continuar) {
+            return;
+        }
+    }
+
     try {
 
-        const terrario = getActive();
-
         const resposta = await fetch(
-            `http://localhost:8080/api/leituras/ultima/${terrario.id}`
+            `http://localhost:8080/api/dispositivos/${mapa[key]}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    estadoAtual: novoEstado,
+                    modoManual: true
+                })
+            }
         );
 
         if (!resposta.ok) {
-            throw new Error("Erro ao obter dados da API");
+            throw new Error("Erro ao atualizar dispositivo");
         }
 
-        const dados = await resposta.json();
-
-        terrario.temp = dados.temperatura;
-        terrario.hum = dados.humidade;
-
-        renderHero();
-        renderMetrics();
-        renderDevices();
+        await atualizarDados();
 
     } catch (erro) {
-        console.error("Erro:", erro);
+        console.error(erro);
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function onTerrarioChanged() {
+
+  renderHero();
+  renderMetrics();
+  renderDevices();
+
+  atualizarDados();
+
+}
+
+async function atualizarDados() {
+
+  try {
+
+    const terrario = getActive();
+
+    // Última leitura
+
+    const resposta = await fetch(
+      `http://localhost:8080/api/leituras/ultima/${terrario.id}`
+    );
+
+    if (!resposta.ok)
+      throw new Error("Erro ao obter leitura");
+
+    const dados = await resposta.json();
+
+    terrario.temp = dados.temperatura;
+    terrario.hum = dados.humidade;
+
+    // Dispositivos
+
+    const respostaDispositivos = await fetch(
+      `http://localhost:8080/api/dispositivos/terrario/${terrario.id}`
+    );
+
+    if (!respostaDispositivos.ok)
+      throw new Error("Erro ao obter dispositivos");
+
+    const dispositivos = await respostaDispositivos.json();
+
+    let existeModoManual = false;
+
+    dispositivos.forEach(d => {
+
+      switch (d.tipoDispositivo) {
+
+        case "VENTOINHA":
+          terrario.fan = d.estadoAtual;
+          break;
+
+        case "LAMPADA_AQUECIMENTO":
+          terrario.heat = d.estadoAtual;
+          break;
+
+        case "LAMPADA_ILUMINACAO":
+          terrario.light = d.estadoAtual;
+          break;
+
+        case "HUMIDIFICADOR":
+          terrario.humidifier = d.estadoAtual;
+          break;
+      }
+
+      const mapa = {
+        "VENTOINHA": "fan",
+        "LAMPADA_AQUECIMENTO": "heat",
+        "LAMPADA_ILUMINACAO": "light",
+        "HUMIDIFICADOR": "humidifier"
+      };
+
+      const key = mapa[d.tipoDispositivo];
+
+      const tag = document.getElementById(key + "-manual");
+
+      if (tag) {
+        tag.style.display =
+          d.modoManual ? "inline-block" : "none";
+      }
+
+      if (d.modoManual) {
+        existeModoManual = true;
+      }
+
+    });
+
+    console.log(dispositivos);
+    console.log("Existe modo manual:", existeModoManual);
+
+    const banner = document.getElementById("manual-banner");
+
+    if (banner) {
+      banner.style.display =
+        existeModoManual ? "block" : "none";
+    }
+
+    saveTerrarios();
+
+    renderHero();
+    renderMetrics();
+    renderDevices();
+
+  }
+  catch (erro) {
+
+    console.error("Erro:", erro);
+
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
   renderHero();
   renderMetrics();
   renderDevices();
   renderPickerList();
 
   atualizarDados();
+
   setInterval(atualizarDados, 5000);
+
 });

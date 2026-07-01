@@ -24,6 +24,9 @@ public class Dispositivo {
     @Column(name = "estado_atual")
     private Boolean estadoAtual;
 
+    @Column(name = "modo_manual")
+    private Boolean modoManual;
+
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
@@ -68,6 +71,14 @@ public class Dispositivo {
 
     public void setEstadoAtual(Boolean estadoAtual) {
         this.estadoAtual = estadoAtual;
+    }
+
+    public Boolean getModoManual() {
+        return modoManual;
+    }
+
+    public void setModoManual(Boolean modoManual) {
+        this.modoManual = modoManual;
     }
 
     public LocalDateTime getAtualizadoEm() {

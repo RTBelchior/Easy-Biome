@@ -120,6 +120,7 @@ CREATE TABLE dispositivo (
                          'HUMIDIFICADOR'
                      )),
     estado_atual  BOOLEAN   NOT NULL DEFAULT FALSE,
+    modo_manual BOOLEAN NOT NULL DEFAULT FALSE,
     atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_dispositivo_terrario FOREIGN KEY (id_terrario)
         REFERENCES terrario(id_terrario) ON DELETE CASCADE

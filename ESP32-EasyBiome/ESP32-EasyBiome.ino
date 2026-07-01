@@ -1,54 +1,72 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <Wire.h>
+#include <ArduinoJson.h>
 #include "Adafruit_SHT4x.h"
 
-// Wi-Fi
+//=========================
+// WiFi
+//=========================
+
 const char* ssid = "BELCHIOR";
 const char* password = "rodrigoerita0";
 
+//=========================
 // API
-const char* serverName = "http://192.168.68.73:8080/api/leituras";
+//=========================
 
-// Pinos
-#define RELAY1 26      // Lâmpada
-#define RELAY2 27      // Ventoinha
-#define ATOMIZADOR 25  // Atomizador
+const char* leituraURL =
+  "http://192.168.68.70:8080/api/leituras";
 
-Adafruit_SHT4x sht4 = Adafruit_SHT4x();
+const char* dispositivosURL =
+  "http://192.168.68.70:8080/api/dispositivos/terrario/1";
+
+//=========================
+// GPIO
+//=========================
+
+#define LAMPADA_AQUECIMENTO 26
+#define VENTOINHA 27
+#define HUMIDIFICADOR 25
+#define LAMPADA_ILUMINACAO 33
+
+Adafruit_SHT4x sht4;
 
 void setup() {
 
   Serial.begin(115200);
 
-  pinMode(RELAY1, OUTPUT);
-  pinMode(RELAY2, OUTPUT);
-  pinMode(ATOMIZADOR, OUTPUT);
+  pinMode(LAMPADA_AQUECIMENTO, OUTPUT);
+  pinMode(VENTOINHA, OUTPUT);
+  pinMode(HUMIDIFICADOR, OUTPUT);
+  pinMode(LAMPADA_ILUMINACAO, OUTPUT);
 
-  // Estado inicial
-  digitalWrite(RELAY1, HIGH);
-  digitalWrite(RELAY2, HIGH);
-  digitalWrite(ATOMIZADOR, LOW);
+  // Relés desligados (ativos em LOW)
+  digitalWrite(LAMPADA_AQUECIMENTO, HIGH);
+  digitalWrite(VENTOINHA, HIGH);
+  digitalWrite(HUMIDIFICADOR, LOW);
+  digitalWrite(LAMPADA_ILUMINACAO, HIGH);
 
   if (!sht4.begin()) {
-    Serial.println("Sensor não encontrado!");
-    while (1) delay(1);
+    Serial.println("Erro ao iniciar o SHT40.");
+    while (1)
+      ;
   }
 
-  Serial.println("SHT40 iniciado");
+  Serial.println("SHT40 iniciado.");
 
-  // Liga ao Wi-Fi
   WiFi.begin(ssid, password);
 
-  Serial.print("A ligar ao Wi-Fi");
+  Serial.print("A ligar ao WiFi");
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
 
   Serial.println();
-  Serial.println("Wi-Fi ligado!");
-  Serial.print("IP do ESP32: ");
+  Serial.println("WiFi ligado!");
+  Serial.print("IP: ");
   Serial.println(WiFi.localIP());
 }
 
@@ -61,70 +79,25 @@ void loop() {
   float temperatura = temp.temperature;
   float humidade = humidity.relative_humidity;
 
+  Serial.println();
+  Serial.println("==============");
+
   Serial.print("Temperatura: ");
-  Serial.print(temperatura);
-  Serial.println(" °C");
+  Serial.println(temperatura);
 
   Serial.print("Humidade: ");
-  Serial.print(humidade);
-  Serial.println(" %");
-
-  // ----------------------------
-  // Lâmpada e Ventoinha
-  // ----------------------------
-
-  if (temperatura < 25.0) {
-
-    digitalWrite(RELAY1, LOW);
-    digitalWrite(RELAY2, HIGH);
-
-    Serial.println("Lâmpada LIGADA");
-    Serial.println("Ventoinha DESLIGADA");
-
-  }
-  else if (temperatura > 27.0) {
-
-    digitalWrite(RELAY1, HIGH);
-    digitalWrite(RELAY2, LOW);
-
-    Serial.println("Lâmpada DESLIGADA");
-    Serial.println("Ventoinha LIGADA");
-
-  }
-  else {
-
-    digitalWrite(RELAY1, HIGH);
-    digitalWrite(RELAY2, HIGH);
-
-    Serial.println("Lâmpada DESLIGADA");
-    Serial.println("Ventoinha DESLIGADA");
-  }
-
-  // ----------------------------
-  // Atomizador
-  // ----------------------------
-
-  if (humidade < 50.0) {
-
-    digitalWrite(ATOMIZADOR, HIGH);
-    Serial.println("Atomizador LIGADO");
-
-  }
-  else if (humidade > 70.0) {
-
-    digitalWrite(ATOMIZADOR, LOW);
-    Serial.println("Atomizador DESLIGADO");
-  }
-
-  // ----------------------------
-  // Enviar para a API
-  // ----------------------------
+  Serial.println(humidade);
 
   if (WiFi.status() == WL_CONNECTED) {
 
+    //-------------------------
+    // Enviar leitura
+    //-------------------------
+
     HTTPClient http;
 
-    http.begin(serverName);
+    http.begin(leituraURL);
+
     http.addHeader("Content-Type", "application/json");
 
     String json = "{";
@@ -133,22 +106,80 @@ void loop() {
     json += "\"humidade\":" + String(humidade, 2);
     json += "}";
 
-    int httpResponseCode = http.POST(json);
+    int resposta = http.POST(json);
 
-    Serial.print("HTTP Response: ");
-    Serial.println(httpResponseCode);
-
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.println(response);
-    } else {
-      Serial.println("Erro ao enviar dados.");
-    }
+    Serial.print("POST Leituras -> ");
+    Serial.println(resposta);
 
     http.end();
+
+    //-------------------------
+    // Ler dispositivos
+    //-------------------------
+
+    HTTPClient http2;
+
+    http2.begin(dispositivosURL);
+
+    int codigo = http2.GET();
+
+    if (codigo == 200) {
+
+      String payload = http2.getString();
+
+      Serial.println(payload);
+
+      DynamicJsonDocument doc(4096);
+
+      deserializeJson(doc, payload);
+
+      for (JsonObject dispositivo : doc.as<JsonArray>()) {
+
+        String tipo = dispositivo["tipoDispositivo"];
+        bool estado = dispositivo["estadoAtual"];
+
+        if (tipo == "VENTOINHA") {
+
+          digitalWrite(VENTOINHA, estado ? LOW : HIGH);
+
+          Serial.print("Ventoinha: ");
+          Serial.println(estado ? "Ligada" : "Desligada");
+        }
+
+        else if (tipo == "LAMPADA_AQUECIMENTO") {
+
+          digitalWrite(LAMPADA_AQUECIMENTO, estado ? LOW : HIGH);
+
+          Serial.print("Lâmpada Aquecimento: ");
+          Serial.println(estado ? "Ligada" : "Desligada");
+        }
+
+        else if (tipo == "LAMPADA_ILUMINACAO") {
+
+          digitalWrite(LAMPADA_ILUMINACAO, estado ? LOW : HIGH);
+
+          Serial.print("Lâmpada Iluminação: ");
+          Serial.println(estado ? "Ligada" : "Desligada");
+        }
+
+        else if (tipo == "HUMIDIFICADOR") {
+
+          // Humidificador é ativo em HIGH
+          digitalWrite(HUMIDIFICADOR, estado ? HIGH : LOW);
+
+          Serial.print("Humidificador: ");
+          Serial.println(estado ? "Ligado" : "Desligado");
+        }
+      }
+
+    } else {
+
+      Serial.print("Erro GET dispositivos: ");
+      Serial.println(codigo);
+    }
+
+    http2.end();
   }
 
-  Serial.println("-------------------------");
-
-  delay(30000);
+  delay(5000);
 }
