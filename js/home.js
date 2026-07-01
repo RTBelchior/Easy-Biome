@@ -88,6 +88,19 @@ function renderDevices() {
 async function toggleDev(key) {
 
     const terrario = getActive();
+    const novoEstado = !terrario[key];
+
+    // Vai ligar → mostra o modal
+    if (novoEstado) {
+        abrirModalManual(key);
+        return;
+    }
+
+    // Vai desligar → faz o pedido diretamente
+    await ligarDispositivo(key, false, true);
+}
+
+async function ligarDispositivo(key, estado, modoManual = true) {
 
     const mapa = {
         fan: 1,
@@ -95,20 +108,6 @@ async function toggleDev(key) {
         light: 3,
         humidifier: 4
     };
-
-    const novoEstado = !terrario[key];
-
-    // Pergunta ao utilizador antes de ativar o modo manual
-    if (novoEstado) {
-
-        const continuar = confirm(
-            "Este dispositivo vai passar para Modo Manual.\n\nPretende continuar?"
-        );
-
-        if (!continuar) {
-            return;
-        }
-    }
 
     try {
 
@@ -120,8 +119,8 @@ async function toggleDev(key) {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    estadoAtual: novoEstado,
-                    modoManual: true
+                    estadoAtual: estado,
+                    modoManual: modoManual
                 })
             }
         );
@@ -259,3 +258,23 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(atualizarDados, 5000);
 
 });
+
+let dispositivoPendente = null;
+
+function abrirModalManual(key) {
+    dispositivoPendente = key;
+    document.getElementById("manual-modal").style.display = "flex";
+}
+
+function fecharModalManual() {
+    document.getElementById("manual-modal").style.display = "none";
+}
+
+async function confirmarModoManual() {
+
+    fecharModalManual();
+
+    await ligarDispositivo(dispositivoPendente, true, true);
+
+    dispositivoPendente = null;
+}

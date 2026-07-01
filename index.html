@@ -8,28 +8,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/header.css" />
 </head>
-
-<div id="manual-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-box">
-        <h3>⚠️ Ativar modo manual?</h3>
-
-        <p>
-            Ao ligar este dispositivo, o controlo automático será desativado até voltar ao modo automático.
-        </p>
-
-        <div class="modal-actions">
-            <button class="btn-cancel" onclick="fecharModalManual()">
-                Cancelar
-            </button>
-
-            <button class="btn-confirm" onclick="confirmarModoManual()">
-                Continuar
-            </button>
-        </div>
-    </div>
-</div>
 
 <body>
 
@@ -116,6 +97,7 @@
             </span>
           </div>
           <div class="dev-sub" id="fan-sub"></div>
+          
         </div>
         <button class="toggle" id="fan-t" onclick="toggleDev('fan')" aria-label="Ventoinha"></button>
       </div>
@@ -223,6 +205,26 @@
       Definições
     </a>
   </nav>
+
+  <div id="manual-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+        <h3>⚠️ Ativar modo manual?</h3>
+
+        <p>
+            Ao ligar este dispositivo, o controlo automático será desativado até voltar ao modo automático.
+        </p>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="fecharModalManual()">
+                Cancelar
+            </button>
+
+            <button class="btn-confirm" onclick="confirmarModoManual()">
+                Continuar
+            </button>
+        </div>
+    </div>
+</div>
 
   <script src="js/terrarios.js"></script>
   <script src="js/picker.js"></script>
