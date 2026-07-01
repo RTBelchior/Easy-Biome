@@ -87,53 +87,88 @@ function renderDevices() {
 
 async function toggleDev(key) {
 
-    const terrario = getActive();
-    const novoEstado = !terrario[key];
+  const terrario = getActive();
+  const novoEstado = !terrario[key];
 
-    // Vai ligar → mostra o modal
-    if (novoEstado) {
-        abrirModalManual(key);
-        return;
-    }
+  // Vai ligar → mostra o modal
+  if (novoEstado) {
+    abrirModalManual(key);
+    return;
+  }
 
-    // Vai desligar → faz o pedido diretamente
-    await ligarDispositivo(key, false, true);
+  // Vai desligar → faz o pedido diretamente
+  await ligarDispositivo(key, false, true);
 }
 
 async function ligarDispositivo(key, estado, modoManual = true) {
 
-    const mapa = {
-        fan: 1,
-        heat: 2,
-        light: 3,
-        humidifier: 4
-    };
+  const mapa = {
+    fan: 1,
+    heat: 2,
+    light: 3,
+    humidifier: 4
+  };
 
-    try {
+  try {
 
-        const resposta = await fetch(
-            `http://localhost:8080/api/dispositivos/${mapa[key]}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    estadoAtual: estado,
-                    modoManual: modoManual
-                })
-            }
-        );
+    const resposta = await fetch(
+      `http://localhost:8080/api/dispositivos/${mapa[key]}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          estadoAtual: estado,
+          modoManual: modoManual
+        })
+      }
+    );
 
-        if (!resposta.ok) {
-            throw new Error("Erro ao atualizar dispositivo");
-        }
-
-        await atualizarDados();
-
-    } catch (erro) {
-        console.error(erro);
+    if (!resposta.ok) {
+      throw new Error("Erro ao atualizar dispositivo");
     }
+
+    await atualizarDados();
+
+  } catch (erro) {
+    console.error(erro);
+  }
+}
+
+async function voltarModoAutomatico(key) {
+
+  const mapa = {
+    fan: 1,
+    heat: 2,
+    light: 3,
+    humidifier: 4
+  };
+
+  try {
+
+    const resposta = await fetch(
+      `http://localhost:8080/api/dispositivos/${mapa[key]}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          estadoAtual: getActive()[key],
+          modoManual: false
+        })
+      }
+    );
+
+    if (!resposta.ok)
+      throw new Error("Erro");
+
+    await atualizarDados();
+
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function onTerrarioChanged() {
@@ -216,14 +251,18 @@ async function atualizarDados() {
           d.modoManual ? "inline-block" : "none";
       }
 
+      const autoBtn = document.getElementById(key + "-auto");
+
+      if (autoBtn) {
+        autoBtn.style.display =
+          d.modoManual ? "inline-flex" : "none";
+      }
+
       if (d.modoManual) {
         existeModoManual = true;
       }
 
     });
-
-    console.log(dispositivos);
-    console.log("Existe modo manual:", existeModoManual);
 
     const banner = document.getElementById("manual-banner");
 
@@ -262,19 +301,19 @@ document.addEventListener("DOMContentLoaded", () => {
 let dispositivoPendente = null;
 
 function abrirModalManual(key) {
-    dispositivoPendente = key;
-    document.getElementById("manual-modal").style.display = "flex";
+  dispositivoPendente = key;
+  document.getElementById("manual-modal").style.display = "flex";
 }
 
 function fecharModalManual() {
-    document.getElementById("manual-modal").style.display = "none";
+  document.getElementById("manual-modal").style.display = "none";
 }
 
 async function confirmarModoManual() {
 
-    fecharModalManual();
+  fecharModalManual();
 
-    await ligarDispositivo(dispositivoPendente, true, true);
+  await ligarDispositivo(dispositivoPendente, true, true);
 
-    dispositivoPendente = null;
+  dispositivoPendente = null;
 }

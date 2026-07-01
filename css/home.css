@@ -263,6 +263,25 @@ body {
   font-weight: 600;
 }
 
+/* NOVO: Botão voltar ao Modo Automático */
+.auto-btn {
+  display: none;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--green);
+  color: #0D1410;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.auto-btn:hover {
+  filter: brightness(1.1);
+}
+
 /* ── Cartões de Métricas ── */
 .metrics {
   display: grid;
