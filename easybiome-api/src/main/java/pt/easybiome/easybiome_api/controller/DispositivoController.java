@@ -27,6 +27,11 @@ public class DispositivoController {
         return repository.findByIdTerrario(idTerrario);
     }
 
+    @GetMapping("/{id}")
+    public Dispositivo obter(@PathVariable Long id) {
+        return repository.findById(id).orElseThrow();
+    }
+
     @PutMapping("/{id}")
     public Dispositivo alterarEstado(
             @PathVariable Long id,
@@ -39,19 +44,18 @@ public class DispositivoController {
         d.setEstadoAtual(dispositivo.getEstadoAtual());
         d.setAtualizadoEm(LocalDateTime.now());
 
-        Dispositivo atualizado = repository.save(d);
+        repository.save(d);
 
         LogComando log = new LogComando();
         log.setIdDispositivo(d.getIdDispositivo());
-        log.setIdUtilizador(1L); // temporário
+        log.setIdUtilizador(1L); // utilizador autenticado futuramente
         log.setEstadoAnterior(estadoAnterior);
         log.setEstadoNovo(d.getEstadoAtual());
-        log.setOrigemLog("APP");
+        log.setOrigemLog("WEB");
         log.setExecutadoEm(LocalDateTime.now());
 
         logRepository.save(log);
 
-        return atualizado;
+        return d;
     }
-
 }
