@@ -36,7 +36,8 @@
 
   .logo-box {
     width: auto;
-    height: 50px; /* Altura otimizada para a versão desktop */
+    height: 50px;
+    /* Altura otimizada para a versão desktop */
     background: none;
     border-radius: 0;
     display: flex;

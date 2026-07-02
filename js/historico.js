@@ -1,97 +1,242 @@
 /* ════════════════════════════════════════════
-   LÓGICA DA PÁGINA DE HISTÓRICO (historico.html)
+   LÓGICA DA PÁGINA DE HISTÓRICO
    ════════════════════════════════════════════ */
 
 const histData = [];
+let horasFiltro = 1;
 
 function onTerrarioChanged() {
-  histData.length = 0;
-  renderHistList();
-  chartsDrawn = false;
-  initCharts();
+    atualizarHistorico();
 }
+
+/* ────────────────────────────────────────── */
+/* Obtém o histórico da API                   */
+/* ────────────────────────────────────────── */
+
+async function atualizarHistorico() {
+
+    try {
+
+        const terrario = getActive();
+
+        const resposta = await fetch(
+            `http://localhost:8080/api/leituras/historico/${terrario.id}?horas=${horasFiltro}`
+        );
+
+        if (!resposta.ok)
+            throw new Error("Erro ao obter histórico");
+
+        const leituras = await resposta.json();
+
+        histData.length = 0;
+
+        leituras.forEach(l => {
+
+            histData.push({
+                t: l.temperatura,
+                h: l.humidade,
+                ts: new Date(l.registadoEm).toLocaleTimeString("pt-PT", {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                })
+            });
+
+        });
+
+        renderHistList();
+        desenharGraficos();
+
+    } catch (erro) {
+        console.error("Erro:", erro);
+    }
+
+}
+
+/* ────────────────────────────────────────── */
+/* Lista                                      */
+/* ────────────────────────────────────────── */
 
 function renderHistList() {
-  const el = document.getElementById('hist-list');
-  if (!el) return;
-  el.innerHTML = [...histData].reverse().slice(0, 8).map(r => {
+
+    const el = document.getElementById("hist-list");
+
+    if (!el) return;
+
     const t = getActive();
-    const tw = r.t > t.tempRange[1] || r.t < t.tempRange[0];
-    const hw = r.h < t.humRange[0] || r.h > t.humRange[1];
-    return `<div class="hist-row">
-      <div class="hist-time">${r.ts}</div>
-      <div class="hist-vals">
-        <div class="hist-val ${tw ? 'warn' : 'ok'}">${r.t}°C</div>
-        <div class="hist-val ${hw ? 'warn' : 'ok'}">${r.h}%</div>
-      </div>
-    </div>`;
-  }).join('');
+
+    el.innerHTML = [...histData].reverse().map(r => {
+
+        const tw =
+            r.t < t.tempRange[0] || r.t > t.tempRange[1];
+
+        const hw =
+            r.h < t.humRange[0] || r.h > t.humRange[1];
+
+        return `
+        <div class="hist-row">
+            <div class="hist-time">${r.ts}</div>
+
+            <div class="hist-vals">
+                <div class="hist-val ${tw ? "warn" : "ok"}">
+                    ${r.t.toFixed(1)}°C
+                </div>
+
+                <div class="hist-val ${hw ? "warn" : "ok"}">
+                    ${Math.round(r.h)}%
+                </div>
+            </div>
+        </div>
+        `;
+
+    }).join("");
+
 }
+
+/* ────────────────────────────────────────── */
+/* Filtros                                    */
+/* ────────────────────────────────────────── */
 
 function filterHist(el) {
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  /* TODO: ligar este filtro ao endpoint /api/terrario/dados/historico */
+
+    document
+        .querySelectorAll(".filter-chip")
+        .forEach(c => c.classList.remove("active"));
+
+    el.classList.add("active");
+
+    switch (el.textContent.trim()) {
+
+        case "1h":
+            horasFiltro = 1;
+            break;
+
+        case "6h":
+            horasFiltro = 6;
+            break;
+
+        case "24h":
+            horasFiltro = 24;
+            break;
+
+        case "7 dias":
+            horasFiltro = 168;
+            break;
+    }
+
+    atualizarHistorico();
+
 }
 
-/* ── Gráficos em canvas (sem dependências externas) ── */
-let chartsDrawn = false;
+/* ────────────────────────────────────────── */
+/* Gráficos                                   */
+/* ────────────────────────────────────────── */
 
-function initCharts() {
-  if (chartsDrawn) return;
-  chartsDrawn = true;
-  const t = getActive();
-  drawChart('chart-temp', generateData(24, t.tempRange[0], t.tempRange[1]), '#3DBA7E');
-  drawChart('chart-hum', generateData(24, t.humRange[0], t.humRange[1]), '#D4A03A');
-}
+function desenharGraficos() {
 
-function generateData(n, min, max) {
-  return Array.from({ length: n }, () => +(min + Math.random() * (max - min)).toFixed(1));
+    drawChart(
+        "chart-temp",
+        histData.map(x => x.t),
+        "#3DBA7E"
+    );
+
+    drawChart(
+        "chart-hum",
+        histData.map(x => x.h),
+        "#D4A03A"
+    );
+
 }
 
 function drawChart(id, data, color) {
-  const canvas = document.getElementById(id);
-  if (!canvas) return;
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.parentElement.clientWidth;
-  const h = 120;
-  canvas.width = w * dpr;
-  canvas.height = h * dpr;
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr, dpr);
 
-  const pad = { l: 8, r: 8, t: 8, b: 8 };
-  const cw = w - pad.l - pad.r;
-  const mn = Math.min(...data) - 2, mx = Math.max(...data) + 2;
-  const xStep = cw / (data.length - 1);
-  const yScale = v => (h - pad.t - pad.b) - ((v - mn) / (mx - mn)) * (h - pad.t - pad.b) + pad.t;
-  const xPos = i => pad.l + i * xStep;
+    const canvas = document.getElementById(id);
 
-  const grad = ctx.createLinearGradient(0, pad.t, 0, h);
-  grad.addColorStop(0, color + '44');
-  grad.addColorStop(1, color + '00');
-  ctx.beginPath();
-  ctx.moveTo(xPos(0), yScale(data[0]));
-  data.forEach((v, i) => { if (i > 0) ctx.lineTo(xPos(i), yScale(v)); });
-  ctx.lineTo(xPos(data.length - 1), h);
-  ctx.lineTo(xPos(0), h);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+    if (!canvas || data.length === 0) return;
 
-  ctx.beginPath();
-  ctx.moveTo(xPos(0), yScale(data[0]));
-  data.forEach((v, i) => { if (i > 0) ctx.lineTo(xPos(i), yScale(v)); });
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ctx.stroke();
+    const dpr = window.devicePixelRatio || 1;
+
+    const w = canvas.parentElement.clientWidth;
+    const h = 120;
+
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+
+    const ctx = canvas.getContext("2d");
+
+    ctx.scale(dpr, dpr);
+
+    const pad = {
+        l: 8,
+        r: 8,
+        t: 8,
+        b: 8
+    };
+
+    const cw = w - pad.l - pad.r;
+
+    const mn = Math.min(...data) - 2;
+    const mx = Math.max(...data) + 2;
+
+    const xStep = cw / (data.length - 1 || 1);
+
+    const xPos = i => pad.l + i * xStep;
+
+    const yPos = v =>
+        (h - pad.t - pad.b)
+        - ((v - mn) / (mx - mn || 1))
+        * (h - pad.t - pad.b)
+        + pad.t;
+
+    const grad = ctx.createLinearGradient(0, pad.t, 0, h);
+
+    grad.addColorStop(0, color + "44");
+    grad.addColorStop(1, color + "00");
+
+    ctx.beginPath();
+
+    ctx.moveTo(xPos(0), yPos(data[0]));
+
+    data.forEach((v, i) => {
+        if (i > 0)
+            ctx.lineTo(xPos(i), yPos(v));
+    });
+
+    ctx.lineTo(xPos(data.length - 1), h);
+    ctx.lineTo(xPos(0), h);
+
+    ctx.closePath();
+
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.beginPath();
+
+    ctx.moveTo(xPos(0), yPos(data[0]));
+
+    data.forEach((v, i) => {
+        if (i > 0)
+            ctx.lineTo(xPos(i), yPos(v));
+    });
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = "round";
+
+    ctx.stroke();
+
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderPickerList();
-  renderHistList();
-  initCharts();
+/* ────────────────────────────────────────── */
+/* Arranque                                   */
+/* ────────────────────────────────────────── */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    renderPickerList();
+
+    atualizarHistorico();
+
 });

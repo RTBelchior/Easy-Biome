@@ -11,6 +11,8 @@ import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.repository.DispositivoRepository;
 import pt.easybiome.easybiome_api.repository.LeituraSensorRepository;
 import pt.easybiome.easybiome_api.repository.TerrarioRepository;
+import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/leituras")
@@ -88,5 +90,18 @@ public class LeituraSensorController {
     @GetMapping("/ultima/{idTerrario}")
     public LeituraSensor ultimaLeitura(@PathVariable Long idTerrario) {
         return repository.findTopByIdTerrarioOrderByRegistadoEmDesc(idTerrario);
+    }
+
+    @GetMapping("/historico/{idTerrario}")
+    public List<LeituraSensor> historico(
+            @PathVariable Long idTerrario,
+            @RequestParam(defaultValue = "24") int horas) {
+
+        LocalDateTime inicio = LocalDateTime.now().minusHours(horas);
+
+        return repository.findByIdTerrarioAndRegistadoEmAfterOrderByRegistadoEmAsc(
+                idTerrario,
+                inicio
+        );
     }
 }
