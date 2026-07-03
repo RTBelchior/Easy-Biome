@@ -8,7 +8,7 @@
 }
 
 /* Ativação e estilização apenas para ecrãs largos (Desktop a partir de 1180px) */
-@media (min-width: 1180px) {
+@media (min-width: 992px) {
   .desktop-topbar {
     display: flex;
     align-items: center;
@@ -91,5 +91,7 @@
   .desktop-nav-link.active {
     color: var(--green);
     background: var(--green-g);
+    box-shadow: inset 0 0 0 1px var(--green);
+    font-weight: 500;
   }
 }
