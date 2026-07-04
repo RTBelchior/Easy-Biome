@@ -16,10 +16,10 @@ const char* password = "rodrigoerita0";
 //=========================
 
 const char* leituraURL =
-  "http://192.168.68.66:8080/api/leituras";
+  "http://192.168.68.70:8080/api/leituras";
 
 const char* dispositivosURL =
-  "http://192.168.68.66:8080/api/dispositivos/terrario/1";
+  "http://192.168.68.70:8080/api/dispositivos/terrario/1";
 
 //=========================
 // GPIO

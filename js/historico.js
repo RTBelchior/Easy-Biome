@@ -225,7 +225,64 @@ function drawChart(id, data, color) {
     ctx.lineWidth = 2;
     ctx.lineJoin = "round";
 
+    const pontos = [];
+
+    data.forEach((v, i) => {
+        pontos.push({
+            x: xPos(i),
+            y: yPos(v),
+            value: v,
+            time: histData[i].ts
+        });
+    });
+
     ctx.stroke();
+
+    const tooltip = document.getElementById(
+        id === "chart-temp"
+            ? "tooltip-temp"
+            : "tooltip-hum"
+    );
+
+    canvas.onmousemove = function (e) {
+
+        const rect = canvas.getBoundingClientRect();
+
+        const mouseX = e.clientX - rect.left;
+
+        let maisPerto = pontos[0];
+
+        pontos.forEach(p => {
+            if (Math.abs(p.x - mouseX) < Math.abs(maisPerto.x - mouseX)) {
+                maisPerto = p;
+            }
+        });
+
+        // redesenha o gráfico
+        desenharGraficos();
+
+        // bolinha
+        ctx.beginPath();
+        ctx.arc(maisPerto.x, maisPerto.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        tooltip.style.display = "block";
+        tooltip.style.left = maisPerto.x + "px";
+        tooltip.style.top = maisPerto.y + "px";
+
+        tooltip.innerHTML =
+            id === "chart-temp"
+                ? `<strong>${maisPerto.value.toFixed(1)} °C</strong><br>${maisPerto.time}`
+                : `<strong>${Math.round(maisPerto.value)} %</strong><br>${maisPerto.time}`;
+    };
+
+    canvas.onmouseleave = function () {
+
+        tooltip.style.display = "none";
+
+        desenharGraficos();
+    };
 
 }
 

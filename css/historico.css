@@ -1,0 +1,469 @@
+/* ==========================================================================
+   EASYBIOME — HISTÓRICO STYLESHEET
+   ========================================================================== */
+
+/* ── VARIÁVEIS E DEFINIÇÕES BASE ── */
+:root {
+  --bg: #0D1410;
+  --bg2: #131A16;
+  --panel: #1A2420;
+  --panel2: #1F2D28;
+  --border: #2A3D35;
+  --green: #3DBA7E;
+  --green-d: #1F6B47;
+  --green-g: #3DBA7E22;
+  --amber: #D4A03A;
+  --text: #D8E8E0;
+  --text2: #7A9E8A;
+  --text3: #4A6A58;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --r: 14px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Redimensionamento responsivo do body (Mobile Largo / Tablet) */
+@media (min-width: 540px) {
+  body {
+    max-width: 700px;
+  }
+}
+
+@media (min-width: 900px) {
+  body {
+    max-width: 880px;
+  }
+}
+
+/* Ecrãs Computador */
+@media (min-width: 992px) {
+  body {
+    max-width: none;
+  }
+}
+
+/* ── PAGE WRAPPER STRUCT ── */
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+/* ── NAV TOP (MOBILE) ── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  position: sticky;
+  top: 0;
+  background: #0D1410EE;
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.top-bar-title {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.top-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 17px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo-box {
+  width: auto;
+  height: 32px;
+  background: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+  color: var(--text2);
+}
+
+/* ── BOTTOM NAV (MOBILE) ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: #0D1410F5;
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 0.4rem 0 calc(0.5rem + env(safe-area-inset-bottom));
+  z-index: 100;
+}
+
+@media (min-width: 540px) {
+  .bottom-nav {
+    max-width: 700px;
+  }
+}
+
+@media (min-width: 900px) {
+  .bottom-nav {
+    max-width: 880px;
+  }
+}
+
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 0;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 10px;
+  font-family: var(--mono);
+  border: none;
+  background: none;
+  transition: color .15s;
+  text-decoration: none;
+}
+
+.bnav-item svg {
+  width: 22px;
+  height: 22px;
+}
+
+.bnav-item.active {
+  color: var(--green);
+}
+
+/* ── INTERFACE COMPONENT: PICKER / BOTTOM SHEET ── */
+.picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.picker-overlay.open {
+  display: flex;
+}
+
+.picker-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 0.75rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+  animation: slideUp .2s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.picker-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 0 auto 14px;
+}
+
+.sel-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.picker-add {
+  width: 100%;
+  margin-top: 14px;
+  padding: .8rem;
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* ══════════════════════════════════════════
+   HISTÓRICO PAGE COMPONENTS
+   ══════════════════════════════════════════ */
+
+/* Filtros horizontais (Time Chips) */
+.hist-filters {
+  display: flex;
+  gap: 8px;
+  padding: 1rem 1.25rem 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.hist-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--mono);
+  flex-shrink: 0;
+}
+
+.filter-chip.active {
+  background: var(--green-g);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* Contentores dos Gráficos (Canvas) */
+.chart-card {
+  margin: 1rem 1.25rem 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1rem;
+}
+
+.chart-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 120px;
+}
+
+.chart-tooltip {
+  position: absolute;
+  display: none;
+  background: #1F2937;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -120%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+}
+
+canvas {
+  width: 100% !important;
+}
+
+/* Listagem de Leituras */
+.sec-header {
+  padding: 1.25rem 1.25rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.hist-list {
+  padding: 1rem 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hist-row {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: .9rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hist-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.hist-vals {
+  display: flex;
+  gap: 14px;
+}
+
+.hist-val {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.hist-val.ok {
+  color: var(--green);
+}
+
+.hist-val.warn {
+  color: var(--amber);
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVIDADE E ADAPTAÇÃO DE LAYOUT
+   ══════════════════════════════════════════ */
+
+/* TABLETS (Entre 540px e 1179px) */
+@media (min-width: 540px) and (max-width: 1179px) {
+  .chart-wrap {
+    height: 150px;
+  }
+}
+
+/* COMPUTADORES E ECRÃS LARGOS (Mínimo 992px) */
+@media (min-width: 992px) {
+  .bottom-nav {
+    display: none;
+  }
+
+  /* Oculta topo nativo caso a navbar geral injetada via desktop-topbar apareça */
+  .page > .top-bar {
+    display: none;
+  }
+
+  .page {
+    padding-bottom: 3rem;
+    align-items: center;
+  }
+
+  /* Centralização e controle máximo de largura fluida */
+  .page > *:not(.top-bar) {
+    width: 100%;
+    max-width: 720px;
+  }
+
+  .sec-header,
+  .hist-filters,
+  .hist-list,
+  .chart-card {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 720px;
+    width: 100%;
+  }
+
+  .chart-card {
+    margin-top: 1rem;
+  }
+
+  .chart-wrap {
+    height: 160px;
+  }
+
+  /* Modifica a folha Picker de Bottom Sheet para Modal Centralizado */
+  .picker-overlay {
+    align-items: center;
+  }
+
+  .picker-sheet {
+    width: 420px;
+    max-width: 420px;
+    border-radius: 16px;
+    animation: fadeScale .15s ease-out;
+  }
+
+  @keyframes fadeScale {
+    from {
+      opacity: 0;
+      transform: scale(.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

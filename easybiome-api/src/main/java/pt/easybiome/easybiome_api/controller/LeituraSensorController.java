@@ -1,6 +1,8 @@
 package pt.easybiome.easybiome_api.controller;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +13,7 @@ import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.repository.DispositivoRepository;
 import pt.easybiome.easybiome_api.repository.LeituraSensorRepository;
 import pt.easybiome.easybiome_api.repository.TerrarioRepository;
-import java.util.List;
-import java.time.LocalDateTime;
+import pt.easybiome.easybiome_api.service.DispositivoService;
 
 @RestController
 @RequestMapping("/api/leituras")
@@ -28,19 +29,25 @@ public class LeituraSensorController {
     @Autowired
     private DispositivoRepository dispositivoRepository;
 
+    @Autowired
+    private DispositivoService dispositivoService;
+
     @PostMapping
     public LeituraSensor guardar(@RequestBody LeituraSensor leitura) {
 
         LeituraSensor leituraGuardada = repository.save(leitura);
 
-        Terrario terrario = terrarioRepository.findById(leitura.getIdTerrario()).orElseThrow();
+        Terrario terrario = terrarioRepository
+                .findById(leitura.getIdTerrario())
+                .orElseThrow();
 
         for (Dispositivo d : dispositivoRepository.findByIdTerrario(leitura.getIdTerrario())) {
 
-            // Se estiver em modo manual, a automação não altera o estado
             if (Boolean.TRUE.equals(d.getModoManual())) {
                 continue;
             }
+
+            Boolean estadoAnterior = d.getEstadoAtual();
 
             switch (d.getTipoDispositivo()) {
 
@@ -62,6 +69,7 @@ public class LeituraSensorController {
 
                     if (leitura.getHumidade() < terrario.getHumidadeTerrarioMin()) {
                         d.setEstadoAtual(true);
+
                     } else if (leitura.getHumidade() > terrario.getHumidadeTerrarioMax()) {
                         d.setEstadoAtual(false);
                     }
@@ -81,7 +89,27 @@ public class LeituraSensorController {
                     break;
             }
 
-            dispositivoRepository.save(d);
+            if (!estadoAnterior.equals(d.getEstadoAtual())) {
+
+                dispositivoRepository.save(d);
+
+                String acao = d.getEstadoAtual() ? "LIGAR" : "DESLIGAR";
+
+                String descricao = d.getNomeDispositivo()
+                        + (d.getEstadoAtual()
+                        ? " ligado automaticamente"
+                        : " desligado automaticamente");
+
+                dispositivoService.registarLog(
+                        d.getIdDispositivo(),
+                        estadoAnterior,
+                        d.getEstadoAtual(),
+                        "AUTOMATICO",
+                        null,
+                        acao,
+                        descricao
+                );
+            }
         }
 
         return leituraGuardada;

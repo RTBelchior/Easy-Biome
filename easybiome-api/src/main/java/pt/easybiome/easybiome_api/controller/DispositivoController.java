@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import pt.easybiome.easybiome_api.model.Dispositivo;
-import pt.easybiome.easybiome_api.repository.DispositivoRepository;
+import pt.easybiome.easybiome_api.service.DispositivoService;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ import java.util.List;
 public class DispositivoController {
 
     @Autowired
-    private DispositivoRepository repository;
+    private DispositivoService service;
 
     @GetMapping("/terrario/{idTerrario}")
     public List<Dispositivo> listar(@PathVariable Long idTerrario) {
-        return repository.findByIdTerrario(idTerrario);
+        return service.listarPorTerrario(idTerrario);
     }
 
     @PutMapping("/{id}")
@@ -26,17 +26,10 @@ public class DispositivoController {
             @PathVariable Long id,
             @RequestBody Dispositivo dispositivo) {
 
-        Dispositivo d = repository.findById(id).orElseThrow();
-
-        // Atualiza o estado
-        d.setEstadoAtual(dispositivo.getEstadoAtual());
-
-        // Se vier definido, passa para modo manual ou automático
-        if (dispositivo.getModoManual() != null) {
-            d.setModoManual(dispositivo.getModoManual());
-        }
-
-        return repository.save(d);
+        return service.alterarEstado(
+                id,
+                dispositivo.getEstadoAtual(),
+                dispositivo.getModoManual()
+        );
     }
-
 }

@@ -27,6 +27,12 @@ public class LogComando {
     @Column(name = "origem_log")
     private String origemLog;
 
+    @Column(name = "acao")
+    private String acao;
+
+    @Column(name = "descricao")
+    private String descricao;
+
     @Column(name = "executado_em")
     private LocalDateTime executadoEm;
 
@@ -75,6 +81,22 @@ public class LogComando {
 
     public void setOrigemLog(String origemLog) {
         this.origemLog = origemLog;
+    }
+
+    public String getAcao() {
+        return acao;
+    }
+
+    public void setAcao(String acao) {
+        this.acao = acao;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public LocalDateTime getExecutadoEm() {

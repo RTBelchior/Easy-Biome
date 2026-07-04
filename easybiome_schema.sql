@@ -45,7 +45,6 @@ CREATE TABLE utilizador (
 -- ------------------------------------------------------------
 CREATE TABLE terrario (
     id_terrario              BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    id_utilizador            BIGINT NOT NULL,
     id_especie               BIGINT,
     nome_terrario            VARCHAR(100) NOT NULL,
     descricao_terrario       VARCHAR(255),
@@ -57,8 +56,6 @@ CREATE TABLE terrario (
     hora_ligar_iluminacao    TIME,
     hora_desligar_iluminacao TIME,
     criado_em                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_terrario_utilizador FOREIGN KEY (id_utilizador)
-        REFERENCES utilizador(id_utilizador) ON DELETE CASCADE,
     CONSTRAINT fk_terrario_especie FOREIGN KEY (id_especie)
         REFERENCES especie(id_especie) ON DELETE SET NULL,
     CONSTRAINT chk_terrario_temp CHECK (temp_terrario_min < temp_terrario_max),
@@ -133,18 +130,39 @@ CREATE TABLE dispositivo (
 -- AUTOMATICO (agendamento) ou ESP32.
 -- ------------------------------------------------------------
 CREATE TABLE log_comando (
-    id_log          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    id_dispositivo  BIGINT NOT NULL,
-    id_utilizador   BIGINT,
-    estado_anterior BOOLEAN     NOT NULL,
-    estado_novo     BOOLEAN     NOT NULL,
-    origem_log      VARCHAR(20) NOT NULL
-                    CHECK (origem_log IN ('APP', 'AUTOMATICO', 'ESP32')),
-    executado_em    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_log_dispositivo FOREIGN KEY (id_dispositivo)
-        REFERENCES dispositivo(id_dispositivo) ON DELETE CASCADE,
-    CONSTRAINT fk_log_utilizador FOREIGN KEY (id_utilizador)
-        REFERENCES utilizador(id_utilizador) ON DELETE SET NULL
+
+    id_log BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    id_dispositivo BIGINT NOT NULL,
+    id_utilizador BIGINT,
+
+    estado_anterior BOOLEAN NOT NULL,
+    estado_novo BOOLEAN NOT NULL,
+
+    origem_log VARCHAR(20) NOT NULL
+        CHECK (origem_log IN ('APP','AUTOMATICO','ESP32')),
+
+    acao VARCHAR(30) NOT NULL
+        CHECK (acao IN (
+            'LIGAR',
+            'DESLIGAR',
+            'MODO_MANUAL',
+            'MODO_AUTOMATICO'
+        )),
+
+    descricao VARCHAR(255),
+
+    executado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_log_dispositivo
+        FOREIGN KEY (id_dispositivo)
+        REFERENCES dispositivo(id_dispositivo)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_log_utilizador
+        FOREIGN KEY (id_utilizador)
+        REFERENCES utilizador(id_utilizador)
+        ON DELETE SET NULL
 );
 
 CREATE INDEX idx_log_dispositivo
