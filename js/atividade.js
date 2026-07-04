@@ -1,20 +1,34 @@
-/* ═══════════════════════════════════════════════
-   EASYBIOME — ATIVIDADE
-   ═══════════════════════════════════════════════ */
+/* ==========================================================
+   EASYBIOME - ATIVIDADE
+   ========================================================== */
 
 let atividades = [];
+let atividadesFiltradas = [];
 
-/* ───────────────────────────────────────────── */
-/* Atualiza quando muda o terrário              */
-/* ───────────────────────────────────────────── */
+let filtroOrigem = "TODOS";
+let filtroDispositivo = "TODOS";
+
+const nomesDispositivos = {
+    1: "🌀 Ventoinha",
+    2: "🔥 Aquecimento",
+    3: "💡 Iluminação",
+    4: "💧 Humidificador"
+};
+
+const tiposDispositivos = {
+    1: "VENTOINHA",
+    2: "LAMPADA_AQUECIMENTO",
+    3: "LAMPADA_ILUMINACAO",
+    4: "HUMIDIFICADOR"
+};
+
+/* ========================================================== */
 
 function onTerrarioChanged() {
     carregarAtividade();
 }
 
-/* ───────────────────────────────────────────── */
-/* Obtém atividade da API                       */
-/* ───────────────────────────────────────────── */
+/* ========================================================== */
 
 async function carregarAtividade() {
 
@@ -26,229 +40,199 @@ async function carregarAtividade() {
             `http://localhost:8080/api/logs/terrario/${terrario.id}`
         );
 
-        if (!resposta.ok) {
-            throw new Error("Erro ao obter atividade.");
-        }
+        if (!resposta.ok)
+            throw new Error();
 
         atividades = await resposta.json();
 
-        renderAtividade();
+        atividadesFiltradas = [...atividades];
 
-    } catch (e) {
+        renderizar();
 
-        console.error(e);
+    } catch {
 
         document.getElementById("atividade-list").innerHTML =
-            `<div class="sem-atividade">
+            `<div class="loading">
                 Não foi possível carregar a atividade.
             </div>`;
-
     }
-
 }
 
-/* ───────────────────────────────────────────── */
-/* Renderização                                 */
-/* ───────────────────────────────────────────── */
+/* ========================================================== */
 
-function renderAtividade() {
+function selecionarFiltro(chip) {
 
-    const container = document.getElementById("atividade-list");
+    const grupo = chip.dataset.group;
+    const valor = chip.dataset.value;
 
-    if (!atividades.length) {
+    document
+        .querySelectorAll(`.filter-chip[data-group="${grupo}"]`)
+        .forEach(c => c.classList.remove("active"));
 
-        container.innerHTML =
-            `<div class="sem-atividade">
-                Ainda não existe atividade registada.
-            </div>`;
+    chip.classList.add("active");
+
+    if (grupo === "origem")
+        filtroOrigem = valor;
+    else
+        filtroDispositivo = valor;
+
+    filtrarAtividade();
+}
+
+/* ========================================================== */
+
+function filtrarAtividade() {
+
+    const texto = document
+        .getElementById("pesquisa")
+        .value
+        .toLowerCase();
+
+    atividadesFiltradas = atividades.filter(a => {
+
+        const nome =
+            (nomesDispositivos[a.idDispositivo] || "")
+                .toLowerCase();
+
+        const tipo =
+            tiposDispositivos[a.idDispositivo];
+
+        const origemOK =
+            filtroOrigem === "TODOS"
+            || a.origemLog === filtroOrigem;
+
+        const dispositivoOK =
+            filtroDispositivo === "TODOS"
+            || tipo === filtroDispositivo;
+
+        const pesquisaOK =
+            nome.includes(texto);
+
+        return origemOK && dispositivoOK && pesquisaOK;
+
+    });
+
+    renderizar();
+}
+
+/* ========================================================== */
+
+function renderizar() {
+
+    const lista = document.getElementById("atividade-list");
+
+    if (atividadesFiltradas.length === 0) {
+
+        lista.innerHTML = `
+            <div class="loading">
+                Nenhuma atividade encontrada.
+            </div>
+        `;
 
         return;
     }
 
-    let html = "";
+    lista.innerHTML = atividadesFiltradas
+        .map(criarCard)
+        .join("");
+}
 
-    let ultimaData = "";
+/* ========================================================== */
 
-    atividades.forEach(log => {
+function criarCard(log) {
 
-        const data = new Date(log.executadoEm);
+    const dispositivo =
+        nomesDispositivos[log.idDispositivo] || "Dispositivo";
 
-        const dia = obterTituloData(data);
+    const data = new Date(log.executadoEm);
 
-        if (dia !== ultimaData) {
+    const hora = data.toLocaleTimeString("pt-PT", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 
-            html += `
-                <div class="data-header">
-                    ${dia}
+    const dia = data.toLocaleDateString("pt-PT");
+
+    let badgeOrigem = "";
+    let badgeAcao = "";
+
+    switch (log.origemLog) {
+
+        case "APP":
+            badgeOrigem = `<span class="badge app">APP</span>`;
+            break;
+
+        case "AUTOMATICO":
+            badgeOrigem = `<span class="badge auto">AUTOMÁTICO</span>`;
+            break;
+
+        default:
+            badgeOrigem = `<span class="badge esp">ESP32</span>`;
+    }
+
+    switch (log.acao) {
+
+        case "LIGAR":
+            badgeAcao = `<span class="badge on">🟢 Ligado</span>`;
+            break;
+
+        case "DESLIGAR":
+            badgeAcao = `<span class="badge off">🔴 Desligado</span>`;
+            break;
+
+        case "MODO_MANUAL":
+            badgeAcao = `<span class="badge manual">⚙️ Manual</span>`;
+            break;
+
+        case "MODO_AUTOMATICO":
+            badgeAcao = `<span class="badge auto-mode">🤖 Automático</span>`;
+            break;
+
+        default:
+            badgeAcao = `<span class="badge">${log.acao}</span>`;
+    }
+
+    return `
+
+        <div class="activity-card">
+
+            <div class="activity-top">
+
+                <div class="activity-device">
+                    ${dispositivo}
                 </div>
-            `;
 
-            ultimaData = dia;
-        }
+                <div class="activity-time">
+                    ${hora}<br>${dia}
+                </div>
 
-        const info = obterInfoAcao(log);
-
-        html += `
-
-        <div class="atividade-card">
-
-            <div class="atividade-icon ${info.classe}">
-                ${info.icone}
             </div>
 
-            <div class="atividade-info">
+            <div class="activity-action">
 
-                <div class="atividade-titulo">
-                    ${info.titulo}
-                </div>
+                Estado anterior:
+                <strong>${log.estadoAnterior ? "Ligado" : "Desligado"}</strong>
 
-                <div class="atividade-dispositivo">
-                    ${log.nomeDispositivo}
-                </div>
+                →
 
-                <div class="atividade-footer">
+                <strong>${log.estadoNovo ? "Ligado" : "Desligado"}</strong>
 
-                    <span class="origem">
-                        ${traduzirOrigem(log.origemLog)}
-                    </span>
+            </div>
 
-                    <span>
-                        ${formatarHora(data)}
-                    </span>
+            <div class="activity-footer">
 
-                </div>
+                ${badgeAcao}
+
+                ${badgeOrigem}
 
             </div>
 
         </div>
 
-        `;
-
-    });
-
-    container.innerHTML = html;
-
+    `;
 }
 
-/* ───────────────────────────────────────────── */
-
-function obterInfoAcao(log) {
-
-    switch (log.acao) {
-
-        case "LIGAR":
-            return {
-                icone: "🟢",
-                classe: "icon-ligar",
-                titulo: "Dispositivo ligado"
-            };
-
-        case "DESLIGAR":
-            return {
-                icone: "🔴",
-                classe: "icon-desligar",
-                titulo: "Dispositivo desligado"
-            };
-
-        case "MODO_MANUAL":
-            return {
-                icone: "⚙️",
-                classe: "icon-manual",
-                titulo: "Modo manual ativado"
-            };
-
-        case "MODO_AUTOMATICO":
-            return {
-                icone: "♻️",
-                classe: "icon-auto",
-                titulo: "Modo automático ativado"
-            };
-
-        default:
-            return {
-                icone: "ℹ️",
-                classe: "",
-                titulo: log.acao
-            };
-
-    }
-
-}
-
-/* ───────────────────────────────────────────── */
-
-function traduzirOrigem(origem) {
-
-    switch (origem) {
-
-        case "APP":
-            return "Aplicação";
-
-        case "AUTOMATICO":
-            return "Automático";
-
-        case "ESP32":
-            return "ESP32";
-
-        default:
-            return origem;
-
-    }
-
-}
-
-/* ───────────────────────────────────────────── */
-
-function formatarHora(data) {
-
-    return data.toLocaleTimeString("pt-PT", {
-
-        hour: "2-digit",
-        minute: "2-digit"
-
-    });
-
-}
-
-/* ───────────────────────────────────────────── */
-
-function obterTituloData(data) {
-
-    const hoje = new Date();
-
-    const ontem = new Date();
-
-    ontem.setDate(hoje.getDate() - 1);
-
-    if (mesmoDia(data, hoje))
-        return "Hoje";
-
-    if (mesmoDia(data, ontem))
-        return "Ontem";
-
-    return data.toLocaleDateString("pt-PT", {
-
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-
-    });
-
-}
-
-/* ───────────────────────────────────────────── */
-
-function mesmoDia(a, b) {
-
-    return a.getDate() === b.getDate()
-        && a.getMonth() === b.getMonth()
-        && a.getFullYear() === b.getFullYear();
-
-}
-
-/* ───────────────────────────────────────────── */
-/* Arranque                                     */
-/* ───────────────────────────────────────────── */
+/* ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
