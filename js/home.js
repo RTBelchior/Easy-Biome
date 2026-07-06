@@ -87,17 +87,19 @@ function renderDevices() {
 
 async function toggleDev(key) {
 
-  const terrario = getActive();
-  const novoEstado = !terrario[key];
+    const terrario = getActive();
+    const novoEstado = !terrario[key];
 
-  // Vai ligar → mostra o modal
-  if (novoEstado) {
-    abrirModalManual(key);
-    return;
-  }
+    const modoManual = terrario[key + "Manual"];
 
-  // Vai desligar → faz o pedido diretamente
-  await ligarDispositivo(key, false, true);
+    // Só mostra o aviso se ainda estiver em automático
+    if (novoEstado && !modoManual) {
+        abrirModalManual(key);
+        return;
+    }
+
+    // Se já está em modo manual, altera diretamente
+    await ligarDispositivo(key, novoEstado, true);
 }
 
 async function ligarDispositivo(key, estado, modoManual = true) {
@@ -220,18 +222,22 @@ async function atualizarDados() {
 
         case "VENTOINHA":
           terrario.fan = d.estadoAtual;
+          terrario.fanManual = d.modoManual;
           break;
 
         case "LAMPADA_AQUECIMENTO":
           terrario.heat = d.estadoAtual;
+          terrario.heatManual = d.modoManual;
           break;
 
         case "LAMPADA_ILUMINACAO":
           terrario.light = d.estadoAtual;
+          terrario.lightManual = d.modoManual;
           break;
 
         case "HUMIDIFICADOR":
           terrario.humidifier = d.estadoAtual;
+          terrario.humidifierManual = d.modoManual;
           break;
       }
 
@@ -311,9 +317,12 @@ function fecharModalManual() {
 
 async function confirmarModoManual() {
 
-  fecharModalManual();
+    fecharModalManual();
 
-  await ligarDispositivo(dispositivoPendente, true, true);
+    const terrario = getActive();
+    terrario[dispositivoPendente + "Manual"] = true;
 
-  dispositivoPendente = null;
+    await ligarDispositivo(dispositivoPendente, true, true);
+
+    dispositivoPendente = null;
 }
