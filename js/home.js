@@ -5,8 +5,11 @@
 function renderHero() {
   const t = getActive();
 
-  document.getElementById("terrario-img").src = t.img;
-  document.getElementById("terrario-name").textContent = t.nome;
+  document.getElementById("terrario-img").src =
+    t.imagemTerrario || "imagens/terrario-default.jpg";
+
+  document.getElementById("terrario-name").textContent =
+    t.nomeTerrario;
 }
 
 function renderMetrics() {
@@ -87,19 +90,19 @@ function renderDevices() {
 
 async function toggleDev(key) {
 
-    const terrario = getActive();
-    const novoEstado = !terrario[key];
+  const terrario = getActive();
+  const novoEstado = !terrario[key];
 
-    const modoManual = terrario[key + "Manual"];
+  const modoManual = terrario[key + "Manual"];
 
-    // Só mostra o aviso se ainda estiver em automático
-    if (novoEstado && !modoManual) {
-        abrirModalManual(key);
-        return;
-    }
+  // Só mostra o aviso se ainda estiver em automático
+  if (novoEstado && !modoManual) {
+    abrirModalManual(key);
+    return;
+  }
 
-    // Se já está em modo manual, altera diretamente
-    await ligarDispositivo(key, novoEstado, true);
+  // Se já está em modo manual, altera diretamente
+  await ligarDispositivo(key, novoEstado, true);
 }
 
 async function ligarDispositivo(key, estado, modoManual = true) {
@@ -317,12 +320,98 @@ function fecharModalManual() {
 
 async function confirmarModoManual() {
 
-    fecharModalManual();
+  fecharModalManual();
 
-    const terrario = getActive();
-    terrario[dispositivoPendente + "Manual"] = true;
+  const terrario = getActive();
+  terrario[dispositivoPendente + "Manual"] = true;
 
-    await ligarDispositivo(dispositivoPendente, true, true);
+  await ligarDispositivo(dispositivoPendente, true, true);
 
-    dispositivoPendente = null;
+  dispositivoPendente = null;
+}
+
+function abrirModalTerrario() {
+  closeTerrarioPicker();
+  document.getElementById("modal-terrario").style.display = "flex";
+}
+
+async function guardarTerrario() {
+
+  const nome = document.getElementById("terrario-nome").value.trim();
+  const descricao = document.getElementById("terrario-descricao").value.trim();
+
+  const tempMin = document.getElementById("temp-min").value;
+  const tempMax = document.getElementById("temp-max").value;
+
+  const humMin = document.getElementById("hum-min").value;
+  const humMax = document.getElementById("hum-max").value;
+
+  const horaLigar = document.getElementById("hora-ligar").value;
+  const horaDesligar = document.getElementById("hora-desligar").value;
+
+  const imagem = document.getElementById("terrario-imagem").files[0];
+
+  if (
+    !nome ||
+    !tempMin ||
+    !tempMax ||
+    !humMin ||
+    !humMax ||
+    !horaLigar ||
+    !horaDesligar
+  ) {
+    alert("Preencha todos os campos obrigatórios.");
+    return;
+  }
+
+  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
+
+  const formData = new FormData();
+
+  formData.append("nome", nome);
+  formData.append("descricao", descricao);
+  formData.append("tempMin", tempMin);
+  formData.append("tempMax", tempMax);
+  formData.append("humMin", humMin);
+  formData.append("humMax", humMax);
+  formData.append("horaLigar", horaLigar);
+  formData.append("horaDesligar", horaDesligar);
+  formData.append("idUtilizador", utilizador.idUtilizador);
+
+  if (imagem) {
+    formData.append("imagem", imagem);
+  }
+
+  try {
+
+    const resposta = await fetch(`${API_BASE}/terrarios`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Erro ao criar terrário.");
+    }
+
+    fecharModalTerrario();
+
+    document.getElementById("terrario-nome").value = "";
+    document.getElementById("terrario-descricao").value = "";
+    document.getElementById("temp-min").value = "";
+    document.getElementById("temp-max").value = "";
+    document.getElementById("hum-min").value = "";
+    document.getElementById("hum-max").value = "";
+    document.getElementById("hora-ligar").value = "";
+    document.getElementById("hora-desligar").value = "";
+    document.getElementById("terrario-imagem").value = "";
+
+    await carregarTerrarios();
+
+    alert("Terrário criado com sucesso!");
+
+  } catch (erro) {
+
+    console.error(erro);
+    alert("Não foi possível criar o terrário.");
+  }
 }

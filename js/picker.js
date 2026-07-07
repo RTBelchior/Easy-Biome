@@ -7,15 +7,29 @@ function renderPickerList() {
   const list = document.getElementById('picker-list');
   if (!list) return;
   list.innerHTML = terrarios.map(t => `
-    <div class="picker-item ${t.id===activeTerrarioId?'active':''}" onclick="onPickTerrario(${t.id})">
-      <img src="${t.img}" alt="">
-      <div>
+<div class="picker-item ${t.idTerrario === activeTerrarioId ? 'active' : ''}"
+     onclick="onPickTerrario(${t.idTerrario})">
+
+    <img src="${t.imagemTerrario || 'imagens/terrario-default.jpg'}">
+
+    <div>
         <div class="picker-item-name">${t.nome}</div>
-        <div class="picker-item-sub">${t.temp.toFixed(1)}°C · ${Math.round(t.hum)}%</div>
-      </div>
-      ${t.id===activeTerrarioId ? '<svg class="picker-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+
+        <div class="picker-item-sub">
+            ${t.tempTerrarioMin}°C - ${t.tempTerrarioMax}°C
+        </div>
     </div>
-  `).join('');
+
+    ${t.idTerrario === activeTerrarioId
+      ? `<svg class="picker-check" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+           </svg>`
+      : ""
+    }
+
+</div>
+`).join('');
 }
 
 function openTerrarioPicker() {
@@ -29,10 +43,7 @@ function closeTerrarioPicker(e) {
 }
 
 function addTerrario() {
-  const name = prompt('Nome do novo terrário:');
-  if (!name || !name.trim()) return;
-  const id = addTerrarioData(name.trim());
-  onPickTerrario(id);
+    abrirModalTerrario();
 }
 
 /* Cada página define a sua própria onPickTerrario() para
@@ -47,3 +58,5 @@ function onPickTerrario(id) {
     location.reload();
   }
 }
+
+window.addEventListener("load", carregarTerrarios);

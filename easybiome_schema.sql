@@ -213,19 +213,32 @@ INSERT INTO utilizador (nome_utilizador, email_utilizador, password_hash_utiliza
     ('Rogerio',  'rogerio@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR');
 
 INSERT INTO terrario (
-    id_utilizador, id_especie, nome_terrario, descricao_terrario,
-    temp_terrario_min, temp_terrario_max, humidade_terrario_min, humidade_terrario_max,
-    hora_ligar_iluminacao, hora_desligar_iluminacao
-) VALUES (
-    1, 4, 'Terrário Exposição', 'Terrário de teste com ESP32',
-    30.0, 34.0, 30.0, 40.0,
-    '08:00:00', '20:00:00'
+    id_especie,
+    nome_terrario,
+    descricao_terrario,
+    temp_terrario_min,
+    temp_terrario_max,
+    humidade_terrario_min,
+    humidade_terrario_max,
+    hora_ligar_iluminacao,
+    hora_desligar_iluminacao
+)
+VALUES (
+    4,
+    'Terrário Exposição',
+    'Terrário de teste com ESP32',
+    30.0,
+    34.0,
+    30.0,
+    40.0,
+    '08:00:00',
+    '20:00:00'
 );
 
-INSERT INTO utilizador_terrario (id_utilizador, id_terrario, permissao_terrario) VALUES
-    (1, 1, 'DONO'),
-    (2, 1, 'EDITOR'),
-    (3, 1, 'LEITOR');
+INSERT INTO utilizador_terrario
+(id_utilizador, id_terrario, permissao_terrario)
+VALUES
+(1,1,'DONO');
 
 INSERT INTO dispositivo (id_terrario, nome_dispositivo, tipo_dispositivo) VALUES
     (1, 'Ventoinha',           'VENTOINHA'),
