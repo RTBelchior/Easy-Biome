@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>EasyBiome — Atividade</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="css/atividade.css">
     <link rel="stylesheet" href="css/header.css">
@@ -42,35 +44,22 @@
         <!-- Pesquisa -->
 
         <div class="search-box">
-            <input
-                type="text"
-                id="pesquisa"
-                placeholder="Pesquisar dispositivo..."
-                oninput="filtrarAtividade()">
+            <input type="text" id="pesquisa" placeholder="Pesquisar dispositivo..." oninput="filtrarAtividade()">
         </div>
 
         <!-- Origem -->
 
         <div class="filters">
 
-            <div class="filter-chip active"
-                data-group="origem"
-                data-value="TODOS"
-                onclick="selecionarFiltro(this)">
+            <div class="filter-chip active" data-group="origem" data-value="TODOS" onclick="selecionarFiltro(this)">
                 Todos
             </div>
 
-            <div class="filter-chip"
-                data-group="origem"
-                data-value="APP"
-                onclick="selecionarFiltro(this)">
+            <div class="filter-chip" data-group="origem" data-value="APP" onclick="selecionarFiltro(this)">
                 App
             </div>
 
-            <div class="filter-chip"
-                data-group="origem"
-                data-value="AUTOMATICO"
-                onclick="selecionarFiltro(this)">
+            <div class="filter-chip" data-group="origem" data-value="AUTOMATICO" onclick="selecionarFiltro(this)">
                 Automático
             </div>
         </div>
@@ -79,37 +68,26 @@
 
         <div class="filters">
 
-            <div class="filter-chip active"
-                data-group="dispositivo"
-                data-value="TODOS"
+            <div class="filter-chip active" data-group="dispositivo" data-value="TODOS"
                 onclick="selecionarFiltro(this)">
                 Todos
             </div>
 
-            <div class="filter-chip"
-                data-group="dispositivo"
-                data-value="VENTOINHA"
-                onclick="selecionarFiltro(this)">
+            <div class="filter-chip" data-group="dispositivo" data-value="VENTOINHA" onclick="selecionarFiltro(this)">
                 🌀 Ventoinha
             </div>
 
-            <div class="filter-chip"
-                data-group="dispositivo"
-                data-value="LAMPADA_AQUECIMENTO"
+            <div class="filter-chip" data-group="dispositivo" data-value="LAMPADA_AQUECIMENTO"
                 onclick="selecionarFiltro(this)">
                 🔥 Aquecimento
             </div>
 
-            <div class="filter-chip"
-                data-group="dispositivo"
-                data-value="LAMPADA_ILUMINACAO"
+            <div class="filter-chip" data-group="dispositivo" data-value="LAMPADA_ILUMINACAO"
                 onclick="selecionarFiltro(this)">
                 💡 Luz
             </div>
 
-            <div class="filter-chip"
-                data-group="dispositivo"
-                data-value="HUMIDIFICADOR"
+            <div class="filter-chip" data-group="dispositivo" data-value="HUMIDIFICADOR"
                 onclick="selecionarFiltro(this)">
                 💧 Humidificador
             </div>
@@ -183,12 +161,14 @@
         <a class="bnav-item" href="definicoes.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33A1.65 1.65 0 0 0 14 21.09V21a2 2 0 0 1-4 0v.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6 1.65 1.65 0 0 0 10 3.09V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c0 .67.39 1.28 1 1.51H21a2 2 0 0 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33A1.65 1.65 0 0 0 14 21.09V21a2 2 0 0 1-4 0v.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15 1.65 1.65 0 0 0 3.09 14H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6 1.65 1.65 0 0 0 10 3.09V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c0 .67.39 1.28 1 1.51H21a2 2 0 0 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z" />
             </svg>
             Definições
         </a>
 
     </nav>
+    <script src="js/config.js"></script>
 
     <script src="js/terrarios.js"></script>
     <script src="js/picker.js"></script>

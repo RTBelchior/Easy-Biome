@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EasyBiome — Autenticação</title>
+  <title>EasyBiome — Criar Conta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@500&display=swap"
     rel="stylesheet" />
@@ -78,47 +78,78 @@
 
     <div class="eb-right">
       <div class="eb-right-top" role="tablist">
-        <a href="login.html" class="eb-tab on" role="tab" aria-selected="true">Entrar</a>
-        <a href="criarConta.html" class="eb-tab" role="tab" aria-selected="false">Criar conta</a>
+        <a href="login.html" class="eb-tab" role="tab" aria-selected="false">Entrar</a>
+        <a href="criarConta.html" class="eb-tab on" role="tab" aria-selected="true">Criar conta</a>
       </div>
 
       <div class="eb-form-wrap">
-        <div class="panel on" id="p-in" role="tabpanel">
-          <p class="f-heading">Bem-vindo de volta</p>
-          <p class="f-sub">Acede aos teus terrários</p>
+        <div class="panel on" id="p-up" role="tabpanel">
+          <p class="f-heading">Cria a tua conta</p>
+          <p class="f-sub">Começa a monitorizar hoje — é grátis</p>
 
-          <div class="f-field">
-            <label class="f-label" for="li-email">Email</label>
-            <div class="f-inp-wrap">
-              <i class="ti ti-mail lead" aria-hidden="true"></i>
-              <input type="email" id="li-email" placeholder="ti@exemplo.pt" autocomplete="email" />
+          <div class="f-row">
+            <div class="f-field">
+              <label class="f-label" for="rg-fn">Primeiro nome</label>
+              <div class="f-inp-wrap">
+                <i class="ti ti-user lead" aria-hidden="true"></i>
+                <input type="text" id="rg-fn" placeholder="Ana" autocomplete="given-name" />
+              </div>
+              <div class="f-err" id="e-rg-fn">Obrigatório</div>
             </div>
-            <div class="f-err" id="e-li-email">Email inválido</div>
+            <div class="f-field">
+              <label class="f-label" for="rg-ln">Apelido</label>
+              <div class="f-inp-wrap">
+                <i class="ti ti-user lead" aria-hidden="true"></i>
+                <input type="text" id="rg-ln" placeholder="Ferreira" autocomplete="family-name" />
+              </div>
+            </div>
           </div>
 
           <div class="f-field">
-            <label class="f-label" for="li-pw">Palavra-passe</label>
+            <label class="f-label" for="rg-em">Email</label>
+            <div class="f-inp-wrap">
+              <i class="ti ti-mail lead" aria-hidden="true"></i>
+              <input type="email" id="rg-em" placeholder="ana@exemplo.pt" autocomplete="email" />
+            </div>
+            <div class="f-err" id="e-rg-em">Email inválido</div>
+          </div>
+
+          <div class="f-field">
+            <label class="f-label" for="rg-pw">Palavra-passe</label>
             <div class="f-inp-wrap">
               <i class="ti ti-lock lead" aria-hidden="true"></i>
-              <input type="password" id="li-pw" placeholder="••••••••" autocomplete="current-password" />
-              <button class="pw-toggle" aria-label="Mostrar palavra-passe" onclick="tpw('li-pw',this)">
+              <input type="password" id="rg-pw" placeholder="Mínimo 8 caracteres" oninput="chkStr(this.value)"
+                autocomplete="new-password" />
+              <button class="pw-toggle" aria-label="Mostrar" onclick="tpw('rg-pw',this)">
                 <i class="ti ti-eye"></i>
               </button>
             </div>
-            <div class="f-err" id="e-li-pw">Preenche a palavra-passe</div>
-          </div>
-
-          <div class="f-aux">
-            <div class="f-check-row">
-              <input type="checkbox" id="rem" />
-              <label for="rem">Manter sessão</label>
+            <div class="str-bar">
+              <div class="str-seg" id="s1"></div>
+              <div class="str-seg" id="s2"></div>
+              <div class="str-seg" id="s3"></div>
+              <div class="str-seg" id="s4"></div>
             </div>
+            <div class="str-info"><span class="str-lbl" id="slbl"></span></div>
+            <div class="f-err" id="e-rg-pw">Mínimo 8 caracteres</div>
           </div>
 
-          <button class="btn-go" id="b-in" onclick="doIn()">
-            <span id="bt-in">Entrar na conta</span>
-            <div class="btn-spin" id="sp-in"></div>
-            <i class="ti ti-arrow-right" id="ic-in"></i>
+          <div class="f-field">
+            <label class="f-label" for="rg-p2">Confirmar</label>
+            <div class="f-inp-wrap">
+              <i class="ti ti-lock-check lead" aria-hidden="true"></i>
+              <input type="password" id="rg-p2" placeholder="Repete a palavra-passe" autocomplete="new-password" />
+              <button class="pw-toggle" aria-label="Mostrar" onclick="tpw('rg-p2',this)">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+            <div class="f-err" id="e-rg-p2">As palavras-passe não coincidem</div>
+          </div>
+
+          <button class="btn-go" id="b-up" onclick="doUp()">
+            <span id="bt-up">Criar conta gratuita</span>
+            <div class="btn-spin" id="sp-up"></div>
+            <i class="ti ti-arrow-right" id="ic-up"></i>
           </button>
         </div>
       </div>
@@ -127,7 +158,7 @@
   </div>
 
   <script src="js/config.js"></script>
-  <script src="js/login.js"></script>
+  <script src="js/criarConta.js"></script>
 </body>
 
 </html>

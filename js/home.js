@@ -114,7 +114,7 @@ async function ligarDispositivo(key, estado, modoManual = true) {
   try {
 
     const resposta = await fetch(
-      `http://localhost:8080/api/dispositivos/${mapa[key]}`,
+      `${API_BASE}/dispositivos/${mapa[key]}`,
       {
         method: "PUT",
         headers: {
@@ -150,7 +150,7 @@ async function voltarModoAutomatico(key) {
   try {
 
     const resposta = await fetch(
-      `http://localhost:8080/api/dispositivos/${mapa[key]}`,
+      `${API_BASE}/dispositivos/${mapa[key]}`,
       {
         method: "PUT",
         headers: {
@@ -192,7 +192,7 @@ async function atualizarDados() {
     // Última leitura
 
     const resposta = await fetch(
-      `http://localhost:8080/api/leituras/ultima/${terrario.id}`
+      `${API_BASE}/leituras/ultima/${terrario.id}`
     );
 
     if (!resposta.ok)
@@ -206,7 +206,7 @@ async function atualizarDados() {
     // Dispositivos
 
     const respostaDispositivos = await fetch(
-      `http://localhost:8080/api/dispositivos/terrario/${terrario.id}`
+      `${API_BASE}/dispositivos/terrario/${terrario.id}`
     );
 
     if (!respostaDispositivos.ok)

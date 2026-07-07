@@ -37,7 +37,7 @@ async function carregarAtividade() {
         const terrario = getActive();
 
         const resposta = await fetch(
-            `http://localhost:8080/api/logs/terrario/${terrario.id}`
+            `${API_BASE}/logs/terrario/${terrario.id}`
         );
 
         if (!resposta.ok)

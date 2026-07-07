@@ -20,7 +20,7 @@ async function atualizarHistorico() {
         const terrario = getActive();
 
         const resposta = await fetch(
-            `http://localhost:8080/api/leituras/historico/${terrario.id}?horas=${horasFiltro}`
+            `${API_BASE}/leituras/historico/${terrario.id}?horas=${horasFiltro}`
         );
 
         if (!resposta.ok)
