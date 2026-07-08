@@ -9,17 +9,10 @@ let filtroOrigem = "TODOS";
 let filtroDispositivo = "TODOS";
 
 const nomesDispositivos = {
-    1: "🌀 Ventoinha",
-    2: "🔥 Aquecimento",
-    3: "💡 Iluminação",
-    4: "💧 Humidificador"
-};
-
-const tiposDispositivos = {
-    1: "VENTOINHA",
-    2: "LAMPADA_AQUECIMENTO",
-    3: "LAMPADA_ILUMINACAO",
-    4: "HUMIDIFICADOR"
+    "VENTOINHA": "🌀 Ventoinha",
+    "LAMPADA_AQUECIMENTO": "🔥 Aquecimento",
+    "LAMPADA_ILUMINACAO": "💡 Iluminação",
+    "HUMIDIFICADOR": "💧 Humidificador"
 };
 
 /* ========================================================== */
@@ -37,13 +30,14 @@ async function carregarAtividade() {
         const terrario = getActive();
 
         const resposta = await fetch(
-            `${API_BASE}/logs/terrario/${terrario.id}`
+            `${API_BASE}/logs/terrario/${terrario.idTerrario}`
         );
 
         if (!resposta.ok)
             throw new Error();
 
         atividades = await resposta.json();
+        console.log(atividades);
 
         atividadesFiltradas = [...atividades];
 
@@ -91,11 +85,10 @@ function filtrarAtividade() {
     atividadesFiltradas = atividades.filter(a => {
 
         const nome =
-            (nomesDispositivos[a.idDispositivo] || "")
-                .toLowerCase();
+            (nomesDispositivos[a.tipoDispositivo] || "").toLowerCase();
 
         const tipo =
-            tiposDispositivos[a.idDispositivo];
+            a.tipoDispositivo;
 
         const origemOK =
             filtroOrigem === "TODOS"
@@ -142,7 +135,7 @@ function renderizar() {
 function criarCard(log) {
 
     const dispositivo =
-        nomesDispositivos[log.idDispositivo] || "Dispositivo";
+        nomesDispositivos[log.tipoDispositivo] || "Dispositivo";
 
     const data = new Date(log.executadoEm);
 

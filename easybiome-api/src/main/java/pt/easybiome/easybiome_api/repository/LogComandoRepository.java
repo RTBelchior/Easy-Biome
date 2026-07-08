@@ -13,12 +13,12 @@ public interface LogComandoRepository extends JpaRepository<LogComando, Long> {
     List<LogComando> findAllByOrderByExecutadoEmDesc();
 
     @Query("""
-        SELECT l
-        FROM LogComando l, Dispositivo d
-        WHERE l.idDispositivo = d.idDispositivo
-        AND d.idTerrario = :idTerrario
-        ORDER BY l.executadoEm DESC
-    """)
-    List<LogComando> findByTerrario(@Param("idTerrario") Long idTerrario);
+            SELECT l, d
+            FROM LogComando l, Dispositivo d
+            WHERE l.idDispositivo = d.idDispositivo
+            AND d.idTerrario = :idTerrario
+            ORDER BY l.executadoEm DESC
+            """)
+    List<Object[]> findByTerrario(@Param("idTerrario") Long idTerrario);
 
 }
