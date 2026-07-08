@@ -10,26 +10,24 @@ function renderPickerList() {
 <div class="picker-item ${t.idTerrario === activeTerrarioId ? 'active' : ''}"
      onclick="onPickTerrario(${t.idTerrario})">
 
-    <img src="${t.imagemTerrario || 'imagens/terrario-default.jpg'}">
+    <img class="picker-img"
+         src="${t.imagemTerrario || 'imagens/terrario-default.jpg'}">
 
-    <div>
-        <div class="picker-item-name">${t.nome}</div>
+    <div class="picker-info">
+        <div class="picker-item-name">
+            ${t.nomeTerrario || t.nome}
+        </div>
 
         <div class="picker-item-sub">
-            ${t.tempTerrarioMin}°C - ${t.tempTerrarioMax}°C
+            🌡️ ${t.tempTerrarioMin}°C – ${t.tempTerrarioMax}°C
         </div>
     </div>
 
     ${t.idTerrario === activeTerrarioId
-      ? `<svg class="picker-check" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-           </svg>`
-      : ""
-    }
-
+      ? `<div class="picker-check">✓</div>`
+      : ""}
 </div>
-`).join('');
+`).join("");
 }
 
 function openTerrarioPicker() {
@@ -43,7 +41,7 @@ function closeTerrarioPicker(e) {
 }
 
 function addTerrario() {
-    abrirModalTerrario();
+  abrirModalTerrario();
 }
 
 /* Cada página define a sua própria onPickTerrario() para

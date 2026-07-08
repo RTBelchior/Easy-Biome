@@ -43,6 +43,7 @@ public class TerrarioService {
             String horaLigar,
             String horaDesligar,
             MultipartFile imagem,
+            String imagemPredefinida,
             Long idUtilizador) {
 
         Utilizador utilizador = utilizadorRepository.findById(idUtilizador)
@@ -89,6 +90,10 @@ public class TerrarioService {
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao guardar imagem", e);
             }
+
+        } else if (imagemPredefinida != null && !imagemPredefinida.isBlank()) {
+
+            terrario.setImagemTerrario("imagens/terrarios/" + imagemPredefinida);
 
         } else {
 

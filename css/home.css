@@ -468,6 +468,61 @@ body {
   animation: slideUp .2s ease-out;
 }
 
+.picker-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px;
+    border-radius:16px;
+    background:#1b2721;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.picker-item:hover{
+    background:#22332b;
+}
+
+.picker-item.active{
+    border:2px solid #4CAF50;
+}
+
+.picker-img{
+    width:90px;
+    height:70px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.picker-info{
+    flex:1;
+}
+
+.picker-item-name{
+    font-size:17px;
+    font-weight:600;
+    color:white;
+}
+
+.picker-item-sub{
+    color:#9fb5a8;
+    margin-top:5px;
+    font-size:14px;
+}
+
+.picker-check{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:#4CAF50;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -730,4 +785,240 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* ==========================================================
+   MODAL NOVO TERRÁRIO
+========================================================== */
+
+.modal-terrario{
+    width:95%;
+    max-width:640px;
+    max-height:88vh;
+    overflow-y:auto;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px 22px;
+    box-shadow:0 18px 45px rgba(0,0,0,.45);
+}
+
+/* Scroll */
+
+.modal-terrario::-webkit-scrollbar{
+    width:8px;
+}
+
+.modal-terrario::-webkit-scrollbar-thumb{
+    background:var(--border);
+    border-radius:20px;
+}
+
+/* Título */
+
+.modal-terrario h3{
+    text-align:center;
+    margin-bottom:16px;
+    color:var(--text);
+    font-size:22px;
+    font-weight:600;
+}
+
+/* Labels */
+
+.modal-terrario label{
+    display:block;
+    margin:10px 0 5px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text2);
+    letter-spacing:.04em;
+}
+
+/* Inputs */
+
+.modal-terrario input,
+.modal-terrario textarea{
+    width:100%;
+    padding:11px 14px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    background:var(--bg2);
+    color:var(--text);
+    font-size:14px;
+    font-family:var(--sans);
+    outline:none;
+    transition:.2s;
+}
+
+.modal-terrario input:focus,
+.modal-terrario textarea:focus{
+    border-color:var(--green);
+    box-shadow:0 0 0 3px var(--green-g);
+}
+
+.modal-terrario textarea{
+    resize:none;
+    min-height:70px;
+}
+
+/* Linhas com dois campos */
+
+.input-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:2px;
+}
+
+/* Upload */
+
+.image-section{
+    margin-top:10px;
+}
+
+.upload-card{
+    background:var(--bg2);
+    border:2px dashed var(--border);
+    border-radius:14px;
+    padding:14px;
+    text-align:center;
+    margin-bottom:16px;
+}
+
+.upload-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    background:var(--green);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.upload-btn:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.05);
+}
+
+.upload-card small{
+    display:block;
+    margin-top:10px;
+    color:var(--text2);
+    font-size:12px;
+}
+
+/* Galeria */
+
+.terrario-gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:10px;
+}
+
+.terrario-option{
+    background:var(--panel2);
+    border:2px solid transparent;
+    border-radius:12px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.terrario-option:hover{
+    transform:translateY(-2px);
+    border-color:var(--green);
+}
+
+.terrario-option.selected{
+    border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(61,186,126,.18);
+}
+
+.terrario-option img{
+    width:100%;
+    height:90px;
+    object-fit:cover;
+    display:block;
+}
+
+.terrario-option span{
+    display:block;
+    padding:8px;
+    text-align:center;
+    color:var(--text);
+    font-size:12px;
+    font-weight:500;
+}
+
+/* Botões */
+
+.modal-terrario .modal-actions{
+    display:flex;
+    gap:12px;
+    margin-top:18px;
+}
+
+.modal-terrario .btn-cancel,
+.modal-terrario .btn-confirm{
+    flex:1;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.modal-terrario .btn-cancel{
+    background:#2b3531;
+    color:#fff;
+}
+
+.modal-terrario .btn-confirm{
+    background:var(--green);
+    color:#fff;
+}
+
+/* Responsivo */
+
+@media (max-width:700px){
+
+    .modal-terrario{
+        max-width:95%;
+        padding:18px;
+    }
+
+    .terrario-gallery{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .terrario-option img{
+        height:75px;
+    }
+}
+
+@media (max-width:480px){
+
+    .input-row{
+        grid-template-columns:1fr;
+    }
+
+    .terrario-gallery{
+        grid-template-columns:repeat(3,1fr);
+        gap:8px;
+    }
+
+    .terrario-option img{
+        height:65px;
+    }
+
+    .terrario-option span{
+        font-size:11px;
+        padding:6px;
+    }
 }

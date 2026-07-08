@@ -11,7 +11,7 @@ import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.service.TerrarioService;
 
 @RestController
-@RequestMapping("/terrarios")
+@RequestMapping("api/terrarios")
 @CrossOrigin(origins = "*")
 public class TerrarioController {
 
@@ -30,7 +30,9 @@ public class TerrarioController {
             @RequestParam String horaLigar,
             @RequestParam String horaDesligar,
             @RequestParam Long idUtilizador,
-            @RequestParam(required = false) MultipartFile imagem
+
+            @RequestParam(required = false) MultipartFile imagem,
+            @RequestParam(required = false) String imagemPredefinida
 
     ) {
 
@@ -44,6 +46,7 @@ public class TerrarioController {
                 horaLigar,
                 horaDesligar,
                 imagem,
+                imagemPredefinida,
                 idUtilizador
         );
     }

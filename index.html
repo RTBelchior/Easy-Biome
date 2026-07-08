@@ -259,17 +259,47 @@
         <input id="hum-max" type="number" step="0.1" placeholder="Máxima">
       </div>
 
-      <label>Hora de ligar iluminação</label>
-      <input id="hora-ligar" type="time">
+      <label>Iluminação</label>
 
-      <label>Hora de desligar iluminação</label>
-      <input id="hora-desligar" type="time">
+      <div class="input-row">
+        <input id="hora-ligar" type="time">
+        <input id="hora-desligar" type="time">
+      </div>
 
       <label>Imagem do terrário</label>
 
-      <input id="terrario-imagem" type="file" accept="image/*">
+      <div class="image-section">
 
-      <small>Podes escolher uma fotografia do teu telemóvel.</small>
+        <div class="upload-card">
+          <label for="terrario-imagem" class="upload-btn">
+            📷 Escolher fotografia
+          </label>
+
+          <input id="terrario-imagem" type="file" accept="image/*" hidden>
+
+          <small>ou escolhe uma imagem pré-definida</small>
+        </div>
+
+        <div class="terrario-gallery">
+
+          <div class="terrario-option" data-img="terrarioGrande.jpg">
+            <img src="imagens/terrarios/terrarioGrande.jpg">
+            <span>Grande</span>
+          </div>
+
+          <div class="terrario-option" data-img="terrarioMedio.jpg">
+            <img src="imagens/terrarios/terrarioMedio.jpg">
+            <span>Médio</span>
+          </div>
+
+          <div class="terrario-option" data-img="terrariosPequeno.jpg">
+            <img src="imagens/terrarios/terrarioPequeno.jpg">
+            <span>Pequeno</span>
+          </div>
+
+        </div>
+
+      </div>
 
       <div class="modal-actions">
         <button class="btn-cancel" onclick="fecharModalTerrario()">

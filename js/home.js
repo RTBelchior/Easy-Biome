@@ -1,9 +1,13 @@
 /* ════════════════════════════════════════════
    LÓGICA DA PÁGINA INICIAL (index.html)
    ════════════════════════════════════════════ */
+let imagemPredefinida = "terrarioGrande.jpg";
 
 function renderHero() {
+
   const t = getActive();
+
+  if (!t) return;
 
   document.getElementById("terrario-img").src =
     t.imagemTerrario || "imagens/terrario-default.jpg";
@@ -16,6 +20,7 @@ function renderMetrics() {
 
   const t = getActive();
 
+  if (!t) return;
   const tw = t.temp > t.tempRange[1] || t.temp < t.tempRange[0];
   const hw = t.hum > t.humRange[1] || t.hum < t.humRange[0];
 
@@ -59,6 +64,8 @@ function renderMetrics() {
 function renderDevices() {
 
   const t = getActive();
+
+  if (!t) return;
 
   ["fan", "heat", "light", "humidifier"].forEach(key => {
 
@@ -191,6 +198,7 @@ async function atualizarDados() {
   try {
 
     const terrario = getActive();
+    if (!terrario) return;
 
     // Última leitura
 
@@ -294,16 +302,37 @@ async function atualizarDados() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-  renderHero();
-  renderMetrics();
-  renderDevices();
-  renderPickerList();
+    await carregarTerrarios();
 
-  atualizarDados();
+    renderHero();
+    renderMetrics();
+    renderDevices();
 
-  setInterval(atualizarDados, 5000);
+    atualizarDados();
+
+    setInterval(() => {
+        if (getActive()) {
+            atualizarDados();
+        }
+    }, 5000);
+
+    document.querySelectorAll(".terrario-option").forEach(opcao => {
+
+        opcao.addEventListener("click", function () {
+
+            document.querySelectorAll(".terrario-option")
+                .forEach(o => o.classList.remove("selected"));
+
+            this.classList.add("selected");
+
+            imagemPredefinida = this.dataset.img;
+
+            console.log(imagemPredefinida);
+        });
+
+    });
 
 });
 
@@ -331,8 +360,18 @@ async function confirmarModoManual() {
 }
 
 function abrirModalTerrario() {
+
   closeTerrarioPicker();
+
   document.getElementById("modal-terrario").style.display = "flex";
+
+  imagemPredefinida = "terrarioGrande.jpg";
+
+  document.querySelectorAll(".terrario-option").forEach(el => {
+    el.classList.remove("selected");
+  });
+
+  document.querySelector(".terrario-option")?.classList.add("selected");
 }
 
 async function guardarTerrario() {
@@ -349,7 +388,7 @@ async function guardarTerrario() {
   const horaLigar = document.getElementById("hora-ligar").value;
   const horaDesligar = document.getElementById("hora-desligar").value;
 
-  const imagem = document.getElementById("terrario-imagem").files[0];
+  const imagemUpload = document.getElementById("terrario-imagem").files[0];
 
   if (
     !nome ||
@@ -378,8 +417,15 @@ async function guardarTerrario() {
   formData.append("horaDesligar", horaDesligar);
   formData.append("idUtilizador", utilizador.idUtilizador);
 
-  if (imagem) {
-    formData.append("imagem", imagem);
+  // Envia upload ou imagem pré-definida
+  if (imagemUpload) {
+
+    formData.append("imagem", imagemUpload);
+
+  } else {
+
+    formData.append("imagemPredefinida", imagemPredefinida);
+
   }
 
   try {
@@ -395,16 +441,6 @@ async function guardarTerrario() {
 
     fecharModalTerrario();
 
-    document.getElementById("terrario-nome").value = "";
-    document.getElementById("terrario-descricao").value = "";
-    document.getElementById("temp-min").value = "";
-    document.getElementById("temp-max").value = "";
-    document.getElementById("hum-min").value = "";
-    document.getElementById("hum-max").value = "";
-    document.getElementById("hora-ligar").value = "";
-    document.getElementById("hora-desligar").value = "";
-    document.getElementById("terrario-imagem").value = "";
-
     await carregarTerrarios();
 
     alert("Terrário criado com sucesso!");
@@ -413,5 +449,28 @@ async function guardarTerrario() {
 
     console.error(erro);
     alert("Não foi possível criar o terrário.");
+
   }
+}
+
+function fecharModalTerrario() {
+
+  document.getElementById("modal-terrario").style.display = "none";
+
+  document.getElementById("terrario-nome").value = "";
+  document.getElementById("terrario-descricao").value = "";
+  document.getElementById("temp-min").value = "";
+  document.getElementById("temp-max").value = "";
+  document.getElementById("hum-min").value = "";
+  document.getElementById("hum-max").value = "";
+  document.getElementById("hora-ligar").value = "";
+  document.getElementById("hora-desligar").value = "";
+  document.getElementById("terrario-imagem").value = "";
+
+  document.querySelectorAll(".terrario-option").forEach(el => {
+    el.classList.remove("selected");
+  });
+
+  document.querySelector(".terrario-option")?.classList.add("selected");
+  imagemPredefinida = "terrarioGrande.jpg";
 }
