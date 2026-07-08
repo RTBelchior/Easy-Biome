@@ -21,8 +21,14 @@ function renderMetrics() {
   const t = getActive();
 
   if (!t) return;
-  const tw = t.temp > t.tempRange[1] || t.temp < t.tempRange[0];
-  const hw = t.hum > t.humRange[1] || t.hum < t.humRange[0];
+  if (t.temp == null || t.hum == null) return;
+  const tw =
+    t.temp > t.tempTerrarioMax ||
+    t.temp < t.tempTerrarioMin;
+
+  const hw =
+    t.hum > t.humidadeTerrarioMax ||
+    t.hum < t.humidadeTerrarioMin;
 
   document.getElementById("temp-val").innerHTML =
     t.temp.toFixed(1) + '<span class="unit">°C</span>';
@@ -39,7 +45,7 @@ function renderMetrics() {
   document.getElementById("temp-hint").textContent =
     tw
       ? "Fora dos limites!"
-      : `Normal · ${t.tempRange[0]}–${t.tempRange[1]}°C`;
+      : `Normal · ${t.tempTerrarioMin}–${t.tempTerrarioMax}°C`
 
   document.getElementById("hum-val").innerHTML =
     Math.round(t.hum) + '<span class="unit">%</span>';
@@ -55,10 +61,10 @@ function renderMetrics() {
 
   document.getElementById("hum-hint").textContent =
     hw
-      ? (t.hum < t.humRange[0]
+      ? (t.hum < t.humidadeTerrarioMin
         ? "Abaixo do limite"
         : "Acima do limite")
-      : `Normal · ${t.humRange[0]}–${t.humRange[1]}%`;
+      : `Normal · ${t.humidadeTerrarioMin}–${t.humidadeTerrarioMax}%`;
 }
 
 function renderDevices() {
@@ -114,11 +120,13 @@ async function toggleDev(key) {
 
 async function ligarDispositivo(key, estado, modoManual = true) {
 
+  const terrario = getActive();
+
   const mapa = {
-    fan: 1,
-    heat: 2,
-    light: 3,
-    humidifier: 4
+    fan: terrario.fanId,
+    heat: terrario.heatId,
+    light: terrario.lightId,
+    humidifier: terrario.humidifierId
   };
 
   try {
@@ -150,11 +158,13 @@ async function ligarDispositivo(key, estado, modoManual = true) {
 
 async function voltarModoAutomatico(key) {
 
+  const terrario = getActive();
+
   const mapa = {
-    fan: 1,
-    heat: 2,
-    light: 3,
-    humidifier: 4
+    fan: terrario.fanId,
+    heat: terrario.heatId,
+    light: terrario.lightId,
+    humidifier: terrario.humidifierId
   };
 
   try {
@@ -183,17 +193,18 @@ async function voltarModoAutomatico(key) {
   }
 }
 
-function onTerrarioChanged() {
+async function onTerrarioChanged() {
+
+  await atualizarDados();
 
   renderHero();
   renderMetrics();
   renderDevices();
-
-  atualizarDados();
-
 }
 
 async function atualizarDados() {
+
+  console.log("A atualizar dados...");
 
   try {
 
@@ -203,13 +214,14 @@ async function atualizarDados() {
     // Última leitura
 
     const resposta = await fetch(
-      `${API_BASE}/leituras/ultima/${terrario.id}`
+      `${API_BASE}/leituras/ultima/${terrario.idTerrario}`
     );
 
     if (!resposta.ok)
       throw new Error("Erro ao obter leitura");
 
     const dados = await resposta.json();
+    console.log(dados);
 
     terrario.temp = dados.temperatura;
     terrario.hum = dados.humidade;
@@ -217,7 +229,7 @@ async function atualizarDados() {
     // Dispositivos
 
     const respostaDispositivos = await fetch(
-      `${API_BASE}/dispositivos/terrario/${terrario.id}`
+      `${API_BASE}/dispositivos/terrario/${terrario.idTerrario}`
     );
 
     if (!respostaDispositivos.ok)
@@ -234,21 +246,25 @@ async function atualizarDados() {
         case "VENTOINHA":
           terrario.fan = d.estadoAtual;
           terrario.fanManual = d.modoManual;
+          terrario.fanId = d.idDispositivo;
           break;
 
         case "LAMPADA_AQUECIMENTO":
           terrario.heat = d.estadoAtual;
           terrario.heatManual = d.modoManual;
+          terrario.heatId = d.idDispositivo;
           break;
 
         case "LAMPADA_ILUMINACAO":
           terrario.light = d.estadoAtual;
           terrario.lightManual = d.modoManual;
+          terrario.lightId = d.idDispositivo;
           break;
 
         case "HUMIDIFICADOR":
           terrario.humidifier = d.estadoAtual;
           terrario.humidifierManual = d.modoManual;
+          terrario.humidifierId = d.idDispositivo;
           break;
       }
 
@@ -288,8 +304,6 @@ async function atualizarDados() {
         existeModoManual ? "block" : "none";
     }
 
-    saveTerrarios();
-
     renderHero();
     renderMetrics();
     renderDevices();
@@ -304,35 +318,35 @@ async function atualizarDados() {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    await carregarTerrarios();
+  await carregarTerrarios();
 
-    renderHero();
-    renderMetrics();
-    renderDevices();
+  renderHero();
+  renderMetrics();
+  renderDevices();
 
-    atualizarDados();
+  atualizarDados();
 
-    setInterval(() => {
-        if (getActive()) {
-            atualizarDados();
-        }
-    }, 5000);
+  setInterval(() => {
+    if (getActive()) {
+      atualizarDados();
+    }
+  }, 5000);
 
-    document.querySelectorAll(".terrario-option").forEach(opcao => {
+  document.querySelectorAll(".terrario-option").forEach(opcao => {
 
-        opcao.addEventListener("click", function () {
+    opcao.addEventListener("click", function () {
 
-            document.querySelectorAll(".terrario-option")
-                .forEach(o => o.classList.remove("selected"));
+      document.querySelectorAll(".terrario-option")
+        .forEach(o => o.classList.remove("selected"));
 
-            this.classList.add("selected");
+      this.classList.add("selected");
 
-            imagemPredefinida = this.dataset.img;
+      imagemPredefinida = this.dataset.img;
 
-            console.log(imagemPredefinida);
-        });
-
+      console.log(imagemPredefinida);
     });
+
+  });
 
 });
 

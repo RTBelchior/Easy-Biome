@@ -10,7 +10,7 @@
 
 const char* ssid = "BELCHIOR";
 const char* password = "rodrigoerita0";
-
+const int ID_TERRARIO = 3;
 //=========================
 // API
 //=========================
@@ -18,8 +18,8 @@ const char* password = "rodrigoerita0";
 const char* leituraURL =
   "http://192.168.68.66:8080/api/leituras";
 
-const char* dispositivosURL =
-  "http://192.168.68.66:8080/api/dispositivos/terrario/1";
+const String dispositivosURL =
+    "http://192.168.68.66:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
 
 //=========================
 // GPIO
@@ -101,7 +101,7 @@ void loop() {
     http.addHeader("Content-Type", "application/json");
 
     String json = "{";
-    json += "\"idTerrario\":1,";
+    json += "\"idTerrario\":" + String(ID_TERRARIO) + ",";
     json += "\"temperatura\":" + String(temperatura, 2) + ",";
     json += "\"humidade\":" + String(humidade, 2);
     json += "}";
