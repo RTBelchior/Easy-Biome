@@ -20,7 +20,7 @@ async function atualizarHistorico() {
         const terrario = getActive();
 
         const resposta = await fetch(
-            `${API_BASE}/leituras/historico/${terrario.id}?horas=${horasFiltro}`
+            `${API_BASE}/leituras/historico/${terrario.idTerrario}?horas=${horasFiltro}`
         );
 
         if (!resposta.ok)
@@ -67,10 +67,12 @@ function renderHistList() {
     el.innerHTML = [...histData].reverse().map(r => {
 
         const tw =
-            r.t < t.tempRange[0] || r.t > t.tempRange[1];
+            r.t < t.tempTerrarioMin ||
+            r.t > t.tempTerrarioMax;
 
         const hw =
-            r.h < t.humRange[0] || r.h > t.humRange[1];
+            r.h < t.humidadeTerrarioMin ||
+            r.h > t.humidadeTerrarioMax;
 
         return `
         <div class="hist-row">
