@@ -17,25 +17,6 @@
   <div id="header-container"></div>
 
   <div class="page">
-    <div class="top-bar">
-      <a class="top-logo" href="index.html">
-        <div class="logo-box">
-          <img src="imagens/logotipo.png" alt="EasyBiome Logo">
-        </div>
-      </a>
-
-      <div class="top-bar-title">Histórico</div>
-
-      <button class="icon-btn" onclick="openTerrarioPicker()" aria-label="Trocar terrário">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round">
-          <path d="M16 3h5v5M21 3l-7 7" />
-          <path d="M8 21H3v-5M3 21l7-7" />
-          <path d="M21 16v5h-5M21 21l-7-7" />
-          <path d="M3 8V3h5M3 3l7 7" />
-        </svg>
-      </button>
-    </div>
 
     <div class="hist-filters">
       <div class="filter-chip active" onclick="filterHist(this)">1h</div>
@@ -87,40 +68,6 @@
     </div>
   </div>
 
-  <nav class="bottom-nav">
-    <a class="bnav-item" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
-      Início
-    </a>
-    <a class="bnav-item active" href="historico.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-      Histórico
-    </a>
-    <a class="bnav-item" href="alertas.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-      </svg>
-      Alertas
-    </a>
-    <a class="bnav-item" href="definicoes.html">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3" />
-        <path
-          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-      Definições
-    </a>
-  </nav>
   <script src="js/config.js"></script>
 
   <script src="js/terrarios.js"></script>
@@ -129,18 +76,39 @@
   <script src="js/historico.js"></script>
 
   <script>
-    fetch('header.html')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Não foi possível carregar o header.');
+    fetch("header.html")
+    .then(r => r.text())
+    .then(data => {
+        document.getElementById("header-container").innerHTML = data;
+
+        const pagina = window.location.pathname.split("/").pop() || "index.html";
+
+        const titulos = {
+            "index.html": "Início",
+            "historico.html": "Histórico",
+            "atividade.html": "Atividade",
+            "alertas.html": "Alertas",
+            "definicoes.html": "Definições",
+            "profile.html": "Perfil"
+        };
+
+        const titulo = document.getElementById("page-title");
+        if (titulo) {
+            titulo.textContent = titulos[pagina] || "EasyBiome";
         }
-        return response.text();
-      })
-      .then(data => {
-        document.getElementById('header-container').innerHTML = data;
-        setActiveNavigation();
-      })
-      .catch(error => console.error('Erro ao injetar o header:', error));
+
+        document.querySelectorAll(".desktop-nav-link").forEach(link => {
+            if (link.getAttribute("href") === pagina) {
+                link.classList.add("active");
+            }
+        });
+
+        document.querySelectorAll(".bnav-item").forEach(link => {
+            if (link.getAttribute("href") === pagina) {
+                link.classList.add("active");
+            }
+        });
+    });
   </script>
 
 </body>

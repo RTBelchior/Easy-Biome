@@ -1,0 +1,375 @@
+/* ══════════════════════════════════════════════════════════════
+   EASYBIOME - PERFIL (Calibração de Cores e Alinhamento Real)
+   ══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg: #0D1410;
+  --bg2: #131A16;
+  --panel: #141D19; /* Cor exata extraída dos cartões do perfil no print */
+  --border: #2A3D35;
+  --green: #3DBA7E;
+  --green-d: #1F6B47;
+  --green-g: #3DBA7E22;
+  --text: #D8E8E0;
+  --text2: #7A9E8A;
+  --text3: #4A6A58;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --r: 14px;
+}
+
+/* ── RESET E BASE ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── DESKTOP NAVBAR SUPREMA ── */
+.desktop-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 2rem;
+  background: #0D1410EE;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 17px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo-box img {
+  height: 32px;
+  object-fit: contain;
+}
+
+.desktop-topbar-links {
+  display: flex;
+  gap: 4px;
+}
+
+.desktop-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text3);
+  text-decoration: none;
+}
+
+.desktop-nav-link.active {
+  color: var(--green);
+  background: var(--green-g);
+  border-color: var(--green-d);
+}
+
+/* ── CONTENT CONTAINER CENTRALIZADO ── */
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 2.5rem 1.25rem 5rem;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  gap: 1.5rem;
+}
+
+/* ── HERO BANNER (CONTA PRINCIPAL) ── */
+.profile-hero {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-hero-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-hero-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--green-g);
+  border: 1px solid var(--green-d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+}
+
+.profile-hero-avatar svg {
+  width: 26px;
+  height: 26px;
+}
+
+.profile-hero-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-hero-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--green);
+  margin-bottom: 2px;
+}
+
+.profile-hero-name {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.profile-hero-email {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 1px;
+}
+
+/* Chips de Estado/Acesso */
+.profile-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.profile-chip {
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+}
+
+.profile-chip strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Link Terminar Sessão - Ajuste de Cor e Alinhamento Reto */
+.profile-action-logout {
+  align-self: flex-start;
+  color: #7E7CFF; /* O roxo exato do teu print */
+  font-family: var(--sans);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0; /* Remove paddings para colar à esquerda com o texto acima */
+  margin-top: 4px;
+}
+
+.profile-action-logout:hover {
+  color: #9896FF;
+}
+
+/* ── METRICS GRID (4 Boxes horizontais no PC) ── */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width:1100px){
+    .profile-stats{
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+
+.profile-stat {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-stat-value {
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.profile-stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  line-height: 1.3;
+}
+
+/* ── TABELAS DE CONFIGURAÇÃO (Conta / Terrário) ── */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+}
+
+.settings-section-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 8px;
+}
+
+.settings-group {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.settings-row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.settings-row-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.settings-row-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-row-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.settings-row-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.settings-val {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* Password "Atualizar" Link */
+.settings-val.interactive {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.settings-val.interactive:hover {
+  color: var(--green);
+}
+
+/* Ocultar elementos mobile no PC */
+@media (max-width: 991px) {
+  .desktop-topbar {
+    display: none;
+  }
+}
+
+/* ════════════════════════════════
+   DESKTOP (igual ao mockup)
+   ════════════════════════════════ */
+
+@media (min-width: 1100px) {
+
+    .page{
+        max-width:1120px;
+        margin:0 auto;
+        padding:2.5rem 2rem 4rem;
+
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:22px;
+        align-items:start;
+    }
+
+    /* Hero ocupa a largura toda */
+    .profile-hero{
+        grid-column:1 / -1;
+    }
+
+    /* Estatísticas ocupam a largura toda */
+    .profile-stats{
+        grid-column:1 / -1;
+    }
+
+    /* Cada secção fica numa coluna */
+    .settings-section{
+        margin-top:0;
+    }
+}
