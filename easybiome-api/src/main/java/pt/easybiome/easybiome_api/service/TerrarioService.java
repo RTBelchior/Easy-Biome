@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import pt.easybiome.easybiome_api.dto.AtualizarTerrarioDTO;
 import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.model.Utilizador;
 import pt.easybiome.easybiome_api.model.UtilizadorTerrario;
@@ -120,5 +121,76 @@ public class TerrarioService {
                 .stream()
                 .map(UtilizadorTerrario::getTerrario)
                 .collect(Collectors.toList());
+    }
+
+    public Terrario obterTerrario(Long id) {
+
+        return terrarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Terrário não encontrado"));
+    }
+
+    public Terrario atualizarTerrario(Long id, AtualizarTerrarioDTO dto) {
+
+        Terrario terrario = terrarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Terrário não encontrado"));
+
+        terrario.setNomeTerrario(dto.getNome());
+        terrario.setDescricaoTerrario(dto.getDescricao());
+
+        terrario.setTempTerrarioMin(dto.getTempMin());
+        terrario.setTempTerrarioMax(dto.getTempMax());
+
+        terrario.setHumidadeTerrarioMin(dto.getHumMin());
+        terrario.setHumidadeTerrarioMax(dto.getHumMax());
+
+        terrario.setHoraLigarIluminacao(dto.getHoraLigar());
+        terrario.setHoraDesligarIluminacao(dto.getHoraDesligar());
+
+        return terrarioRepository.save(terrario);
+    }
+
+    public void apagarTerrario(Long id) {
+
+        Terrario terrario = terrarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Terrário não encontrado"));
+
+        utilizadorTerrarioRepository.deleteAll(
+                utilizadorTerrarioRepository.findByTerrario_IdTerrario(id)
+        );
+
+        terrarioRepository.delete(terrario);
+    }
+
+    public void partilharTerrario(
+            Long idTerrario,
+            String email,
+            String permissao) {
+
+        Terrario terrario = terrarioRepository.findById(idTerrario)
+                .orElseThrow(() ->
+                        new RuntimeException("Terrário não encontrado"));
+
+        Utilizador utilizador = utilizadorRepository
+                .findByEmailUtilizador(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Utilizador não encontrado"));
+
+        boolean existe =
+                utilizadorTerrarioRepository
+                        .existsByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+                                utilizador.getIdUtilizador(),
+                                idTerrario);
+
+        if (existe) {
+            throw new RuntimeException("Este utilizador já tem acesso.");
+        }
+
+        UtilizadorTerrario ut = new UtilizadorTerrario();
+
+        ut.setTerrario(terrario);
+        ut.setUtilizador(utilizador);
+        ut.setPermissaoTerrario(permissao);
+
+        utilizadorTerrarioRepository.save(ut);
     }
 }

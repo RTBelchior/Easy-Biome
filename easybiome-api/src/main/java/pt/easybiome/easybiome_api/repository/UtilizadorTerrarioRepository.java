@@ -11,4 +11,15 @@ public interface UtilizadorTerrarioRepository extends JpaRepository<UtilizadorTe
 
     List<UtilizadorTerrario> findByUtilizador_IdUtilizador(Long idUtilizador);
 
+    List<UtilizadorTerrario> findByTerrario_IdTerrario(Long idTerrario);
+
+    boolean existsByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+            Long idUtilizador,
+            Long idTerrario
+    );
+
+    void deleteByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+            Long idUtilizador,
+            Long idTerrario
+    );
 }

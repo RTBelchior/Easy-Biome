@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import pt.easybiome.easybiome_api.dto.AtualizarTerrarioDTO;
+import pt.easybiome.easybiome_api.dto.PartilharTerrarioDTO;
 import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.service.TerrarioService;
 
@@ -20,7 +22,6 @@ public class TerrarioController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Terrario criarTerrario(
-
             @RequestParam String nome,
             @RequestParam(required = false) String descricao,
             @RequestParam Float tempMin,
@@ -30,11 +31,8 @@ public class TerrarioController {
             @RequestParam String horaLigar,
             @RequestParam String horaDesligar,
             @RequestParam Long idUtilizador,
-
             @RequestParam(required = false) MultipartFile imagem,
-            @RequestParam(required = false) String imagemPredefinida
-
-    ) {
+            @RequestParam(required = false) String imagemPredefinida) {
 
         return terrarioService.criarTerrario(
                 nome,
@@ -47,13 +45,41 @@ public class TerrarioController {
                 horaDesligar,
                 imagem,
                 imagemPredefinida,
-                idUtilizador
-        );
+                idUtilizador);
     }
 
     @GetMapping("/utilizador/{idUtilizador}")
     public List<Terrario> listarTerrarios(@PathVariable Long idUtilizador) {
-
         return terrarioService.listarTerrarios(idUtilizador);
+    }
+
+    @GetMapping("/{id}")
+    public Terrario obterTerrario(@PathVariable Long id) {
+        return terrarioService.obterTerrario(id);
+    }
+
+    @PutMapping("/{id}")
+    public Terrario atualizarTerrario(
+            @PathVariable Long id,
+            @RequestBody AtualizarTerrarioDTO dto) {
+
+        return terrarioService.atualizarTerrario(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void apagarTerrario(@PathVariable Long id) {
+        terrarioService.apagarTerrario(id);
+    }
+
+    @PostMapping("/{id}/partilhar")
+    public void partilharTerrario(
+            @PathVariable Long id,
+            @RequestBody PartilharTerrarioDTO dto) {
+
+        terrarioService.partilharTerrario(
+                id,
+                dto.getEmail(),
+                dto.getPermissao()
+        );
     }
 }

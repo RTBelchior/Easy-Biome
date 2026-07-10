@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <ArduinoJson.h>
 #include "Adafruit_SHT4x.h"
-
+  
 //=========================
 // WiFi
 //=========================
@@ -16,10 +16,10 @@ const int ID_TERRARIO = 3;
 //=========================
 
 const char* leituraURL =
-  "http://192.168.68.66:8080/api/leituras";
+  "http://192.168.68.72:8080/api/leituras";
 
 const String dispositivosURL =
-    "http://192.168.68.66:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
+    "http://192.168.68.72:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
 
 //=========================
 // GPIO

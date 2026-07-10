@@ -318,22 +318,12 @@ async function atualizarDados() {
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  await carregarTerrarios();
+  console.log("Página carregada");
 
-  renderHero();
-  renderMetrics();
-  renderDevices();
-
-  atualizarDados();
-
-  setInterval(() => {
-    if (getActive()) {
-      atualizarDados();
-    }
-  }, 5000);
+  renderPickerList();
+  await carregarDefinicoes();
 
   document.querySelectorAll(".terrario-option").forEach(opcao => {
-
     opcao.addEventListener("click", function () {
 
       document.querySelectorAll(".terrario-option")
@@ -342,10 +332,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       this.classList.add("selected");
 
       imagemPredefinida = this.dataset.img;
-
-      console.log(imagemPredefinida);
     });
-
   });
 
 });
@@ -375,17 +362,16 @@ async function confirmarModoManual() {
 
 function abrirModalTerrario() {
 
-  closeTerrarioPicker();
+    closeTerrarioPicker();
 
-  document.getElementById("modal-terrario").style.display = "flex";
+    document.getElementById("modal-terrario").style.display = "flex";
 
-  imagemPredefinida = "terrarioGrande.jpg";
+    imagemPredefinida = "terrarioGrande.jpg";
 
-  document.querySelectorAll(".terrario-option").forEach(el => {
-    el.classList.remove("selected");
-  });
+    document.querySelectorAll(".terrario-option")
+        .forEach(el => el.classList.remove("selected"));
 
-  document.querySelector(".terrario-option")?.classList.add("selected");
+    document.querySelector(".terrario-option")?.classList.add("selected");
 }
 
 async function guardarTerrario() {

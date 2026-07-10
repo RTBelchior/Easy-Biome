@@ -23,8 +23,6 @@ async function carregarTerrarios() {
 
         terrarios = await resposta.json();
 
-        console.log("Terrários:", terrarios);
-
         if (terrarios.length === 0) {
             return;
         }
@@ -77,5 +75,3 @@ function setActiveTerrario(id) {
     );
 
 }
-
-console.log(terrarios);
