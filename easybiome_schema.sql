@@ -3,24 +3,6 @@
 -- ============================================================
 
 -- ------------------------------------------------------------
--- ESPECIE
--- Perfis predefinidos de temperatura e humidade por espécie.
--- O utilizador escolhe um ao criar o terrário e os valores
--- são usados como ponto de partida, podendo ajustar depois.
--- ------------------------------------------------------------
-CREATE TABLE especie (
-    id_especie        BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nome_especie      VARCHAR(100) NOT NULL UNIQUE,
-    descricao_especie VARCHAR(255),
-    temp_minima       FLOAT NOT NULL,
-    temp_maxima       FLOAT NOT NULL,
-    humidade_minima   FLOAT NOT NULL,
-    humidade_maxima   FLOAT NOT NULL,
-    CONSTRAINT chk_especie_temp CHECK (temp_minima < temp_maxima),
-    CONSTRAINT chk_especie_hum  CHECK (humidade_minima < humidade_maxima)
-);
-
--- ------------------------------------------------------------
 -- UTILIZADOR
 -- ------------------------------------------------------------
 CREATE TABLE utilizador (
@@ -36,7 +18,6 @@ CREATE TABLE utilizador (
 
 -- ------------------------------------------------------------
 -- TERRARIO
--- id_especie é opcional (NULL = configuração personalizada).
 -- hora_ligar_iluminacao e hora_desligar_iluminacao definem
 -- o agendamento fixo diário da lâmpada de iluminação.
 -- NULL = sem agendamento, controlo manual.
@@ -45,7 +26,6 @@ CREATE TABLE utilizador (
 -- ------------------------------------------------------------
 CREATE TABLE terrario (
     id_terrario              BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    id_especie               BIGINT,
     nome_terrario            VARCHAR(100) NOT NULL,
     descricao_terrario       VARCHAR(255),
     imagem_terrario          VARCHAR(255),
@@ -56,8 +36,6 @@ CREATE TABLE terrario (
     hora_ligar_iluminacao    TIME,
     hora_desligar_iluminacao TIME,
     criado_em                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_terrario_especie FOREIGN KEY (id_especie)
-        REFERENCES especie(id_especie) ON DELETE SET NULL,
     CONSTRAINT chk_terrario_temp CHECK (temp_terrario_min < temp_terrario_max),
     CONSTRAINT chk_terrario_hum  CHECK (humidade_terrario_min < humidade_terrario_max)
 );
@@ -199,12 +177,6 @@ CREATE INDEX idx_alerta_terrario
 --  DADOS INICIAIS
 -- ============================================================
 
-INSERT INTO especie (nome_especie, descricao_especie, temp_minima, temp_maxima, humidade_minima, humidade_maxima) VALUES
-    ('Python Regius',  'Cobra real',                                   27.0, 30.0, 55.0, 65.0),
-    ('Corn Snake',     'Pantherophis guttatus — temperatura moderada', 25.0, 29.0, 45.0, 55.0),
-    ('Gecko Leopardo', 'Eublepharis macularius — zonas semi-áridas',   27.0, 31.0, 30.0, 40.0),
-    ('Dragão Barbudo', 'Pogona vitticeps',                             30.0, 34.0, 30.0, 40.0);
-
 INSERT INTO utilizador (nome_utilizador, email_utilizador, password_hash_utilizador, tipo_utilizador) VALUES
     ('Admin',    'admin@easybiome.pt',  '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'ADMIN'),
     ('Rodrigo',  'rodrigo@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR'),
@@ -213,7 +185,6 @@ INSERT INTO utilizador (nome_utilizador, email_utilizador, password_hash_utiliza
     ('Rogerio',  'rogerio@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR');
 
 INSERT INTO terrario (
-    id_especie,
     nome_terrario,
     descricao_terrario,
     temp_terrario_min,
@@ -224,7 +195,6 @@ INSERT INTO terrario (
     hora_desligar_iluminacao
 )
 VALUES (
-    4,
     'Terrário Exposição',
     'Terrário de teste com ESP32',
     30.0,
