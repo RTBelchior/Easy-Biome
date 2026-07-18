@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   console.log("Página carregada");
 
   renderPickerList();
-  await carregarDefinicoes();
+
 
   document.querySelectorAll(".terrario-option").forEach(opcao => {
     opcao.addEventListener("click", function () {

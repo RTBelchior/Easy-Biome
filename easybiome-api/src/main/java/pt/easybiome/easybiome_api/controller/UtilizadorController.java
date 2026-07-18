@@ -3,6 +3,7 @@ package pt.easybiome.easybiome_api.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import pt.easybiome.easybiome_api.dto.AtualizarUtilizadorDTO;
 import pt.easybiome.easybiome_api.dto.LoginDTO;
 import pt.easybiome.easybiome_api.dto.RegistoDTO;
 import pt.easybiome.easybiome_api.model.Utilizador;
@@ -54,6 +55,17 @@ public class UtilizadorController {
             return ResponseEntity.badRequest().body(e.getMessage());
 
         }
+
+    }
+
+    @PutMapping("/{id}")
+    public Utilizador atualizar(
+            @PathVariable Long id,
+            @RequestBody AtualizarUtilizadorDTO dto) {
+
+        Utilizador utilizador = service.atualizar(id, dto);
+        utilizador.setPasswordHashUtilizador(null);
+        return utilizador;
 
     }
 

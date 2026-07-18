@@ -26,40 +26,45 @@
           </svg>
         </div>
         <div>
-          <div class="profile-hero-role">Conta principal</div>
-          <div class="profile-hero-name">Admin</div>
-          <div class="profile-hero-email">admin@easybiome.pt</div>
+          <div id="profile-name" class="profile-hero-name"></div>
+          <div id="profile-email" class="profile-hero-email"></div>
         </div>
       </div>
 
-      <div class="profile-chip-row">
-        <div class="profile-chip">Estado <strong>Ativa</strong></div>
-        <div class="profile-chip">Acesso <strong>Desktop + mobile</strong></div>
-        <div class="profile-chip">Verificado <strong>Sim</strong></div>
-      </div>
+      <a class="profile-action-logout" href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
 
-      <div class="profile-hero-actions">
-        <a class="profile-action" href="login.html">Terminar sessão</a>
-      </div>
+        <span>Terminar sessão</span>
+      </a>
     </section>
 
     <div class="profile-stats">
+
       <div class="profile-stat">
-        <div class="profile-stat-value">3</div>
-        <div class="profile-stat-label">Terrários ligados</div>
+        <div id="stat-terrarios" class="profile-stat-value">0</div>
+        <div class="profile-stat-label">Terrários</div>
       </div>
+
       <div class="profile-stat">
-        <div class="profile-stat-value">24</div>
-        <div class="profile-stat-label">Alertas resolvidos</div>
+        <div id="stat-leituras" class="profile-stat-value">0</div>
+        <div class="profile-stat-label">Leituras hoje</div>
       </div>
+
       <div class="profile-stat">
-        <div class="profile-stat-value">97%</div>
-        <div class="profile-stat-label">Disponibilidade</div>
+        <div id="stat-alerta" class="profile-stat-value">—</div>
+        <div class="profile-stat-label">Último alerta</div>
       </div>
+
       <div class="profile-stat">
-        <div class="profile-stat-value">2 min</div>
-        <div class="profile-stat-label">Última atividade</div>
+        <div id="stat-dias" class="profile-stat-value">0</div>
+        <div class="profile-stat-label">Dias de utilização</div>
       </div>
+
     </div>
 
     <div class="settings-section" style="margin-top:1.25rem">
@@ -79,7 +84,7 @@
               <div class="settings-row-sub">Identificação principal</div>
             </div>
           </div>
-          <div class="settings-val">Admin</div>
+          <div id="settings-name" class="settings-val"></div>
         </div>
         <div class="settings-row">
           <div class="settings-row-left">
@@ -95,26 +100,9 @@
               <div class="settings-row-sub">Contacto e recuperação</div>
             </div>
           </div>
-          <div class="settings-val">admin@easybiome.pt</div>
+          <input id="email" class="profile-input" type="email">
         </div>
 
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Função</div>
-              <div class="settings-row-sub">Acesso administrativo</div>
-            </div>
-          </div>
-          <div class="settings-val">Admin</div>
-        </div>
 
         <div class="settings-row">
           <div class="settings-row-left">
@@ -130,100 +118,58 @@
               <div class="settings-row-sub">Última alteração há 22 dias</div>
             </div>
           </div>
-          <div class="settings-val">Atualizar</div>
+          <div class="password-wrapper">
+
+            <input id="password" class="profile-input" type="password" placeholder="********">
+
+            <button id="toggle-password" type="button" class="eye-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="settings-section" style="margin-top:1.25rem">
-      <div class="settings-section-title">Terrário em foco</div>
-      <div class="settings-group">
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <path d="M3 9h18M9 21V9" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Terrário ativo</div>
-              <div class="settings-row-sub">Nome do ambiente atual</div>
-            </div>
-          </div>
-          <div class="settings-val" id="profile-terra-name">—</div>
-        </div>
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Temperatura</div>
-              <div class="settings-row-sub">Faixa recomendada</div>
-            </div>
-          </div>
-          <div class="settings-val" id="profile-terra-temp">—</div>
-        </div>
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M12 2C6 10 4 14 4 16a8 8 0 0 0 16 0c0-2-2-6-8-14z" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Humidade</div>
-              <div class="settings-row-sub">Faixa recomendada</div>
-            </div>
-          </div>
-          <div class="settings-val" id="profile-terra-hum">—</div>
-        </div>
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <circle cx="12" cy="12" r="2" />
-                <path d="M12 10c0-3.5-2-6-4-6s-3 2.5-2 5 3.5 3 6 3" />
-                <path d="M14 12c3.5 0 6 2 6 4s-2.5 3-5 2-3-3.5-3-6" />
-                <path d="M12 14c0 3.5 2 6 4 6s3-2.5 2-5-3.5-3-6-3" />
-                <path d="M10 12c-3.5 0-6-2-6-4s2.5-3 5-2 3 3.5 3 6" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Dispositivos</div>
-              <div class="settings-row-sub">Estado atual dos atuadores</div>
-            </div>
-          </div>
-          <div class="settings-val" id="profile-terra-devices">—</div>
-        </div>
-        <div class="settings-row">
-          <div class="settings-row-left">
-            <div class="settings-row-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M9 18h6" />
-                <path d="M10 22h4" />
-                <path
-                  d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14" />
-              </svg>
-            </div>
-            <div>
-              <div class="settings-row-name">Iluminação</div>
-              <div class="settings-row-sub">Ligação atual</div>
-            </div>
-          </div>
-          <div class="settings-val" id="profile-terra-power">—</div>
-        </div>
+    <div class="settings-section">
+      <div class="settings-section-title">
+        Os meus terrários
+      </div>
+
+      <div id="terrarios-grid" class="terrarios-grid">
+
       </div>
     </div>
   </div>
 
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-box">
+
+      <h3 id="modal-title">Guardar alterações?</h3>
+
+      <p id="modal-text">
+        Pretende guardar as alterações efetuadas?
+      </p>
+
+      <div class="modal-actions">
+        <button id="modal-cancel" class="modal-btn cancel">
+          Cancelar
+        </button>
+
+        <button id="modal-confirm" class="modal-btn confirm">
+          Continuar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
   <script src="js/terrarios.js"></script>
   <script src="js/picker.js"></script>
   <script src="js/nav.js"></script>

@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import pt.easybiome.easybiome_api.dto.AtualizarUtilizadorDTO;
 import pt.easybiome.easybiome_api.dto.LoginDTO;
 import pt.easybiome.easybiome_api.dto.RegistoDTO;
 import pt.easybiome.easybiome_api.model.Utilizador;
@@ -63,5 +64,24 @@ public class UtilizadorService {
         }
 
         return utilizador;
+    }
+
+    public Utilizador atualizar(Long id, AtualizarUtilizadorDTO dto) {
+
+        Utilizador u = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
+
+        u.setNomeUtilizador(dto.getNomeUtilizador());
+        u.setEmailUtilizador(dto.getEmailUtilizador());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+
+            u.setPasswordHashUtilizador(
+                    encoder.encode(dto.getPassword())
+            );
+
+        }
+
+        return repository.save(u);
     }
 }

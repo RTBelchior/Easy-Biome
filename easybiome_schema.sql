@@ -177,39 +177,6 @@ CREATE INDEX idx_alerta_terrario
 --  DADOS INICIAIS
 -- ============================================================
 
-INSERT INTO utilizador (nome_utilizador, email_utilizador, password_hash_utilizador, tipo_utilizador) VALUES
-    ('Admin',    'admin@easybiome.pt',  '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'ADMIN'),
-    ('Rodrigo',  'rodrigo@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR'),
-    ('Belchior', 'belchior@gmail.pt',   '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR'),
-    ('Matheus',  'matheus@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR'),
-    ('Rogerio',  'rogerio@gmail.pt',    '$2a$10$wX1234exampleHashAqui567890abcdefghijklmnop', 'UTILIZADOR');
-
-INSERT INTO terrario (
-    nome_terrario,
-    descricao_terrario,
-    temp_terrario_min,
-    temp_terrario_max,
-    humidade_terrario_min,
-    humidade_terrario_max,
-    hora_ligar_iluminacao,
-    hora_desligar_iluminacao
-)
-VALUES (
-    'Terrário Exposição',
-    'Terrário de teste com ESP32',
-    30.0,
-    34.0,
-    30.0,
-    40.0,
-    '08:00:00',
-    '20:00:00'
-);
-
-INSERT INTO utilizador_terrario
-(id_utilizador, id_terrario, permissao_terrario)
-VALUES
-(1,1,'DONO');
-
 INSERT INTO dispositivo (id_terrario, nome_dispositivo, tipo_dispositivo) VALUES
     (1, 'Ventoinha',           'VENTOINHA'),
     (1, 'Lâmpada Aquecimento', 'LAMPADA_AQUECIMENTO'),

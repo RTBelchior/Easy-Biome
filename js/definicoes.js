@@ -105,20 +105,20 @@ async function onTerrarioChanged() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Página carregada");
+  console.log("Página carregada");
 
-    renderPickerList();
-    await carregarDefinicoes();
+  renderPickerList();
+  await carregarDefinicoes();
 
-    const utilizador = JSON.parse(localStorage.getItem("utilizador"));
+  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
 
-    if (utilizador) {
-        document.getElementById("profile-name").textContent =
-            utilizador.nomeUtilizador;
+  if (utilizador) {
+    document.getElementById("profile-name").textContent =
+      utilizador.nomeUtilizador;
 
-        document.getElementById("profile-email").textContent =
-            utilizador.emailUtilizador;
-    }
+    document.getElementById("profile-email").textContent =
+      utilizador.emailUtilizador;
+  }
 });
 
 async function carregarDefinicoes() {
@@ -155,15 +155,23 @@ async function carregarDefinicoes() {
     terrario.horaDesligarIluminacao.substring(0, 5);
 }
 
-[
-  "set-temp-min",
-  "set-temp-max",
-  "set-hum-min",
-  "set-hum-max",
-  "set-hora-ligar",
-  "set-hora-desligar"
-].forEach(id => {
-  document.getElementById(id).addEventListener("change", guardarDefinicoes);
+document.addEventListener("DOMContentLoaded", () => {
+
+  [
+    "set-temp-min",
+    "set-temp-max",
+    "set-hum-min",
+    "set-hum-max",
+    "set-hora-ligar",
+    "set-hora-desligar"
+  ].forEach(id => {
+    const input = document.getElementById(id);
+
+    if (input) {
+      input.addEventListener("change", guardarDefinicoes);
+    }
+  });
+
 });
 
 
@@ -233,31 +241,31 @@ fetch("header.html")
     });
   });
 
-  document.querySelectorAll(".terrario-option").forEach(opcao => {
+document.querySelectorAll(".terrario-option").forEach(opcao => {
 
-    opcao.addEventListener("click", function () {
+  opcao.addEventListener("click", function () {
 
-        document.querySelectorAll(".terrario-option")
-            .forEach(o => o.classList.remove("selected"));
+    document.querySelectorAll(".terrario-option")
+      .forEach(o => o.classList.remove("selected"));
 
-        this.classList.add("selected");
+    this.classList.add("selected");
 
-        imagemPredefinida = this.dataset.img;
-    });
+    imagemPredefinida = this.dataset.img;
+  });
 
 });
 
 function abrirModalTerrario() {
 
-    document.getElementById("modal-terrario").style.display = "flex";
+  document.getElementById("modal-terrario").style.display = "flex";
 
-    imagemPredefinida = "terrarioGrande.jpg";
+  imagemPredefinida = "terrarioGrande.jpg";
 
-    document.querySelectorAll(".terrario-option").forEach(el => {
-        el.classList.remove("selected");
-    });
+  document.querySelectorAll(".terrario-option").forEach(el => {
+    el.classList.remove("selected");
+  });
 
-    document.querySelector(".terrario-option")?.classList.add("selected");
+  document.querySelector(".terrario-option")?.classList.add("selected");
 }
 
 async function guardarTerrario() {
@@ -364,33 +372,33 @@ function fecharModalTerrario() {
 
 async function executeShare() {
 
-    const email = document.getElementById("share-email").value;
+  const email = document.getElementById("share-email").value;
 
-    const permissao =
-        document.getElementById("share-role").value === "admin"
-            ? "EDITOR"
-            : "LEITOR";
+  const permissao =
+    document.getElementById("share-role").value === "admin"
+      ? "EDITOR"
+      : "LEITOR";
 
-    const idTerrario =
-        localStorage.getItem("easybiome_active_id");
+  const idTerrario =
+    localStorage.getItem("easybiome_active_id");
 
-    const resposta = await fetch(
-        `${API_BASE}/terrarios/${idTerrario}/partilhar`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                permissao
-            })
-        }
-    );
-
-    if (resposta.ok) {
-        alert("Terrário partilhado com sucesso.");
-    } else {
-        alert(await resposta.text());
+  const resposta = await fetch(
+    `${API_BASE}/terrarios/${idTerrario}/partilhar`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        permissao
+      })
     }
+  );
+
+  if (resposta.ok) {
+    alert("Terrário partilhado com sucesso.");
+  } else {
+    alert(await resposta.text());
+  }
 }
