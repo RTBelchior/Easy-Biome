@@ -148,31 +148,53 @@ CREATE INDEX idx_log_dispositivo
 
 -- ------------------------------------------------------------
 -- ALERTA
--- Gerado automaticamente pelo backend quando temperatura ou
--- humidade saem dos limites definidos, ou quando um dispositivo
--- falha. resolvido_alerta = TRUE quando o utilizador confirma.
+-- Histórico de alertas gerados automaticamente pelo sistema.
 -- ------------------------------------------------------------
 CREATE TABLE alerta (
-    id_alerta        BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    id_terrario      BIGINT NOT NULL,
-    tipo_alerta      VARCHAR(30) NOT NULL
-                     CHECK (tipo_alerta IN (
-                         'TEMPERATURA_ALTA',
-                         'TEMPERATURA_BAIXA',
-                         'HUMIDADE_ALTA',
-                         'HUMIDADE_BAIXA',
-                         'DISPOSITIVO_FALHA'
-                     )),
-    mensagem_alerta  VARCHAR(255) NOT NULL,
-    resolvido_alerta BOOLEAN   NOT NULL DEFAULT FALSE,
-    criado_em        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_alerta_terrario FOREIGN KEY (id_terrario)
-        REFERENCES terrario(id_terrario) ON DELETE CASCADE
+
+    id_alerta BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+
+    id_terrario BIGINT NOT NULL,
+
+    tipo_alerta VARCHAR(30) NOT NULL
+        CHECK (tipo_alerta IN (
+            'TEMPERATURA_ALTA',
+            'TEMPERATURA_BAIXA',
+            'HUMIDADE_ALTA',
+            'HUMIDADE_BAIXA',
+            'DISPOSITIVO_FALHA'
+        )),
+
+    valor_alerta FLOAT,
+    limite_alerta FLOAT,
+
+    mensagem_alerta VARCHAR(255) NOT NULL,
+
+    severidade_alerta VARCHAR(10) NOT NULL DEFAULT 'MEDIA'
+        CHECK (severidade_alerta IN ('BAIXA','MEDIA','ALTA')),
+
+    resolvido_alerta BOOLEAN NOT NULL DEFAULT FALSE,
+
+    lido_alerta BOOLEAN NOT NULL DEFAULT FALSE,
+
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    resolvido_em TIMESTAMP NULL,
+
+    CONSTRAINT fk_alerta_terrario
+        FOREIGN KEY (id_terrario)
+        REFERENCES terrario(id_terrario)
+        ON DELETE CASCADE
 );
 
 CREATE INDEX idx_alerta_terrario
-    ON alerta (id_terrario, resolvido_alerta, criado_em DESC);
+    ON alerta(id_terrario, criado_em DESC);
 
+CREATE INDEX idx_alerta_resolvido
+    ON alerta(resolvido_alerta);
+
+CREATE INDEX idx_alerta_lido
+    ON alerta(lido_alerta);
 -- ============================================================
 --  DADOS INICIAIS
 -- ============================================================
