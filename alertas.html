@@ -18,60 +18,13 @@
 
   <div class="page">
 
-    <div class="alert-list">
-      <div class="alert-row unread">
-        <div class="alert-icon warn-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg></div>
-        <div class="alert-body">
-          <div class="alert-title">Humidade baixa</div>
-          <div class="alert-desc">42% — abaixo do mínimo de 50%</div>
-          <div class="alert-time">há 5 minutos · Exposição</div>
-          <div style="margin-top:6px"><span class="alert-badge unresolved">Por resolver</span></div>
-        </div>
-      </div>
-      <div class="alert-row ok">
-        <div class="alert-icon ok-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg></div>
-        <div class="alert-body">
-          <div class="alert-title">Temperatura normalizada</div>
-          <div class="alert-desc">Voltou ao intervalo 20–35°C</div>
-          <div class="alert-time">há 2 horas · Exposição</div>
-          <div style="margin-top:6px"><span class="alert-badge resolved">Resolvido</span></div>
-        </div>
-      </div>
-      <div class="alert-row unread">
-        <div class="alert-icon warn-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg></div>
-        <div class="alert-body">
-          <div class="alert-title">Temperatura alta</div>
-          <div class="alert-desc">36.2°C — acima do máximo de 35°C</div>
-          <div class="alert-time">ontem, 14:32 · Quarto</div>
-          <div style="margin-top:6px"><span class="alert-badge unresolved">Por resolver</span></div>
-        </div>
-      </div>
-      <div class="alert-row ok">
-        <div class="alert-icon ok-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12" />
-          </svg></div>
-        <div class="alert-body">
-          <div class="alert-title">ESP32 reconectado</div>
-          <div class="alert-desc">Ligação restabelecida após 3 min offline</div>
-          <div class="alert-time">ontem, 09:15 · Exposição</div>
-          <div style="margin-top:6px"><span class="alert-badge resolved">Resolvido</span></div>
-        </div>
-      </div>
+    <div class="alert-list" id="alert-list">
+
+    <div class="loading">
+        A carregar alertas...
     </div>
+
+</div>
   </div>
 
   <script src="js/terrarios.js"></script>

@@ -16,10 +16,10 @@ const int ID_TERRARIO = 3;
 //=========================
 
 const char* leituraURL =
-  "http://192.168.68.73:8080/api/leituras";
+  "http://192.168.68.69:8080/api/leituras";
 
 const String dispositivosURL =
-    "http://192.168.68.73:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
+    "http://192.168.68.69:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
 
 //=========================
 // GPIO
