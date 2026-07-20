@@ -134,17 +134,37 @@ public class TerrarioService {
         Terrario terrario = terrarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Terrário não encontrado"));
 
-        terrario.setNomeTerrario(dto.getNome());
-        terrario.setDescricaoTerrario(dto.getDescricao());
+        if (dto.getNome() != null) {
+            terrario.setNomeTerrario(dto.getNome());
+        }
 
-        terrario.setTempTerrarioMin(dto.getTempMin());
-        terrario.setTempTerrarioMax(dto.getTempMax());
+        if (dto.getDescricao() != null) {
+            terrario.setDescricaoTerrario(dto.getDescricao());
+        }
 
-        terrario.setHumidadeTerrarioMin(dto.getHumMin());
-        terrario.setHumidadeTerrarioMax(dto.getHumMax());
+        if (dto.getTempMin() != null) {
+            terrario.setTempTerrarioMin(dto.getTempMin());
+        }
 
-        terrario.setHoraLigarIluminacao(dto.getHoraLigar());
-        terrario.setHoraDesligarIluminacao(dto.getHoraDesligar());
+        if (dto.getTempMax() != null) {
+            terrario.setTempTerrarioMax(dto.getTempMax());
+        }
+
+        if (dto.getHumMin() != null) {
+            terrario.setHumidadeTerrarioMin(dto.getHumMin());
+        }
+
+        if (dto.getHumMax() != null) {
+            terrario.setHumidadeTerrarioMax(dto.getHumMax());
+        }
+
+        if (dto.getHoraLigar() != null) {
+            terrario.setHoraLigarIluminacao(dto.getHoraLigar());
+        }
+
+        if (dto.getHoraDesligar() != null) {
+            terrario.setHoraDesligarIluminacao(dto.getHoraDesligar());
+        }
 
         return terrarioRepository.save(terrario);
     }

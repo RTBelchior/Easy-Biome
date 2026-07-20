@@ -13,6 +13,7 @@ import pt.easybiome.easybiome_api.model.Terrario;
 import pt.easybiome.easybiome_api.repository.DispositivoRepository;
 import pt.easybiome.easybiome_api.repository.LeituraSensorRepository;
 import pt.easybiome.easybiome_api.repository.TerrarioRepository;
+import pt.easybiome.easybiome_api.service.AlertaService;
 import pt.easybiome.easybiome_api.service.DispositivoService;
 
 @RestController
@@ -32,6 +33,9 @@ public class LeituraSensorController {
     @Autowired
     private DispositivoService dispositivoService;
 
+    @Autowired
+    private AlertaService alertaService;
+
     @PostMapping
     public LeituraSensor guardar(@RequestBody LeituraSensor leitura) {
 
@@ -40,6 +44,8 @@ public class LeituraSensorController {
         Terrario terrario = terrarioRepository
                 .findById(leitura.getIdTerrario())
                 .orElseThrow();
+
+        alertaService.verificarAlertas(terrario, leitura);
 
         for (Dispositivo d : dispositivoRepository.findByIdTerrario(leitura.getIdTerrario())) {
 
@@ -132,4 +138,6 @@ public class LeituraSensorController {
                 inicio
         );
     }
+
+
 }

@@ -28,6 +28,12 @@ public class Alerta {
     @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "valor_alerta")
+    private Double valorAlerta;
+
+    @Column(name = "limite_alerta")
+    private Double limiteAlerta;
+
     public Alerta() {
     }
 
@@ -77,5 +83,21 @@ public class Alerta {
 
     public void setCriadoEm(LocalDateTime criadoEm) {
         this.criadoEm = criadoEm;
+    }
+
+    public Double getValorAlerta() {
+        return valorAlerta;
+    }
+
+    public void setValorAlerta(Double valorAlerta) {
+        this.valorAlerta = valorAlerta;
+    }
+
+    public Double getLimiteAlerta() {
+        return limiteAlerta;
+    }
+
+    public void setLimiteAlerta(Double limiteAlerta) {
+        this.limiteAlerta = limiteAlerta;
     }
 }

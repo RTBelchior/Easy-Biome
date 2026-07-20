@@ -180,27 +180,29 @@ async function guardarDefinicoes() {
   const idTerrario = localStorage.getItem("easybiome_active_id");
 
   const dados = {
-
     tempMin: parseFloat(document.getElementById("set-temp-min").value),
     tempMax: parseFloat(document.getElementById("set-temp-max").value),
 
-    humMin: parseInt(document.getElementById("set-hum-min").value),
-    humMax: parseInt(document.getElementById("set-hum-max").value),
+    humMin: parseFloat(document.getElementById("set-hum-min").value),
+    humMax: parseFloat(document.getElementById("set-hum-max").value),
 
-    horaLigarIluminacao:
-      document.getElementById("set-hora-ligar").value,
-
-    horaDesligarIluminacao:
-      document.getElementById("set-hora-desligar").value,
+    horaLigar: document.getElementById("set-hora-ligar").value,
+    horaDesligar: document.getElementById("set-hora-desligar").value
   };
+  console.log(dados);
 
-  await fetch(`${API_BASE}/terrarios/${idTerrario}`, {
+  const resposta = await fetch(`${API_BASE}/terrarios/${idTerrario}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(dados)
   });
+
+  if (!resposta.ok) {
+    console.error(await resposta.text());
+    return;
+  }
 
   console.log("Definições guardadas.");
 }
