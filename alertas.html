@@ -2,72 +2,296 @@
 <html lang="pt">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>EasyBiome — Alertas</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="css/alertas.css" />
-  <link rel="stylesheet" href="css/header.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>EasyBiome — Alertas</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+        rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/alertas.css" />
+    <link rel="stylesheet" href="css/header.css" />
 </head>
 
 <body>
 
-  <div id="header-container"></div>
+    <!-- HEADER -->
+    <div id="header-container"></div>
 
-  <div class="page">
 
-    <div class="alert-list" id="alert-list">
+    <main class="page">
 
-    <div class="loading">
-        A carregar alertas...
-    </div>
+    <!-- CABEÇALHO -->
+    <section class="alert-page-header">
 
-</div>
-  </div>
+        <h1 class="alert-page-title">
+            Alertas
+        </h1>
 
-  <script src="js/terrarios.js"></script>
-  <script src="js/picker.js"></script>
-  <script src="js/nav.js"></script>
-  <script src="js/alertas.js"></script>
+        <p class="alert-page-subtitle">
+            Consulte e filtre os alertas dos seus terrários.
+        </p>
 
-  <script>
-    fetch("header.html")
-    .then(r => r.text())
-    .then(data => {
-        document.getElementById("header-container").innerHTML = data;
+    </section>
 
-        const pagina = window.location.pathname.split("/").pop() || "index.html";
 
-        const titulos = {
-            "index.html": "Início",
-            "historico.html": "Histórico",
-            "atividade.html": "Atividade",
-            "alertas.html": "Alertas",
-            "definicoes.html": "Definições",
-            "profile.html": "Perfil"
-        };
+    <!-- CAIXA DE FILTROS -->
+    <section class="alert-filters">
 
-        const titulo = document.getElementById("page-title");
-        if (titulo) {
-            titulo.textContent = titulos[pagina] || "EasyBiome";
-        }
+        <div class="filters-title">
+            <svg viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path d="M4 5h16"/>
+                <path d="M7 12h10"/>
+                <path d="M10 19h4"/>
+            </svg>
 
-        document.querySelectorAll(".desktop-nav-link").forEach(link => {
-            if (link.getAttribute("href") === pagina) {
-                link.classList.add("active");
-            }
-        });
+            <span>Filtros</span>
+        </div>
 
-        document.querySelectorAll(".bnav-item").forEach(link => {
-            if (link.getAttribute("href") === pagina) {
-                link.classList.add("active");
-            }
-        });
-    });
-  </script>
+
+        <div class="filters-controls">
+
+            <div class="filter-group">
+
+                <label for="filtro-estado">
+                    Estado
+                </label>
+
+                <select id="filtro-estado">
+
+                    <option value="todos">
+                        Todos os estados
+                    </option>
+
+                    <option value="pendentes">
+                        Por resolver
+                    </option>
+
+                    <option value="resolvidos">
+                        Resolvidos
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filtro-tipo">
+                    Tipo
+                </label>
+
+                <select id="filtro-tipo">
+
+                    <option value="todos">
+                        Todos os tipos
+                    </option>
+
+                    <option value="temperatura">
+                        Temperatura
+                    </option>
+
+                    <option value="humidade">
+                        Humidade
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="filtro-data">
+                    Período
+                </label>
+
+                <select id="filtro-data">
+
+                    <option value="todos">
+                        Todas as datas
+                    </option>
+
+                    <option value="hoje">
+                        Hoje
+                    </option>
+
+                    <option value="7dias">
+                        Últimos 7 dias
+                    </option>
+
+                    <option value="30dias">
+                        Últimos 30 dias
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="limpar-filtros"
+                class="clear-filters"
+            >
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M3 6h18"/>
+                    <path d="M8 6v14"/>
+                    <path d="M16 6v14"/>
+                    <path d="M5 6l1-3h12l1 3"/>
+                    <path d="M10 10v6"/>
+                    <path d="M14 10v6"/>
+
+                </svg>
+
+                Limpar filtros
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- BARRA SUPERIOR DOS RESULTADOS -->
+    <section class="alerts-toolbar">
+
+        <div class="alerts-count">
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+                <path d="M10 21h4"/>
+
+            </svg>
+
+            <span id="alert-count">
+                6 alertas encontrados
+            </span>
+
+        </div>
+    </section>
+
+
+    <!-- ALERTAS -->
+    <section
+        class="alert-list"
+        id="alert-list"
+    >
+
+        <div class="loading">
+            A carregar alertas...
+        </div>
+
+    </section>
+</main>
+
+
+    <!-- SCRIPTS -->
+    <script src="js/config.js"></script>
+    <script src="js/terrarios.js"></script>
+    <script src="js/picker.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/alertas.js"></script>
+
+
+    <!-- HEADER -->
+    <script>
+
+        fetch("header.html")
+
+            .then(r => r.text())
+
+            .then(data => {
+
+                document
+                    .getElementById("header-container")
+                    .innerHTML = data;
+
+
+                const pagina =
+                    window.location.pathname
+                    .split("/")
+                    .pop() || "index.html";
+
+
+                const titulos = {
+
+                    "index.html": "Início",
+
+                    "historico.html": "Histórico",
+
+                    "atividade.html": "Atividade",
+
+                    "alertas.html": "Alertas",
+
+                    "definicoes.html": "Definições",
+
+                    "profile.html": "Perfil"
+
+                };
+
+
+                const titulo =
+                    document.getElementById("page-title");
+
+
+                if (titulo) {
+
+                    titulo.textContent =
+                        titulos[pagina] || "EasyBiome";
+
+                }
+
+
+                document
+                    .querySelectorAll(".desktop-nav-link")
+                    .forEach(link => {
+
+                        if (
+                            link.getAttribute("href")
+                            === pagina
+                        ) {
+
+                            link.classList.add("active");
+
+                        }
+
+                    });
+
+
+                document
+                    .querySelectorAll(".bnav-item")
+                    .forEach(link => {
+
+                        if (
+                            link.getAttribute("href")
+                            === pagina
+                        ) {
+
+                            link.classList.add("active");
+
+                        }
+
+                    });
+
+            });
+
+    </script>
 
 </body>
-
 </html>
