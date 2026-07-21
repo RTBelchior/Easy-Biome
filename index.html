@@ -218,13 +218,19 @@
       <div class="image-section">
 
         <div class="upload-card">
+
           <label for="terrario-imagem" class="upload-btn">
             📷 Escolher fotografia
           </label>
 
           <input id="terrario-imagem" type="file" accept="image/*" hidden>
 
+          <div id="imagem-selecionada" class="imagem-selecionada">
+            Nenhuma imagem selecionada
+          </div>
+
           <small>ou escolhe uma imagem pré-definida</small>
+
         </div>
 
         <div class="terrario-gallery">
@@ -239,7 +245,7 @@
             <span>Médio</span>
           </div>
 
-          <div class="terrario-option" data-img="terrariosPequeno.jpg">
+          <div class="terrario-option" data-img="terrarioPequeno.jpg">
             <img src="imagens/terrarios/terrarioPequeno.jpg">
             <span>Pequeno</span>
           </div>
@@ -270,38 +276,38 @@
 
   <script>
     fetch("header.html")
-    .then(r => r.text())
-    .then(data => {
+      .then(r => r.text())
+      .then(data => {
         document.getElementById("header-container").innerHTML = data;
 
         const pagina = window.location.pathname.split("/").pop() || "index.html";
 
         const titulos = {
-            "index.html": "Início",
-            "historico.html": "Histórico",
-            "atividade.html": "Atividade",
-            "alertas.html": "Alertas",
-            "definicoes.html": "Definições",
-            "profile.html": "Perfil"
+          "index.html": "Início",
+          "historico.html": "Histórico",
+          "atividade.html": "Atividade",
+          "alertas.html": "Alertas",
+          "definicoes.html": "Definições",
+          "profile.html": "Perfil"
         };
 
         const titulo = document.getElementById("page-title");
         if (titulo) {
-            titulo.textContent = titulos[pagina] || "EasyBiome";
+          titulo.textContent = titulos[pagina] || "EasyBiome";
         }
 
         document.querySelectorAll(".desktop-nav-link").forEach(link => {
-            if (link.getAttribute("href") === pagina) {
-                link.classList.add("active");
-            }
+          if (link.getAttribute("href") === pagina) {
+            link.classList.add("active");
+          }
         });
 
         document.querySelectorAll(".bnav-item").forEach(link => {
-            if (link.getAttribute("href") === pagina) {
-                link.classList.add("active");
-            }
+          if (link.getAttribute("href") === pagina) {
+            link.classList.add("active");
+          }
         });
-    });
+      });
   </script>
 </body>
 

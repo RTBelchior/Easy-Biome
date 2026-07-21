@@ -275,26 +275,30 @@ body {
 }
 
 .picker-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: .6rem;
-  border-radius: 12px;
-  cursor: pointer;
-  border: 1px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 16px;
+    background: #1b2721;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: .2s;
+    min-height: 100px;
+}
+
+.picker-img {
+    width: 120px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 12px;
+    flex-shrink: 0;
+    background: #101a15;
 }
 
 .picker-item.active {
   background: var(--green-g);
   border-color: var(--green-d);
-}
-
-.picker-item img {
-  width: 44px;
-  height: 44px;
-  border-radius: 9px;
-  object-fit: cover;
-  flex-shrink: 0;
 }
 
 .picker-item-name {

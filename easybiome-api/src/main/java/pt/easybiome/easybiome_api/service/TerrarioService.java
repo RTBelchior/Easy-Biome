@@ -69,7 +69,9 @@ public class TerrarioService {
 
             try {
 
-                Path pasta = Paths.get("uploads");
+                Path pasta = Paths.get("uploads").toAbsolutePath();
+
+                System.out.println("PASTA DE UPLOADS: " + pasta);
 
                 if (!Files.exists(pasta)) {
                     Files.createDirectories(pasta);

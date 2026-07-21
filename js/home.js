@@ -9,8 +9,17 @@ function renderHero() {
 
   if (!t) return;
 
-  document.getElementById("terrario-img").src =
-    t.imagemTerrario || "imagens/terrario-default.jpg";
+  let imagem = t.imagemTerrario;
+
+  if (imagem && imagem.startsWith("uploads/")) {
+    imagem = `${SERVER_BASE}/${imagem}`;
+  }
+
+  if (!imagem) {
+    imagem = "imagens/terrario-default.jpg";
+  }
+
+  document.getElementById("terrario-img").src = imagem;
 
   document.getElementById("terrario-name").textContent =
     t.nomeTerrario;
@@ -326,16 +335,90 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderPickerList();
 
 
+  // ==========================================================
+  // SELEÇÃO DE IMAGEM PERSONALIZADA
+  // ==========================================================
+
+  const inputImagem = document.getElementById("terrario-imagem");
+  const imagemSelecionada = document.getElementById("imagem-selecionada");
+
+  if (inputImagem) {
+
+    inputImagem.addEventListener("change", function () {
+
+      const ficheiro = this.files[0];
+
+      if (ficheiro) {
+
+        // Mostra o nome da imagem escolhida
+        imagemSelecionada.textContent =
+          "📷 " + ficheiro.name;
+
+        imagemSelecionada.classList.add("selected");
+
+        // Remove a seleção das imagens predefinidas
+        document.querySelectorAll(".terrario-option")
+          .forEach(o => o.classList.remove("selected"));
+
+        // Não usar imagem predefinida
+        imagemPredefinida = null;
+
+        console.log("Imagem personalizada selecionada:", ficheiro.name);
+
+      } else {
+
+        imagemSelecionada.textContent =
+          "Nenhuma imagem selecionada";
+
+        imagemSelecionada.classList.remove("selected");
+
+      }
+
+    });
+
+  }
+
+
+  // ==========================================================
+  // SELEÇÃO DE IMAGEM PREDEFINIDA
+  // ==========================================================
+
   document.querySelectorAll(".terrario-option").forEach(opcao => {
+
     opcao.addEventListener("click", function () {
 
+      // Remove seleção das outras imagens
       document.querySelectorAll(".terrario-option")
         .forEach(o => o.classList.remove("selected"));
 
+      // Seleciona esta imagem
       this.classList.add("selected");
 
+      // Guarda a imagem predefinida
       imagemPredefinida = this.dataset.img;
+
+      // Remove eventual ficheiro personalizado
+      if (inputImagem) {
+        inputImagem.value = "";
+      }
+
+      // Atualiza o texto
+      if (imagemSelecionada) {
+
+        imagemSelecionada.textContent =
+          "Imagem predefinida: " + imagemPredefinida;
+
+        imagemSelecionada.classList.remove("selected");
+
+      }
+
+      console.log(
+        "Imagem predefinida selecionada:",
+        imagemPredefinida
+      );
+
     });
+
   });
 
 });
@@ -423,11 +506,21 @@ async function guardarTerrario() {
   // Envia upload ou imagem pré-definida
   if (imagemUpload) {
 
+    // O utilizador escolheu uma imagem própria
+    console.log("A enviar imagem personalizada:", imagemUpload.name);
+
     formData.append("imagem", imagemUpload);
+
+  } else if (imagemPredefinida) {
+
+    // O utilizador escolheu uma imagem predefinida
+    console.log("A enviar imagem predefinida:", imagemPredefinida);
+
+    formData.append("imagemPredefinida", imagemPredefinida);
 
   } else {
 
-    formData.append("imagemPredefinida", imagemPredefinida);
+    console.log("Nenhuma imagem selecionada");
 
   }
 

@@ -76,29 +76,71 @@ async function carregarTerrarios() {
 
   const utilizador = JSON.parse(localStorage.getItem("utilizador"));
 
-  const resposta = await fetch(
-    `http://localhost:8080/api/terrarios/utilizador/${utilizador.idUtilizador}`
-  );
+  if (!utilizador) {
+    console.error("Utilizador não encontrado.");
+    return;
+  }
 
-  const terrarios = await resposta.json();
+  try {
 
-  const grid = document.getElementById("terrarios-grid");
+    const resposta = await fetch(
+      `${API_BASE}/terrarios/utilizador/${utilizador.idUtilizador}`
+    );
 
-  grid.innerHTML = "";
+    if (!resposta.ok) {
+      throw new Error("Erro ao carregar terrários.");
+    }
 
-  terrarios.forEach(t => {
+    const terrarios = await resposta.json();
 
+    const grid = document.getElementById("terrarios-grid");
 
-    const imagem = t.imagemTerrario || "imagens/terrario-default.jpg";
+    if (!grid) return;
 
-    grid.innerHTML += `
-    <div class="terrario-card">
-        <img src="${imagem}" alt="${t.nomeTerrario}">
-        <h4>${t.nomeTerrario}</h4>
-    </div>
-`;
+    grid.innerHTML = "";
 
-  });
+    terrarios.forEach(t => {
+
+      let imagem;
+
+      if (!t.imagemTerrario) {
+
+        // Sem imagem
+        imagem = "imagens/terrario-default.jpg";
+
+      } else if (t.imagemTerrario.startsWith("uploads/")) {
+
+        // Imagem carregada pelo utilizador
+        imagem = `${SERVER_BASE}/${t.imagemTerrario.replace("uploads/", "")}`;
+
+      } else {
+
+        // Imagem predefinida
+        imagem = t.imagemTerrario;
+
+      }
+
+      grid.innerHTML += `
+        <div class="terrario-card">
+
+          <img
+            src="${imagem}"
+            alt="${t.nomeTerrario}"
+            onerror="this.src='imagens/terrario-default.jpg'"
+          >
+
+          <h4>${t.nomeTerrario}</h4>
+
+        </div>
+      `;
+
+    });
+
+  } catch (erro) {
+
+    console.error("Erro ao carregar terrários:", erro);
+
+  }
 
 }
 

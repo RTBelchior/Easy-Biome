@@ -1,1 +1,3 @@
 const API_BASE = "http://192.168.68.73:8080/api";
+
+const SERVER_BASE = "http://192.168.68.73:8080/uploads";
