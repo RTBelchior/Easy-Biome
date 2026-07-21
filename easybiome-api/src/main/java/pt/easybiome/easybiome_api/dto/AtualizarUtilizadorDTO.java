@@ -6,10 +6,6 @@ public class AtualizarUtilizadorDTO {
     private String emailUtilizador;
     private String password;
 
-
-    public AtualizarUtilizadorDTO() {
-    }
-
     public String getNomeUtilizador() {
         return nomeUtilizador;
     }

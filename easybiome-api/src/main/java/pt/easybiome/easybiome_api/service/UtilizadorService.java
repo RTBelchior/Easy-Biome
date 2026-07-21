@@ -1,5 +1,6 @@
 package pt.easybiome.easybiome_api.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,11 +32,15 @@ public class UtilizadorService {
 
         utilizador.setNomeUtilizador(dto.getNome().trim());
         utilizador.setEmailUtilizador(dto.getEmail().trim());
+
         utilizador.setPasswordHashUtilizador(
                 encoder.encode(dto.getPassword()));
 
         utilizador.setTipoUtilizador("UTILIZADOR");
         utilizador.setAtivoUtilizador(true);
+
+        // Data de criação da conta
+        utilizador.setCriadoEm(LocalDateTime.now());
 
         return repository.save(utilizador);
     }
@@ -71,15 +76,18 @@ public class UtilizadorService {
         Utilizador u = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
 
-        u.setNomeUtilizador(dto.getNomeUtilizador());
-        u.setEmailUtilizador(dto.getEmailUtilizador());
+        if (dto.getNomeUtilizador() != null && !dto.getNomeUtilizador().isBlank()) {
+            u.setNomeUtilizador(dto.getNomeUtilizador());
+        }
+
+        if (dto.getEmailUtilizador() != null && !dto.getEmailUtilizador().isBlank()) {
+            u.setEmailUtilizador(dto.getEmailUtilizador());
+        }
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-
             u.setPasswordHashUtilizador(
                     encoder.encode(dto.getPassword())
             );
-
         }
 
         return repository.save(u);

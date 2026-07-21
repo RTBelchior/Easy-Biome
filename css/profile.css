@@ -337,38 +337,124 @@ body {
   color: var(--text2);
 }
 
-.password-wrapper{
+/* ════════════════════════════════════════════
+   PASSWORD + BOTÃO GUARDAR
+   ════════════════════════════════════════════ */
+
+.password-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.password-wrapper {
     position: relative;
     width: 220px;
 }
 
-.password-wrapper .profile-input{
-    width:100%;
-    padding-right:42px;
+.password-wrapper .profile-input {
+    width: 100%;
+    height: 38px;
+    padding: 8px 42px 8px 10px;
 }
 
-.eye-btn{
-    position:absolute;
-    top:50%;
-    right:12px;
-    transform:translateY(-50%);
-    background:none;
-    border:none;
-    color:var(--text3);
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:0;
+/* Botão do olho */
+
+.eye-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+
+    transform: translateY(-50%);
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    background: transparent;
+    border: none;
+
+    color: var(--text3);
+
+    cursor: pointer;
+
+    border-radius: 6px;
+
+    transition: .2s ease;
 }
 
-.eye-btn svg{
-    width:18px;
-    height:18px;
+.eye-btn:hover {
+    color: var(--green);
+    background: var(--green-g);
 }
 
-.eye-btn:hover{
-    color:var(--green);
+.eye-btn svg {
+    width: 17px;
+    height: 17px;
+}
+
+
+/* Botão Guardar */
+
+.save-btn {
+    height: 38px;
+
+    padding: 0 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--green);
+    color: #ffffff;
+
+    border: 1px solid var(--green);
+    border-radius: 8px;
+
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.save-btn:hover {
+    background: #34a96f;
+    border-color: #34a96f;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 12px rgba(61, 186, 126, .18);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+.save-btn:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+}
+
+.save-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .terrarios-grid{
@@ -406,22 +492,6 @@ body {
     color:white;
     padding:8px 10px;
     width:220px;
-}
-
-.save-btn{
-
-    background:#3DBA7E;
-
-    color:white;
-
-    border:none;
-
-    padding:8px 18px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
 }
 
 /* ===== Modal ===== */
@@ -728,6 +798,21 @@ body {
 
     .terrarios-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .password-actions {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+
+    .password-wrapper {
+        flex: 1;
+        width: auto;
+    }
+
+    .save-btn {
+        flex-shrink: 0;
     }
 
 }
