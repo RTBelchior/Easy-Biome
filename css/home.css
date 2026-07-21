@@ -62,7 +62,10 @@ body {
 .terrario-hero {
   position: relative;
   margin: 1.1rem 1.25rem 0;
-  height: 150px;
+  width: auto;
+  height: auto;
+  min-height: 150px;
+  max-height: 500px;
   border-radius: var(--r);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -71,8 +74,10 @@ body {
 
 .terrario-hero-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  min-height: 150px;
+  max-height: 500px;
+  object-fit: contain;
   display: block;
 }
 
@@ -542,10 +547,6 @@ body {
 }
 
 @media (min-width: 540px) and (max-width: 1179px) {
-  .terrario-hero {
-    height: 200px;
-  }
-
   .metrics {
     gap: 14px;
   }
@@ -564,10 +565,6 @@ body {
 @media (min-width: 900px) and (max-width: 1179px) {
   .devices {
     grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .terrario-hero {
-    height: 240px;
   }
 }
 
@@ -618,10 +615,7 @@ body {
   }
 
   /* Reflow do Layout da Home */
-  .terrario-hero {
-    margin: 1.75rem auto 0;
-    height: 220px;
-  }
+
 
   .metrics {
     grid-template-columns: 1fr 1fr;

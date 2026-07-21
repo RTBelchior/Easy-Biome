@@ -119,8 +119,9 @@ async function toggleDev(key) {
 }
 
 async function ligarDispositivo(key, estado, modoManual = true) {
-
   const terrario = getActive();
+  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
+  console.log(utilizador);
 
   const mapa = {
     fan: terrario.fanId,
@@ -131,18 +132,17 @@ async function ligarDispositivo(key, estado, modoManual = true) {
 
   try {
 
-    const resposta = await fetch(
-      `${API_BASE}/dispositivos/${mapa[key]}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          estadoAtual: estado,
-          modoManual: modoManual
-        })
-      }
+    const resposta = await fetch(`${API_BASE}/dispositivos/${mapa[key]}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        estadoAtual: estado,
+        modoManual: modoManual,
+        idUtilizador: utilizador.idUtilizador
+      })
+    }
     );
 
     if (!resposta.ok) {
@@ -159,6 +159,8 @@ async function ligarDispositivo(key, estado, modoManual = true) {
 async function voltarModoAutomatico(key) {
 
   const terrario = getActive();
+  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
+  console.log(utilizador);
 
   const mapa = {
     fan: terrario.fanId,
@@ -178,7 +180,8 @@ async function voltarModoAutomatico(key) {
         },
         body: JSON.stringify({
           estadoAtual: getActive()[key],
-          modoManual: false
+          modoManual: false,
+          idUtilizador: utilizador.idUtilizador
         })
       }
     );
@@ -362,16 +365,16 @@ async function confirmarModoManual() {
 
 function abrirModalTerrario() {
 
-    closeTerrarioPicker();
+  closeTerrarioPicker();
 
-    document.getElementById("modal-terrario").style.display = "flex";
+  document.getElementById("modal-terrario").style.display = "flex";
 
-    imagemPredefinida = "terrarioGrande.jpg";
+  imagemPredefinida = "terrarioGrande.jpg";
 
-    document.querySelectorAll(".terrario-option")
-        .forEach(el => el.classList.remove("selected"));
+  document.querySelectorAll(".terrario-option")
+    .forEach(el => el.classList.remove("selected"));
 
-    document.querySelector(".terrario-option")?.classList.add("selected");
+  document.querySelector(".terrario-option")?.classList.add("selected");
 }
 
 async function guardarTerrario() {

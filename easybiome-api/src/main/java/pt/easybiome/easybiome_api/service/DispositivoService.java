@@ -31,7 +31,9 @@ public class DispositivoService {
     public Dispositivo alterarEstado(
             Long idDispositivo,
             boolean novoEstado,
-            Boolean modoManual) {
+            Boolean modoManual,
+            Long idUtilizador) {
+        System.out.println("idUtilizador recebido = " + idUtilizador);
 
         Dispositivo dispositivo = dispositivoRepository.findById(idDispositivo)
                 .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado"));
@@ -49,7 +51,7 @@ public class DispositivoService {
                     estadoAnterior,
                     novoEstado,
                     "APP",
-                    null,
+                    idUtilizador,
                     novoEstado ? "LIGAR" : "DESLIGAR",
                     dispositivo.getNomeDispositivo() +
                             (novoEstado
@@ -68,7 +70,7 @@ public class DispositivoService {
                     dispositivo.getEstadoAtual(),
                     dispositivo.getEstadoAtual(),
                     "APP",
-                    null,
+                    idUtilizador,
                     modoManual ? "MODO_MANUAL" : "MODO_AUTOMATICO",
                     (modoManual
                             ? "Modo manual ativado para "

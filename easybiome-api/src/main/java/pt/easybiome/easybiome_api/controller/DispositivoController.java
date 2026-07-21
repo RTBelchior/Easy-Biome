@@ -26,10 +26,13 @@ public class DispositivoController {
             @PathVariable Long id,
             @RequestBody Dispositivo dispositivo) {
 
+        System.out.println("ID Utilizador: " + dispositivo.getIdUtilizador());
+
         return service.alterarEstado(
                 id,
                 dispositivo.getEstadoAtual(),
-                dispositivo.getModoManual()
+                dispositivo.getModoManual(),
+                dispositivo.getIdUtilizador()
         );
     }
 }

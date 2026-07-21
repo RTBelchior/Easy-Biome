@@ -1,7 +1,10 @@
 package pt.easybiome.easybiome_api.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "dispositivo")
@@ -29,6 +32,9 @@ public class Dispositivo {
 
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+
+    @Transient
+    private Long idUtilizador;
 
     public Dispositivo() {
     }
@@ -87,5 +93,13 @@ public class Dispositivo {
 
     public void setAtualizadoEm(LocalDateTime atualizadoEm) {
         this.atualizadoEm = atualizadoEm;
+    }
+
+    public Long getIdUtilizador() {
+        return idUtilizador;
+    }
+
+    public void setIdUtilizador(Long idUtilizador) {
+        this.idUtilizador = idUtilizador;
     }
 }
