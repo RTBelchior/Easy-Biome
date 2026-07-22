@@ -4,6 +4,7 @@
    ════════════════════════════════════════════ */
 
 function renderPickerList() {
+
   const list = document.getElementById('picker-list');
 
   if (!list) return;
@@ -14,12 +15,28 @@ function renderPickerList() {
 
     // Se não existir imagem
     if (!imagem) {
-      imagem = "imagens/terrario-default.jpg";
+      imagem = "terrarioGrande.jpg";
     }
 
     // Imagens enviadas pelo utilizador
     if (imagem.startsWith("uploads/")) {
-      imagem = `http://192.168.68.73:8080/${imagem}`;
+
+      // Remove "uploads/" para não ficar:
+      // /uploads/uploads/imagem.jpg
+      const nomeImagem = imagem.replace(/^uploads\//, "");
+
+      imagem = `${SERVER_BASE}/${nomeImagem}`;
+    }
+
+    // Se vier apenas o nome do ficheiro
+    else if (
+      imagem &&
+      !imagem.startsWith("http://") &&
+      !imagem.startsWith("https://") &&
+      !imagem.startsWith("imagens/")
+    ) {
+
+      imagem = `${SERVER_BASE}/${imagem}`;
     }
 
     return `

@@ -11,15 +11,38 @@ function renderHero() {
 
   let imagem = t.imagemTerrario;
 
-  if (imagem && imagem.startsWith("uploads/")) {
-    imagem = `${SERVER_BASE}/${imagem}`;
+  if (imagem) {
+
+    // Se a API devolver "uploads/nome.jpg"
+    if (imagem.startsWith("uploads/")) {
+      imagem = `${SERVER_BASE}/${imagem.substring("uploads/".length)}`;
+    }
+
+    // Se a API devolver apenas "nome.jpg"
+    else if (!imagem.startsWith("http")) {
+      imagem = `${SERVER_BASE}/${imagem}`;
+    }
+
+  } else {
+
+    // Imagem predefinida local
+    imagem = "imagens/Terrarios/terrarioPequeno.jpg";
+
   }
 
-  if (!imagem) {
-    imagem = "imagens/terrario-default.jpg";
-  }
+  const img = document.getElementById("terrario-img");
 
-  document.getElementById("terrario-img").src = imagem;
+  if (img) {
+    img.src = imagem;
+
+    img.onerror = function () {
+      console.error("Não foi possível carregar a imagem:", imagem);
+
+      // Fallback local
+      this.onerror = null;
+      this.src = "imagens/Terrarios/terrarioPequeno.jpg";
+    };
+  }
 
   document.getElementById("terrario-name").textContent =
     t.nomeTerrario;
