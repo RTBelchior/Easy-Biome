@@ -123,41 +123,75 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function carregarDefinicoes() {
   console.log("carregarDefinicoes foi chamada");
+
   const idTerrario = localStorage.getItem("easybiome_active_id");
 
-  if (!idTerrario) return;
+  if (!idTerrario) {
+    console.error("Nenhum terrário ativo.");
+    return;
+  }
+
   console.log("ID Terrário:", idTerrario);
-  const resposta = await fetch(`${API_BASE}/terrarios/${idTerrario}`);
-  const terrario = await resposta.json();
 
-  console.log("Terrário:", terrario);
-  console.log("ID:", idTerrario);
+  try {
+    const resposta = await fetch(`${API_BASE}/terrarios/${idTerrario}`);
 
-  document.getElementById("set-nome").textContent =
-    terrario.nomeTerrario;
+    if (!resposta.ok) {
+      console.error("Erro ao carregar terrário:", await resposta.text());
+      return;
+    }
 
-  document.getElementById("set-temp-min").value =
-    terrario.tempTerrarioMin;
+    const terrario = await resposta.json();
 
-  document.getElementById("set-temp-max").value =
-    terrario.tempTerrarioMax;
+    console.log("Terrário:", terrario);
 
-  document.getElementById("set-hum-min").value =
-    terrario.humidadeTerrarioMin;
+    // Nome apresentado no campo "Terrário Selecionado"
+    document.getElementById("set-nome").textContent =
+      terrario.nomeTerrario || "Sem nome";
 
-  document.getElementById("set-hum-max").value =
-    terrario.humidadeTerrarioMax;
+    // Nome no campo de edição
+    document.getElementById("set-nome-input").value =
+      terrario.nomeTerrario || "";
 
-  document.getElementById("set-hora-ligar").value =
-    terrario.horaLigarIluminacao.substring(0, 5);
+    // Descrição no campo de edição
+    document.getElementById("set-descricao-input").value =
+      terrario.descricaoTerrario || "";
 
-  document.getElementById("set-hora-desligar").value =
-    terrario.horaDesligarIluminacao.substring(0, 5);
+    // Temperatura
+    document.getElementById("set-temp-min").value =
+      terrario.tempTerrarioMin ?? "";
+
+    document.getElementById("set-temp-max").value =
+      terrario.tempTerrarioMax ?? "";
+
+    // Humidade
+    document.getElementById("set-hum-min").value =
+      terrario.humidadeTerrarioMin ?? "";
+
+    document.getElementById("set-hum-max").value =
+      terrario.humidadeTerrarioMax ?? "";
+
+    // Iluminação
+    document.getElementById("set-hora-ligar").value =
+      terrario.horaLigarIluminacao
+        ? terrario.horaLigarIluminacao.substring(0, 5)
+        : "";
+
+    document.getElementById("set-hora-desligar").value =
+      terrario.horaDesligarIluminacao
+        ? terrario.horaDesligarIluminacao.substring(0, 5)
+        : "";
+
+  } catch (erro) {
+    console.error("Erro ao carregar definições:", erro);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
 
   [
+    "set-nome-input",
+    "set-descricao-input",
     "set-temp-min",
     "set-temp-max",
     "set-hum-min",
@@ -165,11 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
     "set-hora-ligar",
     "set-hora-desligar"
   ].forEach(id => {
+
     const input = document.getElementById(id);
 
     if (input) {
       input.addEventListener("change", guardarDefinicoes);
     }
+
   });
 
 });
@@ -179,32 +215,73 @@ async function guardarDefinicoes() {
 
   const idTerrario = localStorage.getItem("easybiome_active_id");
 
-  const dados = {
-    tempMin: parseFloat(document.getElementById("set-temp-min").value),
-    tempMax: parseFloat(document.getElementById("set-temp-max").value),
-
-    humMin: parseFloat(document.getElementById("set-hum-min").value),
-    humMax: parseFloat(document.getElementById("set-hum-max").value),
-
-    horaLigar: document.getElementById("set-hora-ligar").value,
-    horaDesligar: document.getElementById("set-hora-desligar").value
-  };
-  console.log(dados);
-
-  const resposta = await fetch(`${API_BASE}/terrarios/${idTerrario}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(dados)
-  });
-
-  if (!resposta.ok) {
-    console.error(await resposta.text());
+  if (!idTerrario) {
+    console.error("Nenhum terrário ativo.");
     return;
   }
 
-  console.log("Definições guardadas.");
+  const dados = {
+
+    // Nome e descrição
+    nomeTerrario:
+      document.getElementById("set-nome-input").value.trim(),
+
+    descricaoTerrario:
+      document.getElementById("set-descricao-input").value.trim(),
+
+    // Temperatura
+    tempMin:
+      parseFloat(document.getElementById("set-temp-min").value),
+
+    tempMax:
+      parseFloat(document.getElementById("set-temp-max").value),
+
+    // Humidade
+    humMin:
+      parseFloat(document.getElementById("set-hum-min").value),
+
+    humMax:
+      parseFloat(document.getElementById("set-hum-max").value),
+
+    // Iluminação
+    horaLigar:
+      document.getElementById("set-hora-ligar").value,
+
+    horaDesligar:
+      document.getElementById("set-hora-desligar").value
+  };
+
+  console.log("Dados a guardar:", dados);
+
+  try {
+
+    const resposta = await fetch(
+      `${API_BASE}/terrarios/${idTerrario}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+      }
+    );
+
+    if (!resposta.ok) {
+      console.error("Erro ao guardar:", await resposta.text());
+      return;
+    }
+
+    // Atualiza o nome apresentado no topo
+    document.getElementById("set-nome").textContent =
+      dados.nomeTerrario;
+
+    console.log("Definições guardadas com sucesso.");
+
+  } catch (erro) {
+
+    console.error("Erro ao guardar definições:", erro);
+
+  }
 }
 
 
@@ -275,63 +352,39 @@ async function guardarTerrario() {
   const nome = document.getElementById("terrario-nome").value.trim();
   const descricao = document.getElementById("terrario-descricao").value.trim();
 
-  const tempMin = document.getElementById("temp-min").value;
-  const tempMax = document.getElementById("temp-max").value;
-
-  const humMin = document.getElementById("hum-min").value;
-  const humMax = document.getElementById("hum-max").value;
-
-  const horaLigar = document.getElementById("hora-ligar").value;
-  const horaDesligar = document.getElementById("hora-desligar").value;
-
-  const imagemUpload = document.getElementById("terrario-imagem").files[0];
-
-  if (
-    !nome ||
-    !tempMin ||
-    !tempMax ||
-    !humMin ||
-    !humMax ||
-    !horaLigar ||
-    !horaDesligar
-  ) {
-    alert("Preencha todos os campos obrigatórios.");
+  if (!nome) {
+    alert("Por favor, introduza o nome do terrário.");
     return;
   }
 
   const utilizador = JSON.parse(localStorage.getItem("utilizador"));
 
-  const formData = new FormData();
-
-  formData.append("nome", nome);
-  formData.append("descricao", descricao);
-  formData.append("tempMin", tempMin);
-  formData.append("tempMax", tempMax);
-  formData.append("humMin", humMin);
-  formData.append("humMax", humMax);
-  formData.append("horaLigar", horaLigar);
-  formData.append("horaDesligar", horaDesligar);
-  formData.append("idUtilizador", utilizador.idUtilizador);
-
-  // Envia upload ou imagem pré-definida
-  if (imagemUpload) {
-
-    formData.append("imagem", imagemUpload);
-
-  } else {
-
-    formData.append("imagemPredefinida", imagemPredefinida);
-
+  if (!utilizador) {
+    alert("Utilizador não encontrado.");
+    return;
   }
+
+  const dados = {
+    nomeTerrario: nome,
+    descricaoTerrario: descricao,
+    idUtilizador: utilizador.idUtilizador
+  };
+
+  console.log("Dados a enviar:", dados);
 
   try {
 
     const resposta = await fetch(`${API_BASE}/terrarios`, {
       method: "POST",
-      body: formData
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(dados)
     });
 
     if (!resposta.ok) {
+      const erro = await resposta.text();
+      console.error("Erro do backend:", erro);
       throw new Error("Erro ao criar terrário.");
     }
 
