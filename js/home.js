@@ -245,10 +245,10 @@ function renderMetrics() {
     humHint.textContent =
       hw
         ? (
-            t.hum < t.humidadeTerrarioMin
-              ? "Abaixo do limite"
-              : "Acima do limite"
-          )
+          t.hum < t.humidadeTerrarioMin
+            ? "Abaixo do limite"
+            : "Acima do limite"
+        )
         : `Normal · ${t.humidadeTerrarioMin}–${t.humidadeTerrarioMax}%`;
   }
 
@@ -446,114 +446,320 @@ async function atualizarDados() {
 
   console.log("A atualizar dados...");
 
+  const terrario = getActive();
+
+  if (!terrario) return;
+
+
+  // ==========================================================
+  // RESET DOS DADOS ANTES DE ATUALIZAR
+  // ==========================================================
+  // Isto evita que os dados do terrário anterior
+  // fiquem visíveis quando mudamos de terrário.
+
+
+  terrario.temp = null;
+  terrario.hum = null;
+
+
+  // Todos os dispositivos começam desligados
+
+  terrario.fan = false;
+  terrario.heat = false;
+  terrario.light = false;
+  terrario.humidifier = false;
+
+
+  // Limpar modo manual
+
+  terrario.fanManual = false;
+  terrario.heatManual = false;
+  terrario.lightManual = false;
+  terrario.humidifierManual = false;
+
+
+  // Limpar IDs dos dispositivos
+
+  terrario.fanId = null;
+  terrario.heatId = null;
+  terrario.lightId = null;
+  terrario.humidifierId = null;
+
+
+  // ==========================================================
+  // ATUALIZAR TEMPERATURA E HUMIDADE
+  // ==========================================================
+
   try {
 
-    const terrario = getActive();
-    if (!terrario) return;
+    const resposta =
+      await fetch(
+        `${API_BASE}/leituras/ultima/${terrario.idTerrario}`
+      );
 
-    // Última leitura
 
-    const resposta = await fetch(
-      `${API_BASE}/leituras/ultima/${terrario.idTerrario}`
-    );
+    if (resposta.ok) {
 
-    if (!resposta.ok)
-      throw new Error("Erro ao obter leitura");
+      const dados =
+        await resposta.json();
 
-    const dados = await resposta.json();
-    console.log(dados);
+      console.log(
+        "Última leitura:",
+        dados
+      );
 
-    terrario.temp = dados.temperatura;
-    terrario.hum = dados.humidade;
 
-    // Dispositivos
+      terrario.temp =
+        dados.temperatura;
 
-    const respostaDispositivos = await fetch(
-      `${API_BASE}/dispositivos/terrario/${terrario.idTerrario}`
-    );
+      terrario.hum =
+        dados.humidade;
 
-    if (!respostaDispositivos.ok)
-      throw new Error("Erro ao obter dispositivos");
+    } else {
 
-    const dispositivos = await respostaDispositivos.json();
+      console.log(
+        "Este terrário não possui leituras."
+      );
 
-    let existeModoManual = false;
+      // Mantém null
+      // renderMetrics() irá mostrar --
 
-    dispositivos.forEach(d => {
+      terrario.temp = null;
+      terrario.hum = null;
 
-      switch (d.tipoDispositivo) {
-
-        case "VENTOINHA":
-          terrario.fan = d.estadoAtual;
-          terrario.fanManual = d.modoManual;
-          terrario.fanId = d.idDispositivo;
-          break;
-
-        case "LAMPADA_AQUECIMENTO":
-          terrario.heat = d.estadoAtual;
-          terrario.heatManual = d.modoManual;
-          terrario.heatId = d.idDispositivo;
-          break;
-
-        case "LAMPADA_ILUMINACAO":
-          terrario.light = d.estadoAtual;
-          terrario.lightManual = d.modoManual;
-          terrario.lightId = d.idDispositivo;
-          break;
-
-        case "HUMIDIFICADOR":
-          terrario.humidifier = d.estadoAtual;
-          terrario.humidifierManual = d.modoManual;
-          terrario.humidifierId = d.idDispositivo;
-          break;
-      }
-
-      const mapa = {
-        "VENTOINHA": "fan",
-        "LAMPADA_AQUECIMENTO": "heat",
-        "LAMPADA_ILUMINACAO": "light",
-        "HUMIDIFICADOR": "humidifier"
-      };
-
-      const key = mapa[d.tipoDispositivo];
-
-      const tag = document.getElementById(key + "-manual");
-
-      if (tag) {
-        tag.style.display =
-          d.modoManual ? "inline-block" : "none";
-      }
-
-      const autoBtn = document.getElementById(key + "-auto");
-
-      if (autoBtn) {
-        autoBtn.style.display =
-          d.modoManual ? "inline-flex" : "none";
-      }
-
-      if (d.modoManual) {
-        existeModoManual = true;
-      }
-
-    });
-
-    const banner = document.getElementById("manual-banner");
-
-    if (banner) {
-      banner.style.display =
-        existeModoManual ? "block" : "none";
     }
 
-    renderHero();
-    renderMetrics();
-    renderDevices();
+  } catch (erro) {
+
+    console.log(
+      "Não foi possível obter leituras:",
+      erro
+    );
+
+    terrario.temp = null;
+    terrario.hum = null;
 
   }
-  catch (erro) {
 
-    console.error("Erro:", erro);
+
+  // ==========================================================
+  // ATUALIZAR DISPOSITIVOS
+  // ==========================================================
+
+  let existeModoManual = false;
+
+
+  try {
+
+    const respostaDispositivos =
+      await fetch(
+        `${API_BASE}/dispositivos/terrario/${terrario.idTerrario}`
+      );
+
+
+    if (respostaDispositivos.ok) {
+
+      const dispositivos =
+        await respostaDispositivos.json();
+
+
+      console.log(
+        "Dispositivos:",
+        dispositivos
+      );
+
+
+      dispositivos.forEach(d => {
+
+
+        // ====================================================
+        // GUARDAR DADOS DO DISPOSITIVO
+        // ====================================================
+
+        switch (d.tipoDispositivo) {
+
+          case "VENTOINHA":
+
+            terrario.fan =
+              d.estadoAtual;
+
+            terrario.fanManual =
+              d.modoManual;
+
+            terrario.fanId =
+              d.idDispositivo;
+
+            break;
+
+
+          case "LAMPADA_AQUECIMENTO":
+
+            terrario.heat =
+              d.estadoAtual;
+
+            terrario.heatManual =
+              d.modoManual;
+
+            terrario.heatId =
+              d.idDispositivo;
+
+            break;
+
+
+          case "LAMPADA_ILUMINACAO":
+
+            terrario.light =
+              d.estadoAtual;
+
+            terrario.lightManual =
+              d.modoManual;
+
+            terrario.lightId =
+              d.idDispositivo;
+
+            break;
+
+
+          case "HUMIDIFICADOR":
+
+            terrario.humidifier =
+              d.estadoAtual;
+
+            terrario.humidifierManual =
+              d.modoManual;
+
+            terrario.humidifierId =
+              d.idDispositivo;
+
+            break;
+
+        }
+
+
+        // ====================================================
+        // MAPEAR TIPO PARA ID HTML
+        // ====================================================
+
+        const mapa = {
+
+          "VENTOINHA":
+            "fan",
+
+          "LAMPADA_AQUECIMENTO":
+            "heat",
+
+          "LAMPADA_ILUMINACAO":
+            "light",
+
+          "HUMIDIFICADOR":
+            "humidifier"
+
+        };
+
+
+        const key =
+          mapa[d.tipoDispositivo];
+
+
+        if (!key) return;
+
+
+        // ====================================================
+        // INDICADOR DE MODO MANUAL
+        // ====================================================
+
+        const tag =
+          document.getElementById(
+            key + "-manual"
+          );
+
+
+        if (tag) {
+
+          tag.style.display =
+            d.modoManual
+              ? "inline-block"
+              : "none";
+
+        }
+
+
+        // ====================================================
+        // BOTÃO MODO AUTOMÁTICO
+        // ====================================================
+
+        const autoBtn =
+          document.getElementById(
+            key + "-auto"
+          );
+
+
+        if (autoBtn) {
+
+          autoBtn.style.display =
+            d.modoManual
+              ? "inline-flex"
+              : "none";
+
+        }
+
+
+        if (d.modoManual) {
+
+          existeModoManual = true;
+
+        }
+
+      });
+
+    } else {
+
+      console.log(
+        "Este terrário não possui dispositivos."
+      );
+
+    }
+
+  } catch (erro) {
+
+    console.log(
+      "Não foi possível obter dispositivos:",
+      erro
+    );
 
   }
+
+
+  // ==========================================================
+  // BANNER DE MODO MANUAL
+  // ==========================================================
+
+  const banner =
+    document.getElementById(
+      "manual-banner"
+    );
+
+
+  if (banner) {
+
+    banner.style.display =
+      existeModoManual
+        ? "block"
+        : "none";
+
+  }
+
+
+  // ==========================================================
+  // ATUALIZAR INTERFACE
+  // ==========================================================
+
+  renderHero();
+
+  renderMetrics();
+
+  renderDevices();
+
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

@@ -457,3 +457,12 @@ async function executeShare() {
     alert(await resposta.text());
   }
 }
+
+function terminarSessao() {
+
+  localStorage.removeItem("utilizador");
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+}

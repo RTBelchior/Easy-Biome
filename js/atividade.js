@@ -228,7 +228,7 @@ function criarCard(log) {
 /* ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-
+    verificarSessao();
     renderPickerList();
 
     carregarAtividade();

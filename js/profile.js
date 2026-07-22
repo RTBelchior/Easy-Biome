@@ -596,3 +596,12 @@ function abrirConfirmacao(
     };
 
 }
+
+function terminarSessao() {
+
+  localStorage.removeItem("utilizador");
+
+  sessionStorage.clear();
+
+  window.location.href = "login.html";
+}

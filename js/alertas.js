@@ -5,7 +5,7 @@
    let todosOsAlertas = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-
+  verificarSessao();
   renderPickerList();
 
   document
@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     .addEventListener("click", limparFiltros);
 
   await carregarAlertas();
+
 
 });
 
