@@ -25,8 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   configurarEmail();
   configurarPassword();
-  configurarTogglePassword();
-
 });
 
 
@@ -379,36 +377,32 @@ function configurarEmail() {
 
 }
 
-
 /* ════════════════════════════════════════════
    PASSWORD
    ════════════════════════════════════════════ */
 
 function configurarPassword() {
 
-  const input =
+  const passwordInput =
     document.getElementById("password");
 
-  const botaoGuardar =
-    document.getElementById("guardar-password");
 
-
-  botaoGuardar.addEventListener(
-    "click",
-    async () => {
+  passwordInput.addEventListener(
+    "change",
+    () => {
 
       const novaPassword =
-        input.value.trim();
+        passwordInput.value.trim();
 
 
-      // Verificar se foi preenchida
+      // Verificar se está preenchida
       if (novaPassword === "") {
 
         alert(
           "Introduza uma nova palavra-passe."
         );
 
-        input.focus();
+        passwordInput.focus();
 
         return;
 
@@ -422,13 +416,14 @@ function configurarPassword() {
           "A palavra-passe deve ter pelo menos 6 caracteres."
         );
 
-        input.focus();
+        passwordInput.focus();
 
         return;
 
       }
 
 
+      // Abrir cartão de confirmação
       abrirConfirmacao(
 
         "Alterar palavra-passe",
@@ -440,12 +435,6 @@ function configurarPassword() {
 
           try {
 
-            botaoGuardar.disabled = true;
-
-            botaoGuardar.textContent =
-              "A guardar...";
-
-
             await atualizarUtilizador({
 
               password:
@@ -454,11 +443,8 @@ function configurarPassword() {
             });
 
 
-            // Limpar campo
-            input.value = "";
-
-            input.type =
-              "password";
+            // Limpar campo após alteração
+            passwordInput.value = "";
 
 
             alert(
@@ -469,16 +455,9 @@ function configurarPassword() {
           } catch (erro) {
 
             console.error(
-              "Erro ao alterar password:",
+              "Erro ao alterar palavra-passe:",
               erro
             );
-
-          } finally {
-
-            botaoGuardar.disabled = false;
-
-            botaoGuardar.textContent =
-              "Guardar alterações";
 
           }
 
@@ -487,10 +466,8 @@ function configurarPassword() {
 
         () => {
 
-          input.value = "";
-
-          input.type =
-            "password";
+          // Se cancelar, limpar campo
+          passwordInput.value = "";
 
         }
 
@@ -501,46 +478,6 @@ function configurarPassword() {
   );
 
 }
-
-
-/* ════════════════════════════════════════════
-   MOSTRAR / ESCONDER PASSWORD
-   ════════════════════════════════════════════ */
-
-function configurarTogglePassword() {
-
-  const input =
-    document.getElementById("password");
-
-  const toggle =
-    document.getElementById("toggle-password");
-
-
-  toggle.addEventListener(
-    "click",
-    () => {
-
-      if (input.type === "password") {
-
-        input.type = "text";
-
-        toggle.title =
-          "Esconder password";
-
-      } else {
-
-        input.type = "password";
-
-        toggle.title =
-          "Mostrar password";
-
-      }
-
-    }
-  );
-
-}
-
 
 /* ════════════════════════════════════════════
    ATUALIZAR UTILIZADOR
