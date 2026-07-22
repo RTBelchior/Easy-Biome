@@ -11,41 +11,104 @@ function renderHero() {
 
   let imagem = t.imagemTerrario;
 
-  if (imagem) {
+  console.log("Imagem recebida do terrário:", imagem);
 
-    // Se a API devolver "uploads/nome.jpg"
-    if (imagem.startsWith("uploads/")) {
-      imagem = `${SERVER_BASE}/${imagem.substring("uploads/".length)}`;
-    }
+  // ==========================================================
+  // 1. SE NÃO EXISTIR IMAGEM
+  // ==========================================================
 
-    // Se a API devolver apenas "nome.jpg"
-    else if (!imagem.startsWith("http")) {
-      imagem = `${SERVER_BASE}/${imagem}`;
-    }
+  if (!imagem) {
 
-  } else {
-
-    // Imagem predefinida local
-    imagem = "imagens/Terrarios/terrarioPequeno.jpg";
+    imagem = "terrarioGrande.jpg";
 
   }
 
-  const img = document.getElementById("terrario-img");
+  // ==========================================================
+  // 2. IMAGEM ENVIADA PELO UTILIZADOR
+  // Exemplo:
+  // uploads/minhaImagem.jpg
+  // ==========================================================
+
+  if (imagem.startsWith("uploads/")) {
+
+    // Remove "uploads/" para evitar:
+    // /uploads/uploads/minhaImagem.jpg
+
+    const nomeImagem =
+      imagem.replace(/^uploads\//, "");
+
+    imagem =
+      `${SERVER_BASE}/${nomeImagem}`;
+
+  }
+
+  // ==========================================================
+  // 3. SE FOR APENAS O NOME DA IMAGEM
+  // Exemplo:
+  // terrarioMedio.jpg
+  // terrarioGrande.jpg
+  // terrarioPequeno.jpg
+  // ==========================================================
+
+  else if (
+    imagem &&
+    !imagem.startsWith("http://") &&
+    !imagem.startsWith("https://") &&
+    !imagem.startsWith("imagens/")
+  ) {
+
+    imagem =
+      `${SERVER_BASE}/${imagem}`;
+
+  }
+
+  // ==========================================================
+  // 4. SE JÁ FOR:
+  // imagens/Terrarios/terrarioMedio.jpg
+  //
+  // OU:
+  // http://...
+  //
+  // Não altera.
+  // ==========================================================
+
+  console.log("Imagem final a carregar:", imagem);
+
+  const img =
+    document.getElementById("terrario-img");
 
   if (img) {
+
     img.src = imagem;
 
     img.onerror = function () {
-      console.error("Não foi possível carregar a imagem:", imagem);
 
-      // Fallback local
+      console.error(
+        "Não foi possível carregar a imagem:",
+        imagem
+      );
+
+      // Evita loop infinito
       this.onerror = null;
-      this.src = "imagens/Terrarios/terrarioPequeno.jpg";
+
+      // Fallback
+      this.src =
+        "imagens/Terrarios/terrarioGrande.jpg";
+
     };
+
   }
 
-  document.getElementById("terrario-name").textContent =
-    t.nomeTerrario;
+  const nomeTerrario =
+    document.getElementById("terrario-name");
+
+  if (nomeTerrario) {
+
+    nomeTerrario.textContent =
+      t.nomeTerrario;
+
+  }
+
 }
 
 function renderMetrics() {
@@ -53,50 +116,142 @@ function renderMetrics() {
   const t = getActive();
 
   if (!t) return;
-  if (t.temp == null || t.hum == null) return;
+
+  const tempVal = document.getElementById("temp-val");
+  const humVal = document.getElementById("hum-val");
+
+  const tempCard = document.getElementById("temp-card");
+  const humCard = document.getElementById("hum-card");
+
+  const tempHint = document.getElementById("temp-hint");
+  const humHint = document.getElementById("hum-hint");
+
+
+  // ==========================================================
+  // SEM LEITURA DE TEMPERATURA/HUMIDADE
+  // ==========================================================
+
+  if (t.temp == null || t.hum == null) {
+
+    if (tempVal) {
+      tempVal.innerHTML = "--<span class=\"unit\">°C</span>";
+      tempVal.className = "m-val";
+    }
+
+    if (humVal) {
+      humVal.innerHTML = "--<span class=\"unit\">%</span>";
+      humVal.className = "m-val";
+    }
+
+    if (tempCard) {
+      tempCard.className = "m-card";
+    }
+
+    if (humCard) {
+      humCard.className = "m-card";
+    }
+
+    if (tempHint) {
+      tempHint.textContent = "Sem dados disponíveis";
+      tempHint.className = "m-hint";
+    }
+
+    if (humHint) {
+      humHint.textContent = "Sem dados disponíveis";
+      humHint.className = "m-hint";
+    }
+
+    return;
+  }
+
+
+  // ==========================================================
+  // TEMPERATURA
+  // ==========================================================
+
   const tw =
     t.temp > t.tempTerrarioMax ||
     t.temp < t.tempTerrarioMin;
+
+
+  if (tempVal) {
+
+    tempVal.innerHTML =
+      t.temp.toFixed(1) +
+      '<span class="unit">°C</span>';
+
+    tempVal.className =
+      "m-val " +
+      (tw ? "warn" : "ok");
+  }
+
+
+  if (tempCard) {
+
+    tempCard.className =
+      "m-card" +
+      (tw ? " warn-border" : "");
+  }
+
+
+  if (tempHint) {
+
+    tempHint.className =
+      "m-hint" +
+      (tw ? " warn" : "");
+
+    tempHint.textContent =
+      tw
+        ? "Fora dos limites!"
+        : `Normal · ${t.tempTerrarioMin}–${t.tempTerrarioMax}°C`;
+  }
+
+
+  // ==========================================================
+  // HUMIDADE
+  // ==========================================================
 
   const hw =
     t.hum > t.humidadeTerrarioMax ||
     t.hum < t.humidadeTerrarioMin;
 
-  document.getElementById("temp-val").innerHTML =
-    t.temp.toFixed(1) + '<span class="unit">°C</span>';
 
-  document.getElementById("temp-val").className =
-    "m-val " + (tw ? "warn" : "ok");
+  if (humVal) {
 
-  document.getElementById("temp-card").className =
-    "m-card" + (tw ? " warn-border" : "");
+    humVal.innerHTML =
+      Math.round(t.hum) +
+      '<span class="unit">%</span>';
 
-  document.getElementById("temp-hint").className =
-    "m-hint" + (tw ? " warn" : "");
+    humVal.className =
+      "m-val " +
+      (hw ? "warn" : "ok");
+  }
 
-  document.getElementById("temp-hint").textContent =
-    tw
-      ? "Fora dos limites!"
-      : `Normal · ${t.tempTerrarioMin}–${t.tempTerrarioMax}°C`
 
-  document.getElementById("hum-val").innerHTML =
-    Math.round(t.hum) + '<span class="unit">%</span>';
+  if (humCard) {
 
-  document.getElementById("hum-val").className =
-    "m-val " + (hw ? "warn" : "ok");
+    humCard.className =
+      "m-card" +
+      (hw ? " warn-border" : "");
+  }
 
-  document.getElementById("hum-card").className =
-    "m-card" + (hw ? " warn-border" : "");
 
-  document.getElementById("hum-hint").className =
-    "m-hint" + (hw ? " warn" : "");
+  if (humHint) {
 
-  document.getElementById("hum-hint").textContent =
-    hw
-      ? (t.hum < t.humidadeTerrarioMin
-        ? "Abaixo do limite"
-        : "Acima do limite")
-      : `Normal · ${t.humidadeTerrarioMin}–${t.humidadeTerrarioMax}%`;
+    humHint.className =
+      "m-hint" +
+      (hw ? " warn" : "");
+
+    humHint.textContent =
+      hw
+        ? (
+            t.hum < t.humidadeTerrarioMin
+              ? "Abaixo do limite"
+              : "Acima do limite"
+          )
+        : `Normal · ${t.humidadeTerrarioMin}–${t.humidadeTerrarioMax}%`;
+  }
+
 }
 
 function renderDevices() {
@@ -105,32 +260,82 @@ function renderDevices() {
 
   if (!t) return;
 
-  ["fan", "heat", "light", "humidifier"].forEach(key => {
 
-    const on = t[key];
+  [
+    "fan",
+    "heat",
+    "light",
+    "humidifier"
+  ].forEach(key => {
 
-    const toggleEl = document.getElementById(key + "-t");
-    const iconEl = document.getElementById(key + "-icon");
-    const subEl = document.getElementById(key + "-sub");
+    // Se não existir valor, considera desligado
+    const on = t[key] === true;
 
-    if (toggleEl)
-      toggleEl.classList.toggle("on", on);
 
-    if (iconEl)
-      iconEl.classList.toggle("on", on);
+    const toggleEl =
+      document.getElementById(key + "-t");
+
+    const iconEl =
+      document.getElementById(key + "-icon");
+
+    const subEl =
+      document.getElementById(key + "-sub");
+
+
+    if (toggleEl) {
+
+      toggleEl.classList.toggle(
+        "on",
+        on
+      );
+
+    }
+
+
+    if (iconEl) {
+
+      iconEl.classList.toggle(
+        "on",
+        on
+      );
+
+    }
+
 
     if (subEl) {
 
       const labels = {
-        fan: on ? "A ventilar" : "Desligada",
-        heat: on ? "Ligada · Relé OK" : "Desligada",
-        light: on ? "Ligada" : "Desligada",
-        humidifier: on ? "A humidificar" : "Desligado"
+
+        fan:
+          on
+            ? "A ventilar"
+            : "Desligada",
+
+        heat:
+          on
+            ? "Ligada · Relé OK"
+            : "Desligada",
+
+        light:
+          on
+            ? "Ligada"
+            : "Desligada",
+
+        humidifier:
+          on
+            ? "A humidificar"
+            : "Desligado"
+
       };
 
-      subEl.textContent = labels[key];
+
+      subEl.textContent =
+        labels[key];
+
     }
+
   });
+
 }
 
 async function toggleDev(key) {
