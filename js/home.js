@@ -355,10 +355,58 @@ async function toggleDev(key) {
   await ligarDispositivo(key, novoEstado, true);
 }
 
-async function ligarDispositivo(key, estado, modoManual = true) {
+function associarIdsDispositivos(terrario, dispositivos) {
+
+  dispositivos.forEach(dispositivo => {
+
+    if (dispositivo.tipoDispositivo === "VENTOINHA") {
+      terrario.fanId = dispositivo.idDispositivo;
+    }
+
+    else if (dispositivo.tipoDispositivo === "LAMPADA_AQUECIMENTO") {
+      terrario.heatId = dispositivo.idDispositivo;
+    }
+
+    else if (dispositivo.tipoDispositivo === "LAMPADA_ILUMINACAO") {
+      terrario.lightId = dispositivo.idDispositivo;
+    }
+
+    else if (dispositivo.tipoDispositivo === "HUMIDIFICADOR") {
+      terrario.humidifierId = dispositivo.idDispositivo;
+    }
+
+  });
+
+  return terrario;
+}
+
+async function ligarDispositivo(
+  key,
+  estado,
+  modoManual = true
+) {
+
   const terrario = getActive();
-  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
-  console.log(utilizador);
+
+  if (!terrario) {
+    console.error("ERRO: Nenhum terrário ativo!");
+    return;
+  }
+
+  const utilizador =
+    JSON.parse(localStorage.getItem("utilizador"));
+
+  if (!utilizador || !utilizador.idUtilizador) {
+    console.error(
+      "ERRO: Utilizador não encontrado!",
+      utilizador
+    );
+    return;
+  }
+
+  // ==========================================================
+  // MAPA DOS IDs DOS DISPOSITIVOS
+  // ==========================================================
 
   const mapa = {
     fan: terrario.fanId,
@@ -367,70 +415,308 @@ async function ligarDispositivo(key, estado, modoManual = true) {
     humidifier: terrario.humidifierId
   };
 
-  try {
+  let idDispositivo = mapa[key];
 
-    const resposta = await fetch(`${API_BASE}/dispositivos/${mapa[key]}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        estadoAtual: estado,
-        modoManual: modoManual,
-        idUtilizador: utilizador.idUtilizador
-      })
-    }
+  console.log("=================================");
+  console.log("ALTERAR DISPOSITIVO");
+  console.log("Key:", key);
+  console.log("Estado:", estado);
+  console.log("Modo manual:", modoManual);
+  console.log("IDs atuais:", mapa);
+  console.log("ID encontrado:", idDispositivo);
+  console.log("=================================");
+
+
+  // ==========================================================
+  // SE NÃO TIVER ID, ATUALIZAR OS DISPOSITIVOS
+  // ==========================================================
+
+  if (
+    idDispositivo === null ||
+    idDispositivo === undefined
+  ) {
+
+    console.warn(
+      "ID não encontrado. A atualizar dispositivos..."
     );
-
-    if (!resposta.ok) {
-      throw new Error("Erro ao atualizar dispositivo");
-    }
 
     await atualizarDados();
 
+    // Voltar a obter o terrário ativo
+    const terrarioAtualizado = getActive();
+
+    const mapaAtualizado = {
+      fan: terrarioAtualizado.fanId,
+      heat: terrarioAtualizado.heatId,
+      light: terrarioAtualizado.lightId,
+      humidifier: terrarioAtualizado.humidifierId
+    };
+
+    idDispositivo =
+      mapaAtualizado[key];
+
+    console.log(
+      "IDs depois da atualização:",
+      mapaAtualizado
+    );
+
+    console.log(
+      "ID depois da atualização:",
+      idDispositivo
+    );
+  }
+
+
+  // ==========================================================
+  // VALIDAR ID
+  // ==========================================================
+
+  if (
+    idDispositivo === null ||
+    idDispositivo === undefined
+  ) {
+
+    console.error(
+      "ERRO: ID do dispositivo não encontrado!",
+      {
+        key: key,
+        terrario: getActive()
+      }
+    );
+
+    alert(
+      "Não foi possível encontrar o ID deste dispositivo."
+    );
+
+    return;
+  }
+
+
+  // ==========================================================
+  // ENVIAR PUT PARA A API
+  // ==========================================================
+
+  const url =
+    `${API_BASE}/dispositivos/${idDispositivo}`;
+
+  console.log(
+    "A enviar PUT para:",
+    url
+  );
+
+
+  try {
+
+    const resposta =
+      await fetch(
+        url,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+
+              estadoAtual:
+                estado,
+
+              modoManual:
+                modoManual,
+
+              idUtilizador:
+                utilizador.idUtilizador
+
+            })
+        }
+      );
+
+
+    console.log(
+      "Resposta PUT:",
+      resposta.status
+    );
+
+
+    // ========================================================
+    // VERIFICAR RESPOSTA
+    // ========================================================
+
+    if (!resposta.ok) {
+
+      const erroTexto =
+        await resposta.text();
+
+      console.error(
+        "Erro devolvido pela API:",
+        erroTexto
+      );
+
+      throw new Error(
+        `Erro ao atualizar dispositivo. HTTP ${resposta.status}`
+      );
+    }
+
+
+    // ========================================================
+    // LER RESPOSTA DA API
+    // ========================================================
+
+    const dispositivoAtualizado =
+      await resposta.json();
+
+    console.log(
+      "Dispositivo atualizado:",
+      dispositivoAtualizado
+    );
+
+
+    // ========================================================
+    // ATUALIZAR OS DADOS DO SITE
+    // ========================================================
+
+    await atualizarDados();
+
+
+    console.log(
+      "Dispositivo atualizado com sucesso!"
+    );
+
+
   } catch (erro) {
-    console.error(erro);
+
+    console.error(
+      "Erro ao ligar/desligar dispositivo:",
+      erro
+    );
+
+    alert(
+      "Não foi possível alterar o estado do dispositivo."
+    );
   }
 }
 
 async function voltarModoAutomatico(key) {
 
-  const terrario = getActive();
-  const utilizador = JSON.parse(localStorage.getItem("utilizador"));
-  console.log(utilizador);
+  const terrario =
+    getActive();
+
+
+  const utilizador =
+    JSON.parse(
+      localStorage.getItem(
+        "utilizador"
+      )
+    );
+
 
   const mapa = {
-    fan: terrario.fanId,
-    heat: terrario.heatId,
-    light: terrario.lightId,
-    humidifier: terrario.humidifierId
+
+    fan:
+      terrario.fanId,
+
+    heat:
+      terrario.heatId,
+
+    light:
+      terrario.lightId,
+
+    humidifier:
+      terrario.humidifierId
+
   };
+
+
+  const idDispositivo =
+    mapa[key];
+
+
+  if (
+    idDispositivo === null ||
+    idDispositivo === undefined
+  ) {
+
+    console.error(
+      "ID do dispositivo não encontrado:",
+      key
+    );
+
+
+    return;
+
+  }
+
 
   try {
 
-    const resposta = await fetch(
-      `${API_BASE}/dispositivos/${mapa[key]}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          estadoAtual: getActive()[key],
-          modoManual: false,
-          idUtilizador: utilizador.idUtilizador
-        })
-      }
-    );
+    const resposta =
+      await fetch(
 
-    if (!resposta.ok)
-      throw new Error("Erro");
+        `${API_BASE}/dispositivos/${idDispositivo}`,
+
+        {
+
+          method:
+            "PUT",
+
+          headers: {
+
+            "Content-Type":
+              "application/json"
+
+          },
+
+          body:
+            JSON.stringify({
+
+              estadoAtual:
+                terrario[key],
+
+              modoManual:
+                false,
+
+              idUtilizador:
+                utilizador.idUtilizador
+
+            })
+
+        }
+
+      );
+
+
+    if (!resposta.ok) {
+
+      const erro =
+        await resposta.text();
+
+      console.error(
+        "Erro API:",
+        erro
+      );
+
+      throw new Error(
+        "Erro ao voltar ao modo automático"
+      );
+
+    }
+
 
     await atualizarDados();
 
+
   } catch (e) {
-    console.error(e);
+
+    console.error(
+      "Erro ao voltar ao modo automático:",
+      e
+    );
+
   }
+
 }
 
 async function onTerrarioChanged() {
@@ -768,47 +1054,68 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   renderPickerList();
 
+  // ==========================================================
+  // INICIAR ATUALIZAÇÃO AUTOMÁTICA
+  // ==========================================================
+
+  iniciarAtualizacaoAutomatica();
+
 
   // ==========================================================
   // SELEÇÃO DE IMAGEM PERSONALIZADA
   // ==========================================================
 
-  const inputImagem = document.getElementById("terrario-imagem");
-  const imagemSelecionada = document.getElementById("imagem-selecionada");
+  const inputImagem =
+    document.getElementById("terrario-imagem");
+
+  const imagemSelecionada =
+    document.getElementById("imagem-selecionada");
+
 
   if (inputImagem) {
 
-    inputImagem.addEventListener("change", function () {
+    inputImagem.addEventListener(
+      "change",
+      function () {
 
-      const ficheiro = this.files[0];
+        const ficheiro =
+          this.files[0];
 
-      if (ficheiro) {
+        if (ficheiro) {
 
-        // Mostra o nome da imagem escolhida
-        imagemSelecionada.textContent =
-          "📷 " + ficheiro.name;
+          imagemSelecionada.textContent =
+            "📷 " + ficheiro.name;
 
-        imagemSelecionada.classList.add("selected");
+          imagemSelecionada.classList.add(
+            "selected"
+          );
 
-        // Remove a seleção das imagens predefinidas
-        document.querySelectorAll(".terrario-option")
-          .forEach(o => o.classList.remove("selected"));
+          document
+            .querySelectorAll(".terrario-option")
+            .forEach(o =>
+              o.classList.remove("selected")
+            );
 
-        // Não usar imagem predefinida
-        imagemPredefinida = null;
+          imagemPredefinida = null;
 
-        console.log("Imagem personalizada selecionada:", ficheiro.name);
+          console.log(
+            "Imagem personalizada selecionada:",
+            ficheiro.name
+          );
 
-      } else {
+        } else {
 
-        imagemSelecionada.textContent =
-          "Nenhuma imagem selecionada";
+          imagemSelecionada.textContent =
+            "Nenhuma imagem selecionada";
 
-        imagemSelecionada.classList.remove("selected");
+          imagemSelecionada.classList.remove(
+            "selected"
+          );
+
+        }
 
       }
-
-    });
+    );
 
   }
 
@@ -817,43 +1124,50 @@ document.addEventListener("DOMContentLoaded", async () => {
   // SELEÇÃO DE IMAGEM PREDEFINIDA
   // ==========================================================
 
-  document.querySelectorAll(".terrario-option").forEach(opcao => {
+  document
+    .querySelectorAll(".terrario-option")
+    .forEach(opcao => {
 
-    opcao.addEventListener("click", function () {
+      opcao.addEventListener(
+        "click",
+        function () {
 
-      // Remove seleção das outras imagens
-      document.querySelectorAll(".terrario-option")
-        .forEach(o => o.classList.remove("selected"));
+          document
+            .querySelectorAll(".terrario-option")
+            .forEach(o =>
+              o.classList.remove("selected")
+            );
 
-      // Seleciona esta imagem
-      this.classList.add("selected");
+          this.classList.add("selected");
 
-      // Guarda a imagem predefinida
-      imagemPredefinida = this.dataset.img;
+          imagemPredefinida =
+            this.dataset.img;
 
-      // Remove eventual ficheiro personalizado
-      if (inputImagem) {
-        inputImagem.value = "";
-      }
+          if (inputImagem) {
+            inputImagem.value = "";
+          }
 
-      // Atualiza o texto
-      if (imagemSelecionada) {
+          if (imagemSelecionada) {
 
-        imagemSelecionada.textContent =
-          "Imagem predefinida: " + imagemPredefinida;
+            imagemSelecionada.textContent =
+              "Imagem predefinida: " +
+              imagemPredefinida;
 
-        imagemSelecionada.classList.remove("selected");
+            imagemSelecionada.classList.remove(
+              "selected"
+            );
 
-      }
+          }
 
-      console.log(
-        "Imagem predefinida selecionada:",
-        imagemPredefinida
+          console.log(
+            "Imagem predefinida selecionada:",
+            imagemPredefinida
+          );
+
+        }
       );
 
     });
-
-  });
 
 });
 
@@ -1003,4 +1317,32 @@ function fecharModalTerrario() {
 
   document.querySelector(".terrario-option")?.classList.add("selected");
   imagemPredefinida = "terrarioGrande.jpg";
+}
+
+// ==========================================================
+// ATUALIZAÇÃO AUTOMÁTICA DA PÁGINA
+// ==========================================================
+
+let intervaloAtualizacao = null;
+
+function iniciarAtualizacaoAutomatica() {
+
+  // Evitar criar vários intervalos
+  if (intervaloAtualizacao) {
+    clearInterval(intervaloAtualizacao);
+  }
+
+  // Atualizar imediatamente
+  atualizarDados();
+
+  // Atualizar a cada 5 segundos
+  intervaloAtualizacao = setInterval(async () => {
+
+    console.log(
+      "Atualização automática dos dados..."
+    );
+
+    await atualizarDados();
+
+  }, 5000);
 }

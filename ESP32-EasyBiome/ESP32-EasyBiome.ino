@@ -35,7 +35,7 @@ const char* leituraURL =
   "http://192.168.68.70:8080/api/leituras";
 
 const String dispositivosURL =
-  "http://192.168.68.70:8080/api/dispositivos/terrario/" + String(ID_TERRARIO);
+  "http://192.168.68.70:8080/api/dispositivos/terrario/" + String(ID_TERRARIO) + "/cifrado";
 
 //=========================
 // GPIO
