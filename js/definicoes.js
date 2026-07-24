@@ -443,11 +443,12 @@ async function guardarDefinicoes() {
 
   const dados = {
 
-    // Nome e descrição
-    nomeTerrario:
+    // O DTO Java espera "nome"
+    nome:
       document.getElementById("set-nome-input").value.trim(),
 
-    descricaoTerrario:
+    // O DTO Java espera "descricao"
+    descricao:
       document.getElementById("set-descricao-input").value.trim(),
 
     // Temperatura
@@ -494,7 +495,7 @@ async function guardarDefinicoes() {
 
     // Atualiza o nome apresentado no topo
     document.getElementById("set-nome").textContent =
-      dados.nomeTerrario;
+      dados.nome || "Sem nome";
 
     console.log("Definições guardadas com sucesso.");
 
@@ -647,64 +648,64 @@ function fecharModalTerrario() {
 
 async function carregarUtilizadoresComAcesso() {
 
-    const idTerrario =
-        localStorage.getItem("easybiome_active_id");
+  const idTerrario =
+    localStorage.getItem("easybiome_active_id");
 
-    if (!idTerrario) {
-        console.log("Nenhum terrário selecionado.");
-        return;
+  if (!idTerrario) {
+    console.log("Nenhum terrário selecionado.");
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${API_BASE}/terrarios/${idTerrario}/utilizadores`
+    );
+
+    if (!response.ok) {
+
+      const erro = await response.text();
+
+      throw new Error(
+        erro ||
+        "Erro ao obter utilizadores do terrário."
+      );
     }
 
-    try {
+    const relacoes =
+      await response.json();
 
-        const response = await fetch(
-            `${API_BASE}/terrarios/${idTerrario}/utilizadores`
-        );
+    mostrarUtilizadoresTerrario(
+      relacoes
+    );
 
-        if (!response.ok) {
+  } catch (error) {
 
-            const erro = await response.text();
+    console.error(
+      "Erro ao carregar utilizadores:",
+      error
+    );
 
-            throw new Error(
-                erro ||
-                "Erro ao obter utilizadores do terrário."
-            );
-        }
-
-        const relacoes =
-            await response.json();
-
-        mostrarUtilizadoresTerrario(
-            relacoes
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao carregar utilizadores:",
-            error
-        );
-
-    }
+  }
 }
 
 function mostrarUtilizadoresTerrario(relacoes) {
 
-    const lista =
-        document.getElementById("share-users-list");
+  const lista =
+    document.getElementById("share-users-list");
 
-    if (!lista) {
-        console.error(
-            "Elemento #share-users-list não encontrado."
-        );
-        return;
-    }
+  if (!lista) {
+    console.error(
+      "Elemento #share-users-list não encontrado."
+    );
+    return;
+  }
 
-    lista.innerHTML = "";
+  lista.innerHTML = "";
 
-    if (!relacoes || relacoes.length === 0) {
+  if (!relacoes || relacoes.length === 0) {
 
-        lista.innerHTML = `
+    lista.innerHTML = `
             <div style="
                 padding: 15px;
                 text-align: center;
@@ -715,28 +716,28 @@ function mostrarUtilizadoresTerrario(relacoes) {
             </div>
         `;
 
-        return;
-    }
+    return;
+  }
 
-    relacoes.forEach(relacao => {
+  relacoes.forEach(relacao => {
 
-        const utilizador =
-            relacao.utilizador;
+    const utilizador =
+      relacao.utilizador;
 
-        const permissao =
-            relacao.permissaoTerrario;
+    const permissao =
+      relacao.permissaoTerrario;
 
-        const div =
-            document.createElement("div");
+    const div =
+      document.createElement("div");
 
-        div.className =
-            "share-user-item";
+    div.className =
+      "share-user-item";
 
-        let botaoRemover = "";
+    let botaoRemover = "";
 
-        if (permissao === "PARTILHADO") {
+    if (permissao === "PARTILHADO") {
 
-            botaoRemover = `
+      botaoRemover = `
                 <button
                     class="share-user-remove"
                     onclick="removerUtilizadorTerrario(
@@ -747,9 +748,9 @@ function mostrarUtilizadoresTerrario(relacoes) {
                     Remover
                 </button>
             `;
-        }
+    }
 
-        div.innerHTML = `
+    div.innerHTML = `
 
             <div class="share-user-info">
 
@@ -774,9 +775,9 @@ function mostrarUtilizadoresTerrario(relacoes) {
 
         `;
 
-        lista.appendChild(div);
+    lista.appendChild(div);
 
-    });
+  });
 
 }
 

@@ -43,15 +43,13 @@ CREATE TABLE terrario (
 -- ------------------------------------------------------------
 -- UTILIZADOR_TERRARIO  (N:M — partilha de terrários)
 -- DONO    → criador, acesso total
--- EDITOR  → pode controlar dispositivos
--- LEITOR  → só visualiza dados
 -- ------------------------------------------------------------
 CREATE TABLE utilizador_terrario (
     id_utilizador_terrario BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_utilizador          BIGINT NOT NULL,
     id_terrario            BIGINT NOT NULL,
-    permissao_terrario     VARCHAR(20) NOT NULL DEFAULT 'LEITOR'
-                           CHECK (permissao_terrario IN ('DONO', 'EDITOR', 'LEITOR')),
+    permissao_terrario     VARCHAR(20) NOT NULL DEFAULT 'DONO'
+                           CHECK (permissao_terrario IN ('DONO', 'PARTILHADO')),
     convidado_em           TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (id_utilizador, id_terrario),
     CONSTRAINT fk_ut_utilizador FOREIGN KEY (id_utilizador)
