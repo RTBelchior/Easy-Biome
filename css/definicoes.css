@@ -39,31 +39,30 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  max-width: 480px;
-  margin: 0 auto;
+
+  width: 100%;
+  max-width: none;
+
+  margin: 0;
+
   display: flex;
   flex-direction: column;
+
   min-height: 100vh;
+
   overflow-x: hidden;
-}
-
-@media (min-width: 540px) {
-  body {
-    max-width: 700px;
-  }
-}
-
-@media (min-width: 900px) {
-  body {
-    max-width: 880px;
-  }
 }
 
 .page {
   display: flex;
   flex-direction: column;
+
   flex: 1;
+
+  width: 100%;
+
   overflow-y: auto;
+
   padding-bottom: 80px;
 }
 
@@ -165,15 +164,15 @@ body {
 }
 
 .settings-row-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
-.settings-row-left > div:last-child{
-    flex: 1;
+.settings-row-left>div:last-child {
+  flex: 1;
 }
 
 .settings-row-icon {
@@ -275,25 +274,25 @@ body {
 }
 
 .picker-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 12px;
-    border-radius: 16px;
-    background: #1b2721;
-    margin-bottom: 12px;
-    cursor: pointer;
-    transition: .2s;
-    min-height: 100px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #1b2721;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: .2s;
+  min-height: 100px;
 }
 
 .picker-img {
-    width: 120px;
-    height: 80px;
-    object-fit: contain;
-    border-radius: 12px;
-    flex-shrink: 0;
-    background: #101a15;
+  width: 120px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: #101a15;
 }
 
 .picker-item.active {
@@ -338,64 +337,68 @@ body {
 }
 
 .range-inputs {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 24px;   /* espaço entre Mín. e Máx. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 24px;
+  /* espaço entre Mín. e Máx. */
 }
 
 .range-inputs-hum {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 28px;   /* espaço entre Mín. e Máx. */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 28px;
+  /* espaço entre Mín. e Máx. */
 }
 
 .range-field {
-    display: flex;
-    align-items: center;
-    gap: 6px;    /* espaço entre label, input e unidade */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* espaço entre label, input e unidade */
 }
 
 .range-field-hum {
-    display: flex;
-    align-items: center;
-    gap: 10px;    /* espaço entre label, input e unidade */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* espaço entre label, input e unidade */
 }
 
-.range-field label{
-    width:36px;
-    text-align:right;
-    font-size:13px;
-    font-weight:500;
+.range-field label {
+  width: 36px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.range-field-hum label{
-    width:36px;
-    text-align:right;
-    font-size:13px;
-    font-weight:500;
+.range-field-hum label {
+  width: 36px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .range-separator {
-    display: none;
+  display: none;
 }
 
-.settings-input-field{
-    width:60px;
-    text-align:center;
+.settings-input-field {
+  width: 60px;
+  text-align: center;
 }
 
-.range-box{
-    display:flex;
-    align-items:center;
-    gap:4px;
+.range-box {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.time-input{
-    width:110px;
-    margin-left:auto;
-    text-align:center;
+.time-input {
+  width: 110px;
+  margin-left: auto;
+  text-align: center;
 }
 
 /* ── RESPONSIVIDADE PARA PC (Desktop) ── */
@@ -441,9 +444,63 @@ body {
   }
 }
 
-/* ── RESPONSIVIDADE PARA TABLET ── */
-@media (min-width: 540px) and (max-width: 1179px) {
-  .profile-card {
-    padding: 1.5rem;
+/* ── TABLET ── */
+@media (min-width: 540px) and (max-width: 1180px) {
+
+  /* Header ocupa todo o tablet */
+  .mobile-topbar {
+    height: 78px;
+    width: 100%;
+    padding: 0 28px;
+  }
+
+  /* Logo maior */
+  .mobile-topbar .top-logo {
+    width: 130px;
+    height: 65px;
+  }
+
+  .mobile-topbar .logo-box {
+    width: 130px;
+    height: 65px;
+  }
+
+  /* Título */
+  .mobile-title {
+    font-size: 20px;
+  }
+
+  /* Perfil */
+  .mobile-profile {
+    width: 50px;
+    height: 50px;
+  }
+
+  .mobile-profile svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Barra inferior ocupa todo o tablet */
+  .bottom-nav {
+    width: 100%;
+    max-width: none;
+    height: 82px;
+  }
+
+  .bnav-item {
+    padding: 10px 0;
+    font-size: 12px;
+  }
+
+  .bnav-item svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Espaço para o header e bottom nav */
+  .page {
+    padding-top: 78px;
+    padding-bottom: 82px;
   }
 }
