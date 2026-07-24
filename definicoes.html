@@ -295,7 +295,7 @@
       </div>
       <div>
         <div class="profile-name" id="profile-name">A carregar</div>
-<div class="profile-email" id="profile-email">A carregar</div>
+        <div class="profile-email" id="profile-email">A carregar</div>
       </div>
       <a class="profile-edit" href="profile.html">Ver perfil</a>
     </div>
@@ -509,7 +509,7 @@
             </div>
             <div>
               <div class="settings-row-name">Partilhar terrário</div>
-              <div class="settings-row-sub">Gerir acessos e permissões</div>
+              <div class="settings-row-sub">Partilhar o terrário com outros utilizadores</div>
             </div>
           </div>
           <div class="settings-chevron">
@@ -566,49 +566,34 @@
 
       <!-- Bloco de Convite -->
       <div class="share-input-group">
-        <input type="email" id="share-email" class="share-email-input" placeholder="E-mail do utilizador">
+
         <div class="share-input-row">
-          <select id="share-role" class="settings-select-field" style="flex: 1;">
-            <option value="view">Apenas Ver (Leitura)</option>
-            <option value="admin">Administrador (Controlo Total)</option>
-          </select>
-          <button class="share-btn" onclick="executeShare()">Convidar</button>
+
+          <input type="email" id="share-email" class="share-email-input" placeholder="E-mail do utilizador">
+
+          <button class="share-btn" onclick="executeShare()">
+            Convidar
+          </button>
+
         </div>
+
       </div>
 
       <!-- Lista de Utilizadores -->
-      <div class="sel-label" style="font-size: 11px; padding: 4px 0 4px; color: var(--text3);">Utilizadores com acesso
+      <div class="sel-label" style="font-size: 11px; padding: 4px 0 4px; color: var(--text3);">
+
+        Utilizadores com acesso
+
       </div>
+
       <div class="share-users-list" id="share-users-list">
 
-        <!-- Exemplo Base Estilizado -->
-        <div class="share-user-item">
-          <div class="share-user-info">
-            <span class="share-user-email">user2@easybiome.pt</span>
-
-            <!-- Menu de Permissão Customizado -->
-            <div class="custom-dropdown-wrapper">
-              <button class="custom-dropdown-btn role-view" onclick="toggleDropdownMenu(this)">Apenas Ver</button>
-              <div class="custom-dropdown-menu">
-                <div class="custom-dropdown-item" onclick="selectRoleCustom(this, 'view')">Apenas Ver</div>
-                <div class="custom-dropdown-item" onclick="selectRoleCustom(this, 'admin')">Administrador</div>
-              </div>
-            </div>
-
-          </div>
-          <button class="share-user-remove" onclick="removeShare(this)" aria-label="Remover acesso">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-            </svg>
-          </button>
-        </div>
+        <!-- Os utilizadores serão carregados pela API -->
 
       </div>
     </div>
   </div>
-   <div id="modal-terrario" class="modal-overlay" style="display:none;">
+  <div id="modal-terrario" class="modal-overlay" style="display:none;">
     <div class="modal-box modal-terrario">
 
       <h3>Novo Terrário</h3>
@@ -696,7 +681,7 @@
   <script src="js/definicoes.js"></script>
 
   <script>
-    
+
   </script>
 </body>
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,14 +73,72 @@ public class TerrarioController {
     }
 
     @PostMapping("/{id}/partilhar")
-    public void partilharTerrario(
+    public ResponseEntity<?> partilharTerrario(
             @PathVariable Long id,
             @RequestBody PartilharTerrarioDTO dto) {
 
-        terrarioService.partilharTerrario(
-                id,
-                dto.getEmail(),
-                dto.getPermissao()
-        );
+        try {
+
+            terrarioService.partilharTerrario(
+                    id,
+                    dto.getEmail()
+            );
+
+            return ResponseEntity.ok(
+                    "Terrário partilhado com sucesso."
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .status(400)
+                    .body(e.getMessage());
+
+        }
+    }
+
+    @GetMapping("/{idTerrario}/utilizadores")
+    public ResponseEntity<?> listarUtilizadoresComAcesso(
+            @PathVariable Long idTerrario) {
+
+        try {
+
+            return ResponseEntity.ok(
+                    terrarioService
+                            .listarUtilizadoresComAcesso(idTerrario)
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+
+        }
+    }
+
+    @DeleteMapping("/{idTerrario}/utilizadores/{idUtilizador}")
+    public ResponseEntity<?> removerAcessoTerrario(
+            @PathVariable Long idTerrario,
+            @PathVariable Long idUtilizador) {
+
+        try {
+
+            terrarioService.removerAcessoTerrario(
+                    idTerrario,
+                    idUtilizador
+            );
+
+            return ResponseEntity.ok(
+                    "Acesso removido com sucesso."
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+
+        }
     }
 }

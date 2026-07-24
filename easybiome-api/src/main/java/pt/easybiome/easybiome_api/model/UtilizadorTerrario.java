@@ -8,22 +8,18 @@ public class UtilizadorTerrario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_utilizador_terrario")
     private Long idUtilizadorTerrario;
 
     @ManyToOne
-    @JoinColumn(name = "id_utilizador")
+    @JoinColumn(name = "idUtilizador", nullable = false)
     private Utilizador utilizador;
 
     @ManyToOne
-    @JoinColumn(name = "id_terrario")
+    @JoinColumn(name = "idTerrario", nullable = false)
     private Terrario terrario;
 
-    @Column(name = "permissao_terrario")
+    @Column(name = "permissaoTerrario", nullable = false)
     private String permissaoTerrario;
-
-    public UtilizadorTerrario() {
-    }
 
     public Long getIdUtilizadorTerrario() {
         return idUtilizadorTerrario;

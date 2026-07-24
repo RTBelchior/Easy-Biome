@@ -3,29 +3,100 @@
    ════════════════════════════════════════════ */
 
 let imagemPredefinida = "terrarioGrande.jpg";
-function openShareModal() {
-  const nomeAtivo = document.getElementById('set-nome').innerText;
-  document.getElementById('share-terrario-nome').innerText = nomeAtivo;
-  document.getElementById('share-overlay').classList.add('active');
+let terrarioSelecionado = null;
+
+async function openShareModal() {
+
+  const idTerrario =
+    localStorage.getItem(
+      "easybiome_active_id"
+    );
+
+
+  if (!idTerrario) {
+
+    alert(
+      "Nenhum terrário está selecionado."
+    );
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "share-overlay"
+    );
+
+
+  if (modal) {
+
+    modal.style.display = "flex";
+
+  }
+
+
+  const nomeTerrario =
+    document.getElementById(
+      "set-nome"
+    )?.textContent;
+
+
+  const nomeElemento =
+    document.getElementById(
+      "share-terrario-nome"
+    );
+
+
+  if (nomeElemento) {
+
+    nomeElemento.textContent =
+      nomeTerrario ||
+      "Terrário selecionado";
+
+  }
+
+
+  await carregarUtilizadoresComAcesso();
+
 }
 
 function closeShareModal(event) {
-  if (!event || event.target.id === 'share-overlay') {
-    document.getElementById('share-overlay').classList.remove('active');
+
+  // Só fecha se clicar diretamente no fundo do modal
+  if (!event || event.target.id === "share-overlay") {
+
+    const modal =
+      document.getElementById("share-overlay");
+
+    if (modal) {
+
+      modal.style.display = "none";
+      modal.classList.remove("active");
+
+    }
+
     closeAllDropdowns();
   }
 }
 
 /* ── LÓGICA DO CUSTOM DROPDOWN ── */
-function toggleDropdownMenu(button) {
-  // Impede que o clique feche o modal imediatamente
+function toggleDropdownMenu(event, button) {
+
   event.stopPropagation();
+
   const menu = button.nextElementSibling;
-  const isOpen = menu.classList.contains('show');
+
+  const isOpen =
+    menu.classList.contains("show");
+
   closeAllDropdowns();
+
   if (!isOpen) {
-    menu.classList.add('show');
+    menu.classList.add("show");
   }
+
 }
 
 function selectRoleCustom(itemElement, roleCode) {
@@ -54,47 +125,197 @@ function closeAllDropdowns() {
 // Fecha os menus se o utilizador clicar algures fora deles
 document.addEventListener('click', closeAllDropdowns);
 
-function executeShare() {
-  const emailInput = document.getElementById('share-email');
-  const roleSelect = document.getElementById('share-role');
+async function executeShare() {
 
-  if (!emailInput.value.trim()) {
-    alert('Por favor, introduza um e-mail válido.');
+  const emailInput =
+    document.getElementById("share-email");
+
+  const email =
+    emailInput.value.trim();
+
+  const idTerrario =
+    localStorage.getItem("easybiome_active_id");
+
+
+  // ============================================================
+  // 1. Verificar se existe um terrário selecionado
+  // ============================================================
+
+  if (!idTerrario) {
+
+    alert(
+      "Não foi possível identificar o terrário selecionado."
+    );
+
     return;
   }
 
-  const selectedRole = roleSelect.value;
-  const userList = document.getElementById('share-users-list');
-  const item = document.createElement('div');
-  item.className = 'share-user-item';
 
-  const isView = selectedRole === 'view';
+  // ============================================================
+  // 2. Verificar se foi introduzido um email
+  // ============================================================
 
-  item.innerHTML = `
-        <div class="share-user-info">
-          <span class="share-user-email">${emailInput.value}</span>
-          <div class="custom-dropdown-wrapper">
-            <button class="custom-dropdown-btn ${isView ? 'role-view' : 'role-admin'}" onclick="toggleDropdownMenu(this)">
-              ${isView ? 'Apenas Ver' : 'Administrador'}
-            </button>
-            <div class="custom-dropdown-menu">
-              <div class="custom-dropdown-item" onclick="selectRoleCustom(this, 'view')">Apenas Ver</div>
-              <div class="custom-dropdown-item" onclick="selectRoleCustom(this, 'admin')">Administrador</div>
-            </div>
-          </div>
-        </div>
-        <button class="share-user-remove" onclick="removeShare(this)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-        </button>
-      `;
+  if (!email) {
 
-  userList.appendChild(item);
-  emailInput.value = '';
+    alert(
+      "Introduza o e-mail do utilizador."
+    );
+
+    emailInput.focus();
+
+    return;
+  }
+
+
+  // ============================================================
+  // 3. Validar formato básico do email
+  // ============================================================
+
+  const emailValido =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!emailValido) {
+
+    alert(
+      "Introduza um endereço de e-mail válido."
+    );
+
+    emailInput.focus();
+
+    return;
+  }
+
+
+  try {
+
+    // ============================================================
+    // 4. Enviar pedido para o backend
+    // ============================================================
+
+    const resposta =
+      await fetch(
+        `${API_BASE}/terrarios/${idTerrario}/partilhar`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              email: email
+            })
+        }
+      );
+
+
+    // ============================================================
+    // 5. Se o backend rejeitar o pedido
+    // ============================================================
+
+    if (!resposta.ok) {
+
+      const erro =
+        await resposta.text();
+
+      alert(
+        erro ||
+        "Não foi possível partilhar o terrário."
+      );
+
+      return;
+    }
+
+
+    // ============================================================
+    // 6. Partilha realizada com sucesso
+    // ============================================================
+
+    alert(
+      "Terrário partilhado com sucesso."
+    );
+
+
+    // Limpar campo de email
+    emailInput.value = "";
+
+
+    // Atualizar lista de utilizadores
+    await carregarUtilizadoresComAcesso();
+
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao partilhar terrário:",
+      erro
+    );
+
+    alert(
+      "Erro de comunicação com a API."
+    );
+
+  }
+
 }
 
-function removeShare(button) {
-  if (confirm('Tem a certeza que deseja revogar o acesso deste utilizador?')) {
-    button.parentElement.remove();
+async function removerUtilizadorTerrario(idUtilizador) {
+
+  const idTerrario =
+    localStorage.getItem("easybiome_active_id");
+
+  if (!idTerrario) {
+    alert("Não foi possível identificar o terrário.");
+    return;
+  }
+
+  if (
+    !confirm(
+      "Tem a certeza que deseja remover este utilizador do terrário?"
+    )
+  ) {
+    return;
+  }
+
+  try {
+
+    const resposta = await fetch(
+      `${API_BASE}/terrarios/${idTerrario}/utilizadores/${idUtilizador}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    if (!resposta.ok) {
+
+      const erro = await resposta.text();
+
+      alert(
+        erro ||
+        "Não foi possível remover o utilizador."
+      );
+
+      return;
+    }
+
+    alert(
+      "Utilizador removido do terrário com sucesso."
+    );
+
+    await carregarUtilizadoresComAcesso();
+
+  } catch (erro) {
+
+    console.error(
+      "Erro ao remover utilizador:",
+      erro
+    );
+
+    alert(
+      "Erro de comunicação com a API."
+    );
   }
 }
 
@@ -424,45 +645,138 @@ function fecharModalTerrario() {
   imagemPredefinida = "terrarioGrande.jpg";
 }
 
+async function carregarUtilizadoresComAcesso() {
 
-async function executeShare() {
+    const idTerrario =
+        localStorage.getItem("easybiome_active_id");
 
-  const email = document.getElementById("share-email").value;
-
-  const permissao =
-    document.getElementById("share-role").value === "admin"
-      ? "EDITOR"
-      : "LEITOR";
-
-  const idTerrario =
-    localStorage.getItem("easybiome_active_id");
-
-  const resposta = await fetch(
-    `${API_BASE}/terrarios/${idTerrario}/partilhar`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        permissao
-      })
+    if (!idTerrario) {
+        console.log("Nenhum terrário selecionado.");
+        return;
     }
-  );
 
-  if (resposta.ok) {
-    alert("Terrário partilhado com sucesso.");
-  } else {
-    alert(await resposta.text());
-  }
+    try {
+
+        const response = await fetch(
+            `${API_BASE}/terrarios/${idTerrario}/utilizadores`
+        );
+
+        if (!response.ok) {
+
+            const erro = await response.text();
+
+            throw new Error(
+                erro ||
+                "Erro ao obter utilizadores do terrário."
+            );
+        }
+
+        const relacoes =
+            await response.json();
+
+        mostrarUtilizadoresTerrario(
+            relacoes
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar utilizadores:",
+            error
+        );
+
+    }
 }
 
-function terminarSessao() {
+function mostrarUtilizadoresTerrario(relacoes) {
 
-  localStorage.removeItem("utilizador");
+    const lista =
+        document.getElementById("share-users-list");
 
-  sessionStorage.clear();
+    if (!lista) {
+        console.error(
+            "Elemento #share-users-list não encontrado."
+        );
+        return;
+    }
 
-  window.location.href = "login.html";
+    lista.innerHTML = "";
+
+    if (!relacoes || relacoes.length === 0) {
+
+        lista.innerHTML = `
+            <div style="
+                padding: 15px;
+                text-align: center;
+                color: var(--text3);
+                font-size: 13px;
+            ">
+                Ainda não existem utilizadores com acesso a este terrário.
+            </div>
+        `;
+
+        return;
+    }
+
+    relacoes.forEach(relacao => {
+
+        const utilizador =
+            relacao.utilizador;
+
+        const permissao =
+            relacao.permissaoTerrario;
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "share-user-item";
+
+        let botaoRemover = "";
+
+        if (permissao === "PARTILHADO") {
+
+            botaoRemover = `
+                <button
+                    class="share-user-remove"
+                    onclick="removerUtilizadorTerrario(
+                        ${utilizador.idUtilizador}
+                    )"
+                    title="Remover utilizador"
+                >
+                    Remover
+                </button>
+            `;
+        }
+
+        div.innerHTML = `
+
+            <div class="share-user-info">
+
+                <strong>
+                    ${utilizador.nomeUtilizador}
+                </strong>
+
+                <span class="share-user-email">
+                    ${utilizador.emailUtilizador}
+                </span>
+
+                <span style="
+                    font-size: 11px;
+                    color: var(--text3);
+                ">
+                    ${permissao}
+                </span>
+
+            </div>
+
+            ${botaoRemover}
+
+        `;
+
+        lista.appendChild(div);
+
+    });
+
 }
+

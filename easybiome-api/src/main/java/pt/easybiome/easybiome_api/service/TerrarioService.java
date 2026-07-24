@@ -119,7 +119,7 @@ public class TerrarioService {
     public List<Terrario> listarTerrarios(Long idUtilizador) {
 
         return utilizadorTerrarioRepository
-                .findByUtilizador_IdUtilizador(idUtilizador)
+                .findByUtilizadorIdUtilizador(idUtilizador)
                 .stream()
                 .map(UtilizadorTerrario::getTerrario)
                 .collect(Collectors.toList());
@@ -177,7 +177,7 @@ public class TerrarioService {
                 .orElseThrow(() -> new RuntimeException("Terrário não encontrado"));
 
         utilizadorTerrarioRepository.deleteAll(
-                utilizadorTerrarioRepository.findByTerrario_IdTerrario(id)
+                utilizadorTerrarioRepository.findByTerrarioIdTerrario(id)
         );
 
         terrarioRepository.delete(terrario);
@@ -185,34 +185,100 @@ public class TerrarioService {
 
     public void partilharTerrario(
             Long idTerrario,
-            String email,
-            String permissao) {
+            String email) {
 
-        Terrario terrario = terrarioRepository.findById(idTerrario)
-                .orElseThrow(() ->
-                        new RuntimeException("Terrário não encontrado"));
+        Terrario terrario =
+                terrarioRepository
+                        .findById(idTerrario)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Terrário não encontrado."
+                                )
+                        );
 
-        Utilizador utilizador = utilizadorRepository
-                .findByEmailUtilizador(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Utilizador não encontrado"));
+        Utilizador utilizador =
+                utilizadorRepository
+                        .findByEmailUtilizador(email)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Não existe nenhum utilizador registado com este endereço de email."
+                                )
+                        );
 
-        boolean existe =
+        boolean jaExiste =
                 utilizadorTerrarioRepository
-                        .existsByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+                        .existsByUtilizadorIdUtilizadorAndTerrarioIdTerrario(
                                 utilizador.getIdUtilizador(),
-                                idTerrario);
+                                terrario.getIdTerrario()
+                        );
 
-        if (existe) {
-            throw new RuntimeException("Este utilizador já tem acesso.");
+        if (jaExiste) {
+
+            throw new RuntimeException(
+                    "Este utilizador já tem acesso ao terrário."
+            );
         }
 
-        UtilizadorTerrario ut = new UtilizadorTerrario();
+        UtilizadorTerrario relacao =
+                new UtilizadorTerrario();
 
-        ut.setTerrario(terrario);
-        ut.setUtilizador(utilizador);
-        ut.setPermissaoTerrario(permissao);
+        relacao.setUtilizador(utilizador);
+        relacao.setTerrario(terrario);
 
-        utilizadorTerrarioRepository.save(ut);
+        // Como queres apenas partilha, sem permissões:
+        relacao.setPermissaoTerrario("PARTILHADO");
+
+        utilizadorTerrarioRepository.save(relacao);
+    }
+
+    public List<UtilizadorTerrario> listarUtilizadoresComAcesso(
+            Long idTerrario) {
+
+        terrarioRepository.findById(idTerrario)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Terrário não encontrado."
+                        )
+                );
+
+        return utilizadorTerrarioRepository
+                .findByTerrarioIdTerrario(idTerrario);
+    }
+
+    public void removerAcessoTerrario(
+            Long idTerrario,
+            Long idUtilizador) {
+
+        // Verificar se o terrário existe
+        terrarioRepository.findById(idTerrario)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Terrário não encontrado."
+                        )
+                );
+
+        // Procurar a relação entre o utilizador e o terrário
+        UtilizadorTerrario relacao =
+                utilizadorTerrarioRepository
+                        .findByUtilizadorIdUtilizadorAndTerrarioIdTerrario(
+                                idUtilizador,
+                                idTerrario
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Este utilizador não tem acesso a este terrário."
+                                )
+                        );
+
+        // Não permitir remover o DONO
+        if ("DONO".equals(relacao.getPermissaoTerrario())) {
+
+            throw new RuntimeException(
+                    "O dono do terrário não pode ser removido."
+            );
+        }
+
+        // Só permite remover utilizadores PARTILHADOS
+        utilizadorTerrarioRepository.delete(relacao);
     }
 }

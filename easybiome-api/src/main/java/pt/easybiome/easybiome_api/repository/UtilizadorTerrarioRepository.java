@@ -1,24 +1,35 @@
 package pt.easybiome.easybiome_api.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import pt.easybiome.easybiome_api.model.UtilizadorTerrario;
-
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import pt.easybiome.easybiome_api.model.UtilizadorTerrario;
+import java.util.Optional;
+
 @Repository
-public interface UtilizadorTerrarioRepository extends JpaRepository<UtilizadorTerrario, Long> {
+public interface UtilizadorTerrarioRepository
+        extends JpaRepository<UtilizadorTerrario, Long> {
 
-    List<UtilizadorTerrario> findByUtilizador_IdUtilizador(Long idUtilizador);
+    // Todos os terrários aos quais um utilizador tem acesso
+    List<UtilizadorTerrario> findByUtilizadorIdUtilizador(
+            Long idUtilizador
+    );
 
-    List<UtilizadorTerrario> findByTerrario_IdTerrario(Long idTerrario);
+    // Todos os utilizadores que têm acesso a um terrário
+    List<UtilizadorTerrario> findByTerrarioIdTerrario(
+            Long idTerrario
+    );
 
-    boolean existsByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+    // Verifica se um utilizador já tem acesso a um terrário
+    boolean existsByUtilizadorIdUtilizadorAndTerrarioIdTerrario(
             Long idUtilizador,
             Long idTerrario
     );
 
-    void deleteByUtilizador_IdUtilizadorAndTerrario_IdTerrario(
+    Optional<UtilizadorTerrario>
+    findByUtilizadorIdUtilizadorAndTerrarioIdTerrario(
             Long idUtilizador,
             Long idTerrario
     );
